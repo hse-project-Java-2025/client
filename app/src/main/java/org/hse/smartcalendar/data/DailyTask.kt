@@ -1,6 +1,5 @@
 package org.hse.smartcalendar.data
 
-import androidx.collection.LongList
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
