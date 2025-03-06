@@ -71,9 +71,8 @@ fun AuthScreen(viewModel: AuthViewModel) {
                 Text("Login successful! Token: ${state.token}")
                 Thread.sleep(1000)
                 // TODO Видимо тут должна быть синхронизация.
-                // Закоментил пока
-//                val intent = Intent(LocalContext.current, DailyTasksListActivity::class.java)
-//                LocalContext.current.startActivity(intent)
+                val intent = Intent(LocalContext.current, DailyTasksListActivity::class.java)
+                LocalContext.current.startActivity(intent)
             }
             is AuthViewModel.AuthState.Error -> {
                 Text("Error: ${state.message}", color = MaterialTheme.colorScheme.error)

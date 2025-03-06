@@ -35,24 +35,21 @@ fun DailyTaskCard(task : DailyTask, modifier: Modifier = Modifier) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(10.dp)
         ) {
-                Text(
-                    text = task.getDailyTaskTitle(),
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight(400),
-                    modifier = Modifier.weight(3f)
-                )
-                Text(
-                    text = task.getDailyTaskSchedule(),
-                    modifier = Modifier.weight(2f)
-                        .padding(10.dp)
-                        .align(Alignment.Bottom),
-                    textAlign = TextAlign.End
-                )
-
-            }
-
+            Text(
+                text = task.getDailyTaskTitle(),
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight(400),
+                modifier = Modifier.weight(3f)
+            )
+            Text(
+                text = task.getDailyTaskSchedule(),
+                modifier = Modifier.weight(2f)
+                    .padding(10.dp)
+                    .align(Alignment.Bottom),
+                textAlign = TextAlign.End
+            )
         }
-
+    }
         Surface(
             color = MaterialTheme.colorScheme.surface,
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
@@ -69,16 +66,15 @@ fun DailyTaskCard(task : DailyTask, modifier: Modifier = Modifier) {
             }
         }
     }
-
 }
 
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun DailyTaskCardPreview() {
     val previewTask = DailyTask(
-        title = "Пример задачи",
-        description = "Пример описания",
+        title = "Title example",
+        description = "Description Example",
         duration = LocalTime(
             hour = 1,
             minute = 0),
