@@ -42,7 +42,7 @@ class DailyTask (
         return start
     }
 
-    fun getDailyTaskSchedule() : String {
+    fun getDailyTaskArrangementString() : String {
         return getDailyTaskStartTime().toString() +
                 " due to " + getDailyTaskEndTime().toString()
     }

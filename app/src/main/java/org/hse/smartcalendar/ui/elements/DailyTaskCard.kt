@@ -42,7 +42,7 @@ fun DailyTaskCard(task : DailyTask, modifier: Modifier = Modifier) {
                 modifier = Modifier.weight(3f)
             )
             Text(
-                text = task.getDailyTaskSchedule(),
+                text = task.getDailyTaskArrangementString(),
                 modifier = Modifier.weight(2f)
                     .padding(10.dp)
                     .align(Alignment.Bottom),
