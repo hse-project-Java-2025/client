@@ -101,6 +101,12 @@ fun Greeting(name: String, navController: NavHostController, modifier: Modifier 
             text = "Hello $name!",
             modifier = modifier
         )
+        Spacer(modifier = Modifier.
+        padding(8.dp))
+        Text(
+            text = "Hello $name!",
+            modifier = modifier
+        )
 
         Spacer(modifier = Modifier.
         padding(8.dp))
