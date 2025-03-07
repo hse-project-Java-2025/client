@@ -40,11 +40,9 @@ android {
 }
 
 dependencies {
-
-<<<<<<< HEAD
-=======
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
->>>>>>> timustinov/dev
+    implementation(libs.androidx.navigation.compose.v240beta02)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.kotlinx.datetime)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -53,10 +51,9 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-<<<<<<< HEAD
-=======
     implementation(libs.androidx.lifecycle.runtime.compose.android)
->>>>>>> timustinov/dev
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.datastore.core.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
