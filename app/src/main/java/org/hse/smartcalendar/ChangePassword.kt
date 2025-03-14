@@ -41,73 +41,73 @@ fun ChangeLogin() {
 
 @Composable
 fun ChangeLogin(viewModel: AuthViewModel, navController: NavController) {
-    ChangePassword(viewModel, navController)
+    ChangePassword(viewModel, navController, false)
 }
 
 @Composable
-fun ChangePassword(viewModel: AuthViewModel, navController: NavController) {
+fun ChangePassword(viewModel: AuthViewModel, navController: NavController, isChangeLogin: Boolean = false) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var newPassword1 by remember { mutableStateOf("") }
     var newPassword2 by remember { mutableStateOf("") }
     val authState by viewModel.authState.collectAsState()
-//    Column(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .padding(16.dp),
-//        verticalArrangement = Arrangement.Center,
-//        horizontalAlignment = Alignment.CenterHorizontally
-//    ) {
-//        TextField(
-//            value = username,
-//            onValueChange = { username = it },
-//            label = { Text("Username") },
-//            modifier = Modifier.fillMaxWidth()
-//        )
-//        Spacer(modifier = Modifier.height(8.dp))
-//        TextField(
-//            value = password,
-//            onValueChange = { password = it },
-//            label = { Text("Password") },
-//            modifier = Modifier.fillMaxWidth(),
-//            visualTransformation = PasswordVisualTransformation()
-//        )
-//        Spacer(modifier = Modifier.height(8.dp))
-//        TextField(
-//            value = newPassword1,
-//            onValueChange = { newPassword1 = it },
-//            label = { if (isChangeLogin) Text("New login") else {Text("New password")} },
-//            modifier = Modifier.fillMaxWidth(),
-//            visualTransformation = PasswordVisualTransformation()
-//        )
-//        TextField(
-//            value = newPassword2,
-//            onValueChange = { newPassword2 = it },
-//            label = { if (isChangeLogin) Text("Repeat new login") else {Text("Repeat new password")} },
-//            modifier = Modifier.fillMaxWidth(),
-//            visualTransformation = PasswordVisualTransformation()
-//        )
-//        Spacer(modifier = Modifier.height(16.dp))
-//        Button(
-//            onClick = {
-//                if (isChangeLogin) viewModel.changeLogin(username, password, newPassword1, newPassword2) else
-//                viewModel.changePassword(username, password, newPassword1, newPassword2)},
-//            modifier = Modifier.fillMaxWidth()
-//        ) {
-//            if (isChangeLogin) Text("Change login") else Text("Change password")
-//        }
-//        Spacer(modifier = Modifier.height(16.dp))
-//        when (val state = authState) {
-//            is AuthViewModel.AuthState.Loading -> {
-//                CircularProgressIndicator()
-//            }
-//            is AuthViewModel.AuthState.Success -> {
-//                Text("Change password successful")
-//            }
-//            is AuthViewModel.AuthState.Error -> {
-//                Text("Error: ${state.message}", color = MaterialTheme.colorScheme.error)
-//            }
-//            else -> {}
-//        }
-//    }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        TextField(
+            value = username,
+            onValueChange = { username = it },
+            label = { Text("Username") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        TextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Password") },
+            modifier = Modifier.fillMaxWidth(),
+            visualTransformation = PasswordVisualTransformation()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        TextField(
+            value = newPassword1,
+            onValueChange = { newPassword1 = it },
+            label = { if (isChangeLogin) Text("New login") else {Text("New password")} },
+            modifier = Modifier.fillMaxWidth(),
+            visualTransformation = PasswordVisualTransformation()
+        )
+        TextField(
+            value = newPassword2,
+            onValueChange = { newPassword2 = it },
+            label = { if (isChangeLogin) Text("Repeat new login") else {Text("Repeat new password")} },
+            modifier = Modifier.fillMaxWidth(),
+            visualTransformation = PasswordVisualTransformation()
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = {
+                if (isChangeLogin) viewModel.changeLogin(username, password, newPassword1, newPassword2) else
+                viewModel.changePassword(username, password, newPassword1, newPassword2)},
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            if (isChangeLogin) Text("Change login") else Text("Change password")
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        when (val state = authState) {
+            is AuthViewModel.AuthState.Loading -> {
+                CircularProgressIndicator()
+            }
+            is AuthViewModel.AuthState.Success -> {
+                Text("Change password successful")
+            }
+            is AuthViewModel.AuthState.Error -> {
+                Text("Error: ${state.message}", color = MaterialTheme.colorScheme.error)
+            }
+            else -> {}
+        }
+    }
 }
