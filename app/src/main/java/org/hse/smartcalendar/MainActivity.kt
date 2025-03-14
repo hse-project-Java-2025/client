@@ -47,6 +47,9 @@ enum class Screen {
     Login,
     Calendar,
     Greeting,
+    Settings,
+    ChangePassword,
+    ChangeLogin
 }
 
 @Composable
@@ -73,14 +76,23 @@ fun App(
                 .verticalScroll(rememberScrollState())
                 .padding(innerPadding)
         ){
+            composable(route=Screen.Greeting.name) {
+                Greeting("user", navController)
+            }
             composable(route = Screen.Login.name){
                 AuthScreen(viewModel, navController)
             }
             composable(route=Screen.Calendar.name) {
-                CalendarScreen(viewModel)
+                CalendarScreen(viewModel, navController)
             }
-            composable(route=Screen.Greeting.name) {
-                Greeting("user", navController)
+            composable(route=Screen.Settings.name) {
+                SettingsScreen(viewModel, navController)
+            }
+            composable(route=Screen.ChangePassword.name) {
+                ChangePassword(viewModel, navController)
+            }
+            composable(route=Screen.ChangeLogin.name) {
+                ChangeLogin(viewModel, navController)
             }
         }
     }
@@ -113,6 +125,7 @@ fun Greeting(name: String, navController: NavHostController, modifier: Modifier 
         }
         Button(
             onClick = {
+                navController.navigate(Screen.Calendar.name)
             },
             modifier = Modifier.fillMaxWidth()) {
             Text("Calendar")

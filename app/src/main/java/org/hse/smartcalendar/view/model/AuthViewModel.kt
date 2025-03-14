@@ -33,4 +33,10 @@ class AuthViewModel : ViewModel() {
             }
         }
     }
+    fun setLogin(username: String, newLogin: String){
+        //TODO
+    }
+    fun setPassword(username: String, newPassword: String){
+        //TODO
+    }
 }
