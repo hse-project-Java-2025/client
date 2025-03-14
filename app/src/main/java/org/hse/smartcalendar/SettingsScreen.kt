@@ -27,15 +27,27 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import org.hse.smartcalendar.ui.theme.SmartCalendartestTheme
 
+//здесь работает навигация
 @Preview
 @Composable
 fun SettingsScreen() {
-    SmartCalendartestTheme { SettingsScreen(viewModel = AuthViewModel(), navController = rememberNavController()) }
+    SmartCalendartestTheme {
+        App(viewModel = AuthViewModel(), startDestination = Screen.Settings.name)
+    }
 }
+//это просто preview
+@Composable
+fun SettingsScreenPreview(){
+    SmartCalendartestTheme {
+        SettingsScreen(viewModel = AuthViewModel(), navController = rememberNavController())
+    }
+}
+
 
 private fun changeReminders(state: Boolean){
     if (state){
@@ -55,17 +67,22 @@ fun SettingsScreen(viewModel: AuthViewModel, navController: NavController){
         //horizontalAlignment = Alignment.CenterHorizontally
     ){
         Text("Login", fontSize = 22.sp)
+        Button(
+            onClick = { navController.navigate(Screen.ChangeLogin.name) },
+        ) {
+            Text("Change")
+        }
         Text("Password", fontSize = 22.sp)
         Button(
             onClick = { navController.navigate(Screen.ChangePassword.name) },
-            //modifier = Modifier.fillMaxWidth()
         ) {
             Text("Change")
         }
         var isSwitched by remember { mutableStateOf(true) }
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            //Text("Reminders", modifier = Modifier.fillMaxHeight(), fontSize = 22.sp)
-            SwitchWithText("Reminders", state = isSwitched, onStateChange = {x->changeReminders(x)})
+
+        SwitchWithText("Reminders", isSwitched) {
+            isSwitched = it
+            changeReminders(isSwitched)
         }
     }
 }
@@ -93,7 +110,7 @@ private fun SwitchWithText(label: String, state: Boolean, onStateChange: (Boolea
         verticalAlignment = Alignment.CenterVertically
 
     ) {
-        Text(text = label)
+        Text(text = label, fontSize = 22.sp)
         Spacer(modifier = Modifier.padding(start = 8.dp))
         Checkbox(
             checked = state,

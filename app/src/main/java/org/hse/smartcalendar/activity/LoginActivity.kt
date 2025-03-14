@@ -1,6 +1,5 @@
-package org.hse.smartcalendar.activity
+package org.hse.smartcalendar
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -9,31 +8,35 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import org.hse.smartcalendar.ui.theme.SmartCalendartestTheme
-import org.hse.smartcalendar.view.model.AuthViewModel
 
 class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             SmartCalendartestTheme {
-                AuthScreen(viewModel = AuthViewModel())
+                AuthScreen(viewModel = AuthViewModel(), navController = rememberNavController())
             }
         }
     }
 }
 
 @Composable
-fun AuthScreen(viewModel: AuthViewModel) {
+fun AuthScreen(viewModel: AuthViewModel, navController: NavController) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val authState by viewModel.authState.collectAsState()
-
+    Button(
+        onClick = { navController.navigate(Screen.Calendar.name) },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text("Calendar")
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -58,7 +61,7 @@ fun AuthScreen(viewModel: AuthViewModel) {
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = { viewModel.login(username, password) },
-            modifier = Modifier.fillMaxWidth().testTag("loginButtonTest")
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text("Login")
         }
@@ -69,25 +72,18 @@ fun AuthScreen(viewModel: AuthViewModel) {
             }
             is AuthViewModel.AuthState.Success -> {
                 Text("Login successful! Token: ${state.token}")
-                Thread.sleep(1000)
-                // TODO Видимо тут должна быть синхронизация.
-                // Закоментил пока
-//                val intent = Intent(LocalContext.current, DailyTasksListActivity::class.java)
-//                LocalContext.current.startActivity(intent)
             }
             is AuthViewModel.AuthState.Error -> {
                 Text("Error: ${state.message}", color = MaterialTheme.colorScheme.error)
             }
             else -> {}
         }
-
     }
 }
-
 
 
 @Preview
 @Composable
 fun AuthScreenPreview() {
-    SmartCalendartestTheme { AuthScreen(viewModel = AuthViewModel()) }
+    SmartCalendartestTheme { AuthScreen(viewModel = AuthViewModel(), navController = rememberNavController()) }
 }

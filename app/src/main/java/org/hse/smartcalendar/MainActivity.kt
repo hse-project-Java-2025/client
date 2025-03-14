@@ -55,7 +55,8 @@ enum class Screen {
 @Composable
 fun App(
     viewModel: AuthViewModel,
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    startDestination: String = Screen.Greeting.name
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
 
@@ -71,7 +72,7 @@ fun App(
 
         NavHost(
             navController = navController,
-            startDestination = Screen.Greeting.name,
+            startDestination = startDestination,
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
                 .padding(innerPadding)
