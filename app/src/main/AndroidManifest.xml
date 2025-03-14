@@ -13,20 +13,13 @@
         android:theme="@style/Theme.SmartCalendartest"
         tools:targetApi="31">
         <activity
-<<<<<<< HEAD
-            android:name=".LoginActivity"
-            android:exported="true" />
-        <activity
-            android:name=".MainActivity"
-=======
             android:name=".activity.LoginActivity"
             android:exported="true" />
         <activity
             android:name=".activity.DailyTasksListActivity"
             android:exported="true" />
         <activity
-            android:name=".activity.MainActivity"
->>>>>>> timustinov/dev
+            android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.SmartCalendartest">

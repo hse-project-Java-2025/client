@@ -30,7 +30,6 @@ import androidx.navigation.compose.rememberNavController
 import org.hse.smartcalendar.ui.theme.SmartCalendartestTheme
 class MainActivity : ComponentActivity() {
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -101,12 +100,6 @@ fun Greeting(name: String, navController: NavHostController, modifier: Modifier 
             text = "Hello $name!",
             modifier = modifier
         )
-        Spacer(modifier = Modifier.
-        padding(8.dp))
-        Text(
-            text = "Hello $name!",
-            modifier = modifier
-        )
 
         Spacer(modifier = Modifier.
         padding(8.dp))
@@ -134,52 +127,3 @@ fun GreetingPreview() {
         Greeting("User", navController = rememberNavController())
     }
 }
-
-/*
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            SmartCalendartestTheme {
-                val navController = rememberNavController()
-                NavHost(
-                    navController = navController,
-                    startDestination = "AuthScreen"
-                ) {
-
-                    composable("AuthScreen") {
-                        AuthScreen();
-                    }
-
-                    composable("Calendar") {
-                        Calendar();
-                    }
-                };
-            }
-        }
-    }
-}
-
-
-@Composable
-fun AppTheme(content: () -> Unit) {
-
-}
-
-
-@Composable
-fun AuthScreen(){
-    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        Greeting(
-            name = "User",
-            modifier = Modifier.padding(innerPadding)
-        )
-    }
-}
-
-@Composable
-fun Calendar(){
-
-}
-*/
