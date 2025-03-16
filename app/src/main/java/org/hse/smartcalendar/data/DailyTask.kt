@@ -6,15 +6,6 @@ import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-// TODO Написать нексолько утилитарных функций для работы с минутами.
-fun LocalTime.Companion.fromMinutesOfDay(minutes: Int): LocalTime {
-    return fromSecondOfDay(minutes * 60)
-}
-
-fun LocalTime.Companion.toMinutesOfDay(time : LocalTime): Int {
-    return time.hour * 60 + time.minute
-}
-
 class DailyTask (
     private var title : String,
     private val creationTime : LocalDateTime =

@@ -35,9 +35,9 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailyTask
-import org.hse.smartcalendar.data.fromMinutesOfDay
-import org.hse.smartcalendar.data.toMinutesOfDay
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
+import org.hse.smartcalendar.utility.fromMinutesOfDay
+import org.hse.smartcalendar.utility.toMinutesOfDay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
