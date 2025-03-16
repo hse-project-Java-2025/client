@@ -12,10 +12,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -26,7 +31,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.format
+import kotlinx.datetime.format.MonthNames
+import kotlinx.datetime.format.char
+import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.view.model.ListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,64 +54,9 @@ fun DailyTasksList(viewModel: ListViewModel) {
     val isBottomSheetVisible = rememberSaveable { mutableStateOf(false) }
 
     Scaffold (
-        bottomBar = {
-            BottomAppBar(
-                containerColor = Color.LightGray,
-                contentColor = Color.White,
-                modifier = Modifier.height(100.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                        .align(Alignment.Bottom),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    Button(
-                        onClick = {
-                            viewModel.moveToPreviousDailySchedule()
-                        },
-                        Modifier
-                            .testTag("moveToPreviousScheduleButton")
-                            .weight(1f)
-                    ) {
-                        Text("Previous")
-                    }
-
-                    Spacer(
-                        modifier = Modifier.padding(5.dp)
-                    )
-
-                    Button(
-                        onClick = {
-                            scope.launch {
-                                isBottomSheetVisible.value = true
-                                sheetState.expand()
-                            }
-                        },
-                        Modifier
-                            .testTag("addDailyTaskButton")
-                            .weight(1f)
-                    ) {
-                        Text(text = "Create task")
-                    }
-
-                    Spacer(
-                        modifier = Modifier.padding(5.dp)
-                    )
-
-                    Button(
-                        onClick = { viewModel.moveToNextDailySchedule() },
-                        modifier = Modifier
-                            .testTag("moveToNextScheduleButton")
-                            .weight(1f)
-                    ) {
-                        Text(text = "Next")
-                    }
-                }
-            }
-        }
-    )  { paddingValues ->
+        topBar = { ListTopBar(viewModel.getScheduleDate()) },
+        bottomBar = { ListBottomBar(viewModel, scope, isBottomSheetVisible, sheetState) },
+        content = { paddingValues ->
         LazyColumn (modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)) {
@@ -121,13 +77,100 @@ fun DailyTasksList(viewModel: ListViewModel) {
             endTime = endTime,
             addTask = viewModel::addDailyTask
         )
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ListTopBar(date: LocalDate) {
+    TopAppBar(
+        title = {
+            Text(formatLocalDate(date))
+        },
+        colors = TopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            scrolledContainerColor = MaterialTheme.colorScheme.error,
+            navigationIconContentColor = MaterialTheme.colorScheme.error,
+            titleContentColor = MaterialTheme.colorScheme.outline,
+            actionIconContentColor = MaterialTheme.colorScheme.error
+        )
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ListBottomBar(
+    viewModel: ListViewModel,
+    scope: CoroutineScope,
+    isBottomSheetVisible: MutableState<Boolean>,
+    sheetState: SheetState
+) {
+    BottomAppBar(
+        containerColor = Color.LightGray,
+        contentColor = Color.White,
+        modifier = Modifier.height(100.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+                .align(Alignment.Bottom),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Button(
+                onClick = {
+                    viewModel.moveToPreviousDailySchedule()
+                },
+                Modifier
+                    .testTag("moveToPreviousScheduleButton")
+                    .weight(1f)
+            ) {
+                Text("Previous")
+            }
+            Spacer(modifier = Modifier.padding(5.dp))
+            Button(
+                onClick = {
+                    scope.launch {
+                        isBottomSheetVisible.value = true
+                        sheetState.expand()
+                    }
+                },
+                Modifier
+                    .testTag("addDailyTaskButton")
+                    .weight(1f)
+            ) {
+                Text(text = "Create task")
+            }
+            Spacer(modifier = Modifier.padding(5.dp))
+            Button(
+                onClick = { viewModel.moveToNextDailySchedule() },
+                modifier = Modifier
+                    .testTag("moveToNextScheduleButton")
+                    .weight(1f)
+            ) {
+                Text(text = "Next")
+            }
+        }
     }
 }
 
-val viewModelPreview = ListViewModel(1488)
+fun formatLocalDate(date: LocalDate): String {
+    val formatter = LocalDate.Format {
+        monthName(MonthNames.ENGLISH_ABBREVIATED)
+        char(' ')
+        dayOfMonth()
+        chars(", ")
+        year()
+    }
+    return date.format(formatter)
+}
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun DailyTaskListPreview() {
-    DailyTasksList(viewModelPreview)
+    val viewModelPreview = ListViewModel(1488)
+    SmartCalendarTheme {
+        DailyTasksList(viewModelPreview)
+    }
 }

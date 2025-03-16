@@ -1,5 +1,6 @@
 package org.hse.smartcalendar.view.model
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import kotlinx.datetime.Clock
@@ -15,6 +16,10 @@ import org.hse.smartcalendar.data.User
 
 class ListViewModel(id: Long) : ViewModel() {
     private var dailyTaskSchedule: DailySchedule
+    private var dailyScheduleDate = mutableStateOf(
+        Clock.System.now()
+            .toLocalDateTime(TimeZone.currentSystemDefault()).date
+    )
     var dailyTaskList: SnapshotStateList<DailyTask>
     private val user: User = User(id)
 
@@ -48,7 +53,8 @@ class ListViewModel(id: Long) : ViewModel() {
     }
 
     fun changeDailyTaskSchedule(date: LocalDate): Unit {
-        this.dailyTaskSchedule = user.getSchedule().getOrCreateDailySchedule(date)
+        dailyTaskSchedule = user.getSchedule().getOrCreateDailySchedule(date)
+        dailyScheduleDate.value = dailyTaskSchedule.date
         dailyTaskList.clear()
         dailyTaskSchedule.getDailyTaskList().forEach { task ->
             dailyTaskList.add(task)
@@ -73,6 +79,10 @@ class ListViewModel(id: Long) : ViewModel() {
             )
         )
         changeDailyTaskSchedule(nextDate)
+    }
+
+    fun getScheduleDate(): LocalDate {
+        return dailyScheduleDate.value
     }
 
     private fun <T> SnapshotStateList(dailyTaskList: List<T>): SnapshotStateList<T> {

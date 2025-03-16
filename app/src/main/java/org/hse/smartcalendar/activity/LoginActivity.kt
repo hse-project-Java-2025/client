@@ -29,14 +29,14 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import org.hse.smartcalendar.ui.theme.SmartCalendartestTheme
+import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.view.model.AuthViewModel
 
 class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            SmartCalendartestTheme {
+            SmartCalendarTheme {
                 AuthScreen(viewModel = AuthViewModel())
             }
         }
@@ -107,5 +107,5 @@ fun AuthScreen(viewModel: AuthViewModel) {
 @Preview
 @Composable
 fun AuthScreenPreview() {
-    SmartCalendartestTheme { AuthScreen(viewModel = AuthViewModel()) }
+    SmartCalendarTheme { AuthScreen(viewModel = AuthViewModel()) }
 }

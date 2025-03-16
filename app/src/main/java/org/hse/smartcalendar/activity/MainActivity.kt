@@ -21,14 +21,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import org.hse.smartcalendar.ui.theme.SmartCalendartestTheme
+import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            SmartCalendartestTheme {
+            SmartCalendarTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Greeting(
                         name = "User",
@@ -63,9 +63,9 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
                 val intent = Intent(context, LoginActivity::class.java)
                 context.startActivity(intent)
             },
-            modifier = Modifier.
-                fillMaxWidth().
-                testTag("authorizationButtonTest")) {
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("authorizationButtonTest")) {
             Text("Authorization")
         }
     }
@@ -74,7 +74,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    SmartCalendartestTheme {
+    SmartCalendarTheme {
         Greeting("User")
     }
 }

@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import org.hse.smartcalendar.ui.elements.DailyTasksList
-import org.hse.smartcalendar.ui.theme.SmartCalendartestTheme
+import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.view.model.ListViewModel
 
 class DailyTasksListActivity : ComponentActivity() {
@@ -14,7 +14,7 @@ class DailyTasksListActivity : ComponentActivity() {
         enableEdgeToEdge()
         val viewModel = ListViewModel(intent.getLongExtra("id", -1))
         setContent {
-            SmartCalendartestTheme {
+            SmartCalendarTheme {
                 DailyTasksList(viewModel)
             }
         }
