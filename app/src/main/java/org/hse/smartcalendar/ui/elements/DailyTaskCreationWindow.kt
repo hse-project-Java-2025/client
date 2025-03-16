@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailyTask
+import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.fromMinutesOfDay
 import org.hse.smartcalendar.utility.toMinutesOfDay
@@ -46,11 +47,13 @@ fun BottomSheet(
     sheetState: SheetState,
     onDismiss: () -> Unit,
     taskTitle: MutableState<String>,
+    taskType: MutableState<DailyTaskType>,
     taskDescription: MutableState<String>,
     startTime: MutableState<Int>,
     endTime: MutableState<Int>,
     addTask: (DailyTask) -> Unit
 ) {
+    val expendedTypeSelection = remember { mutableStateOf(false) }
     if (isBottomSheetVisible.value) {
         ModalBottomSheet(
             onDismissRequest = onDismiss,
@@ -76,7 +79,11 @@ fun BottomSheet(
                     label = { Text("Task Title") },
                     modifier = Modifier.fillMaxWidth(),
                 )
-
+                Spacer(modifier = Modifier.padding(12.dp))
+                ExposedTypeSelectionMenu(
+                    expanded = expendedTypeSelection,
+                    type = taskType
+                )
                 Spacer(modifier = Modifier.padding(12.dp))
                 TextField(
                     value = taskDescription.value,
@@ -98,6 +105,7 @@ fun BottomSheet(
                         addTask = addTask,
                         isBottomSheetVisible = isBottomSheetVisible,
                         taskTitle = taskTitle,
+                        taskType = taskType,
                         taskDescription = taskDescription,
                         startTime = startTime,
                         endTime = endTime
@@ -152,13 +160,15 @@ fun addNewTask(
     addTask: (DailyTask) -> Unit,
     isBottomSheetVisible: MutableState<Boolean>,
     taskTitle: MutableState<String>,
+    taskType: MutableState<DailyTaskType>,
     taskDescription: MutableState<String>,
     startTime: MutableState<Int>,
-    endTime: MutableState<Int>
+    endTime: MutableState<Int>,
     ) {
     addTask(
         DailyTask(
             title = taskTitle.value,
+            type = taskType.value,
             description = taskDescription.value,
             duration = LocalTime.fromMinutesOfDay(
                 endTime.value - startTime.value
@@ -239,6 +249,7 @@ fun TimeInputFieldPreview() {
 fun BottomSheetPreview() {
     SmartCalendarTheme {
         val taskTitle = rememberSaveable { mutableStateOf("") }
+        val taskType = rememberSaveable { mutableStateOf(DailyTaskType.COMMON) }
         val taskDirection = rememberSaveable { mutableStateOf("") }
         val startTime = rememberSaveable { mutableIntStateOf( 0) }
         val endTime = rememberSaveable { mutableIntStateOf( 0) }
@@ -259,7 +270,8 @@ fun BottomSheetPreview() {
             taskDescription = taskDirection,
             startTime = startTime,
             endTime = endTime,
-            addTask = {}
+            addTask = {},
+            taskType = taskType
         )
     }
 }

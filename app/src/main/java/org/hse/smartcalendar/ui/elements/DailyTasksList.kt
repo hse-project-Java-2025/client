@@ -37,6 +37,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format
 import kotlinx.datetime.format.MonthNames
 import kotlinx.datetime.format.char
+import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.view.model.ListViewModel
 
@@ -44,6 +45,7 @@ import org.hse.smartcalendar.view.model.ListViewModel
 @Composable
 fun DailyTasksList(viewModel: ListViewModel) {
     val taskTitle = rememberSaveable { mutableStateOf("") }
+    val taskType = rememberSaveable { mutableStateOf(DailyTaskType.COMMON) }
     val taskDescription = rememberSaveable { mutableStateOf("") }
     val startTime = rememberSaveable { mutableIntStateOf( 0) }
     val endTime = rememberSaveable { mutableIntStateOf( 0) }
@@ -72,6 +74,7 @@ fun DailyTasksList(viewModel: ListViewModel) {
                     .invokeOnCompletion { isBottomSheetVisible.value = false }
             },
             taskTitle = taskTitle,
+            taskType = taskType,
             taskDescription = taskDescription,
             startTime = startTime,
             endTime = endTime,
