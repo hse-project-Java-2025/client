@@ -20,14 +20,14 @@ fun ExposedTypeSelectionMenu(
     type: MutableState<DailyTaskType>
 ) {
     val types = DailyTaskType.entries
-    val currentType = remember { mutableStateOf(types[0].toString()) }
+    remember { mutableStateOf(types[0].toString()) }
     ExposedDropdownMenuBox(
         expanded = expanded.value,
         onExpandedChange = { expanded.value = !expanded.value },
     ) {
         TextField(
             readOnly = true,
-            value = type.value.name,
+            value = type.value.toString(),
             onValueChange = { },
             label = { Text("Types") },
             trailingIcon = {
@@ -46,7 +46,7 @@ fun ExposedTypeSelectionMenu(
         ) {
             types.forEach { selectedType ->
                 DropdownMenuItem(
-                    text = { Text(selectedType.name) },
+                    text = { Text(selectedType.toString()) },
                     onClick = {
                         type.value = selectedType
                         expanded.value = false
