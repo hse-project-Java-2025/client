@@ -8,6 +8,7 @@ import kotlinx.datetime.toLocalDateTime
 
 class DailyTask (
     private var title : String,
+    private var type: DailyTaskType = DailyTaskType.COMMON,
     private val creationTime : LocalDateTime =
         Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
     private var description : String,
@@ -23,6 +24,10 @@ class DailyTask (
 
     fun getDailyTaskTitle() : String {
         return title
+    }
+
+    fun getDailyTaskType(): DailyTaskType {
+        return type
     }
 
     fun getDailyTaskDescription() : String {
