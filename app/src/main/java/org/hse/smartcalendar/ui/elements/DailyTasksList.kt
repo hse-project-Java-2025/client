@@ -2,6 +2,7 @@ package org.hse.smartcalendar.ui.elements
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,6 +20,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
@@ -45,14 +47,30 @@ fun DailyTasksList(viewModel: ListViewModel) {
             BottomAppBar(
                 containerColor = Color.LightGray,
                 contentColor = Color.White,
-                modifier = Modifier.height(120.dp)
+                modifier = Modifier.height(100.dp)
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(8.dp)
+                        .align(Alignment.Bottom),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
+                    Button(
+                        onClick = {
+                            viewModel.moveToPreviousDailySchedule()
+                        },
+                        Modifier
+                            .testTag("moveToPreviousScheduleButton")
+                            .weight(1f)
+                    ) {
+                        Text("Previous")
+                    }
+
+                    Spacer(
+                        modifier = Modifier.padding(5.dp)
+                    )
+
                     Button(
                         onClick = {
                             scope.launch {
@@ -60,15 +78,32 @@ fun DailyTasksList(viewModel: ListViewModel) {
                                 sheetState.expand()
                             }
                         },
-                        Modifier.testTag("addDailyTaskButton")
+                        Modifier
+                            .testTag("addDailyTaskButton")
+                            .weight(1f)
                     ) {
-                        Text("Create new task")
+                        Text(text = "Create task")
+                    }
+
+                    Spacer(
+                        modifier = Modifier.padding(5.dp)
+                    )
+
+                    Button(
+                        onClick = { viewModel.moveToNextDailySchedule() },
+                        modifier = Modifier
+                            .testTag("moveToNextScheduleButton")
+                            .weight(1f)
+                    ) {
+                        Text(text = "Next")
                     }
                 }
             }
         }
     )  { paddingValues ->
-        LazyColumn (modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+        LazyColumn (modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)) {
             items(viewModel.dailyTaskList) {
                 DailyTaskCard(it)
             }
@@ -89,7 +124,7 @@ fun DailyTasksList(viewModel: ListViewModel) {
     }
 }
 
-val viewModelPreview = ListViewModel()
+val viewModelPreview = ListViewModel(1488)
 
 @Composable
 @Preview

@@ -12,10 +12,10 @@ class DailyTasksListActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val model = ListViewModel()
+        val viewModel = ListViewModel(intent.getLongExtra("id", -1))
         setContent {
             SmartCalendartestTheme {
-                DailyTasksList(model)
+                DailyTasksList(viewModel)
             }
         }
     }
