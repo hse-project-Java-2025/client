@@ -5,8 +5,10 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import java.util.UUID
 
 class DailyTask (
+    private val id: UUID = UUID.randomUUID(),
     private var title : String,
     private var isComplete: Boolean = false,
     private var type: DailyTaskType = DailyTaskType.COMMON,
@@ -17,6 +19,7 @@ class DailyTask (
     private var end: LocalTime,
     ) {
 
+
     init {
         if (title.isEmpty()) {
             throw EmptyTitleException()
@@ -24,6 +27,10 @@ class DailyTask (
         if (start > end) {
             throw TimeConflictException(start, end)
         }
+    }
+
+    fun getId(): UUID {
+        return id
     }
 
     fun isComplete(): Boolean {
