@@ -232,22 +232,24 @@ fun addNewTask(
     fstFiledHasFormatError: MutableState<Boolean>,
     sndFiledHasFormatError: MutableState<Boolean>,
     ) {
-    val newTask: DailyTask
-    try {
-        newTask = DailyTask(
+    if (startTime.value > endTime.value) {
+        isConflictInTimeField.value = true
+    }
+    if (taskTitle.value.isEmpty()) {
+        isEmptyTitle.value = true
+    }
+    if (isConflictInTimeField.value || isEmptyTitle.value) {
+        return
+    }
+
+    val newTask = DailyTask(
             title = taskTitle.value,
             type = taskType.value,
             description = taskDescription.value,
             start = LocalTime.fromMinutesOfDay(startTime.value),
             end = LocalTime.fromMinutesOfDay(endTime.value),
         )
-    } catch (exception: DailyTask.TimeConflictException) {
-        isConflictInTimeField.value = true
-        return
-    } catch (exception: DailyTask.EmptyTitleException) {
-        isEmptyTitle.value = true
-        return
-    }
+
     try {
         addTask(
             newTask
@@ -256,6 +258,7 @@ fun addNewTask(
         isNestedTask.value = true
         return
     }
+
     isBottomSheetVisible.value = false
     taskTitle.value = ""
     taskDescription.value = ""
