@@ -33,14 +33,14 @@ class ListViewModel(id: Long) : ViewModel() {
     }
 
     fun addDailyTask(newTask : DailyTask) {
-        if (!dailyTaskSchedule.addDailyTask(newTask)) {
-            // TODO
-        } else {
-            dailyTaskList.add(newTask)
-            dailyTaskList.sortBy {
-                    task ->
-                task.getDailyTaskStartTime()
-            }
+        try {
+            dailyTaskSchedule.addDailyTask(newTask)
+        } catch (exception: DailySchedule.NestedTaskException) {
+            throw exception
+        }
+        dailyTaskList.add(newTask)
+        dailyTaskList.sortBy { task ->
+            task.getDailyTaskStartTime()
         }
     }
 

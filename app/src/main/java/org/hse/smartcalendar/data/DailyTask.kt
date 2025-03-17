@@ -16,6 +16,15 @@ class DailyTask (
     private var end: LocalTime,
     ) {
 
+    init {
+        if (title.isEmpty()) {
+            throw EmptyTitleException()
+        }
+        if (start > end) {
+            throw TimeConflictException(start, end)
+        }
+    }
+
     fun getDailyTaskEndTime() : LocalTime {
         return end
     }
@@ -45,4 +54,15 @@ class DailyTask (
         return !(this.getDailyTaskStartTime() >= task.getDailyTaskEndTime() ||
                 task.getDailyTaskStartTime() >= this.getDailyTaskEndTime())
     }
+
+    class TimeConflictException(start: LocalTime, end: LocalTime) : IllegalArgumentException(
+        "Illegal start and end time: start = " +
+                start.toString() +
+                " less then end = " +
+                end.toString()
+    )
+
+    class EmptyTitleException : IllegalArgumentException(
+        "Illegal task title: title is empty"
+    )
 }
