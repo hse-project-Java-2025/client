@@ -54,7 +54,6 @@ class ListViewModel(id: Long) : ViewModel() {
 
     fun changeTaskCompletion(task: DailyTask, status: Boolean) {
         if (dailyTaskSchedule.setCompletionById(task.getId(), status)) {
-            // TODO Может быть придется обновлять список.
             task.setCompletion(status)
         }
     }
