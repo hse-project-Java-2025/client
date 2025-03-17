@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -272,8 +273,6 @@ fun addNewTask(
 
 }
 
-
-//TODO Добавить обработку не валидных случаев
 @Composable
 fun TimeInputField(
     modifier: Modifier = Modifier,
@@ -288,8 +287,17 @@ fun TimeInputField(
         onValueChange = { newText ->
             val formattedText = formatTimeInput(newText.text)
             timeTextValue = TextFieldValue(formattedText, newText.selection)
+            if (timeTextValue.selection == TextRange(3)) {
+                timeTextValue = TextFieldValue(timeTextValue.text, TextRange(4))
+            }
             if (formattedText.length == 5) {
+                try {
                 timeInMinutes.value = LocalTime.toMinutesOfDay(LocalTime.parse(formattedText))
+                } catch (exception: IllegalArgumentException) {
+                    val maxLocalTime = LocalTime(23, 59)
+                    timeInMinutes.value = LocalTime.toMinutesOfDay(maxLocalTime)
+                    timeTextValue = TextFieldValue(maxLocalTime.toString(), newText.selection)
+                }
             }
         },
         keyboardOptions = KeyboardOptions.Default.copy(
@@ -311,7 +319,6 @@ fun TimeInputField(
     )
 }
 
-// TODO Попытаться написать перенос.
 fun formatTimeInput(input: String): String {
     val digitsOnly = input.filter { it.isDigit() }
     val formatted = StringBuilder()
