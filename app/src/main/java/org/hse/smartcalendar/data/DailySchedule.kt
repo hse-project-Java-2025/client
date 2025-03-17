@@ -5,6 +5,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import java.util.LinkedList
+import java.util.UUID
 
 class DailySchedule (val date : LocalDate = Clock.System.now()
     .toLocalDateTime(TimeZone.currentSystemDefault()).date)
@@ -24,6 +25,16 @@ class DailySchedule (val date : LocalDate = Clock.System.now()
                 task.getDailyTaskStartTime()
         }
         return true
+    }
+
+    fun setCompletionById(id: UUID, status: Boolean): Boolean {
+        dailyTasksList.forEach { task ->
+            if (task.getId() == id) {
+                task.setCompletion(status)
+                return true
+            }
+        }
+        return false
     }
 
     fun removeDailyTask(newTask : DailyTask) : Boolean {
