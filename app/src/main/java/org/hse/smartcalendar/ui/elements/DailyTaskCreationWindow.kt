@@ -170,10 +170,8 @@ fun addNewTask(
             title = taskTitle.value,
             type = taskType.value,
             description = taskDescription.value,
-            duration = LocalTime.fromMinutesOfDay(
-                endTime.value - startTime.value
-            ),
-            start = LocalTime.fromMinutesOfDay(startTime.value)
+            start = LocalTime.fromMinutesOfDay(startTime.value),
+            end = LocalTime.fromMinutesOfDay(endTime.value),
         )
     )
     isBottomSheetVisible.value = false

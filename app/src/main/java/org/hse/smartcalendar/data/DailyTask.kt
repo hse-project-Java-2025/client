@@ -13,13 +13,11 @@ class DailyTask (
         Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
     private var description : String,
     private var start : LocalTime,
-    private var duration : LocalTime,
+    private var end: LocalTime,
     ) {
 
     fun getDailyTaskEndTime() : LocalTime {
-        return LocalTime.fromSecondOfDay(
-            start.toSecondOfDay() + duration.toSecondOfDay()
-        )
+        return end
     }
 
     fun getDailyTaskTitle() : String {

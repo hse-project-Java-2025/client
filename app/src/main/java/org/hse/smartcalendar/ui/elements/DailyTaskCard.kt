@@ -83,13 +83,8 @@ fun DailyTaskCardPreview() {
         title = "Common title example",
         type = DailyTaskType.COMMON,
         description = "Common description Example",
-        duration = LocalTime(
-            hour = 1,
-            minute = 0),
-        start = LocalTime(
-            hour = 4,
-            minute = 0
-        )
+        start = LocalTime(4, 0),
+        end = LocalTime(5, 0),
     )
 
 
@@ -97,42 +92,24 @@ fun DailyTaskCardPreview() {
         title = "Fitness title example",
         type = DailyTaskType.FITNESS,
         description = "Fitness description Example",
-        duration = LocalTime(
-            hour = 1,
-            minute = 0
-        ),
-        start = LocalTime(
-            hour = 4,
-            minute = 0
-        )
+        start = LocalTime(4, 0),
+        end = LocalTime(5, 0),
     )
 
     val previewWorkTask = DailyTask(
         title = "Work title example",
         type = DailyTaskType.WORK,
         description = "Work description Example",
-        duration = LocalTime(
-            hour = 1,
-            minute = 0
-        ),
-        start = LocalTime(
-            hour = 4,
-            minute = 0
-        )
+        start = LocalTime(4, 0),
+        end = LocalTime(5, 0),
     )
 
     val previewStudiesTask = DailyTask(
         title = "Studies title example",
         type = DailyTaskType.STUDIES,
         description = "Studies description Example",
-        duration = LocalTime(
-            hour = 1,
-            minute = 0
-        ),
-        start = LocalTime(
-            hour = 4,
-            minute = 0
-        )
+        start = LocalTime(4, 0),
+        end = LocalTime(5, 0),
     )
 
     Column {
