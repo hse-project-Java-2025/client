@@ -8,9 +8,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,7 +30,7 @@ import org.hse.smartcalendar.data.DailyTaskType
 
 
 @Composable
-fun DailyTaskCard(task : DailyTask, modifier: Modifier = Modifier) {
+fun DailyTaskCard(task: DailyTask, modifier: Modifier = Modifier, onCompletionChange: () -> Unit) {
     Column(modifier = Modifier.padding(5.dp)) {
 
     Surface(
@@ -37,11 +43,27 @@ fun DailyTaskCard(task : DailyTask, modifier: Modifier = Modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(10.dp)
+                .padding(6.dp)
         ) {
+            var isComplete by remember { mutableStateOf(task.isComplete()) }
+            RadioButton(
+                onClick = {
+                    onCompletionChange()
+                    isComplete = !isComplete
+                },
+                selected = isComplete,
+                modifier = Modifier,
+                enabled = true,
+                colors = RadioButtonColors(
+                    selectedColor = MaterialTheme.colorScheme.primary,
+                    unselectedColor = MaterialTheme.colorScheme.secondary,
+                    disabledSelectedColor = Color.Blue,
+                    disabledUnselectedColor = Color.Red
+                )
+            )
             Text(
                 text = task.getDailyTaskTitle(),
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight(400),
                 modifier = Modifier.weight(3f)
             )
@@ -105,6 +127,7 @@ fun DailyTaskCardPreview() {
     )
 
     val previewStudiesTask = DailyTask(
+        isComplete = true,
         title = "Studies title example",
         type = DailyTaskType.STUDIES,
         description = "Studies description Example",
@@ -114,16 +137,20 @@ fun DailyTaskCardPreview() {
 
     Column {
         DailyTaskCard(
-            task = previewCommonTask
+            task = previewCommonTask,
+            onCompletionChange = { previewCommonTask.setCompletion(!previewCommonTask.isComplete()) }
         )
         DailyTaskCard(
-            task = previewFitnessTask
+            task = previewFitnessTask,
+            onCompletionChange = { previewFitnessTask.setCompletion(!previewFitnessTask.isComplete()) }
         )
         DailyTaskCard(
-            task = previewWorkTask
+            task = previewWorkTask,
+            onCompletionChange = { previewWorkTask.setCompletion(!previewWorkTask.isComplete()) }
         )
         DailyTaskCard(
-            task = previewStudiesTask
+            task = previewStudiesTask,
+            onCompletionChange = { previewStudiesTask.setCompletion(!previewStudiesTask.isComplete()) }
         )
     }
 }

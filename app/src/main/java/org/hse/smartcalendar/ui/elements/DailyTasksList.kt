@@ -63,7 +63,9 @@ fun DailyTasksList(viewModel: ListViewModel) {
             .fillMaxSize()
             .padding(paddingValues)) {
             items(viewModel.dailyTaskList) {
-                DailyTaskCard(it)
+                DailyTaskCard(it, onCompletionChange = {
+                    viewModel.changeTaskCompletion(it, !it.isComplete())
+                })
             }
         }
         BottomSheet(
