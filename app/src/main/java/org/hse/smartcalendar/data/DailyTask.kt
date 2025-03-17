@@ -8,6 +8,7 @@ import kotlinx.datetime.toLocalDateTime
 
 class DailyTask (
     private var title : String,
+    private var isComplete: Boolean = false,
     private var type: DailyTaskType = DailyTaskType.COMMON,
     private val creationTime : LocalDateTime =
         Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
@@ -23,6 +24,14 @@ class DailyTask (
         if (start > end) {
             throw TimeConflictException(start, end)
         }
+    }
+
+    fun isComplete(): Boolean {
+        return isComplete
+    }
+
+    fun setCompletion(status: Boolean) {
+        isComplete = status
     }
 
     fun getDailyTaskEndTime() : LocalTime {
