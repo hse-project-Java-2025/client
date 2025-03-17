@@ -1,6 +1,7 @@
 package org.hse.smartcalendar.ui.elements
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,15 +32,26 @@ import org.hse.smartcalendar.data.DailyTaskType
 
 
 @Composable
-fun DailyTaskCard(task: DailyTask, modifier: Modifier = Modifier, onCompletionChange: () -> Unit) {
-    Column(modifier = Modifier.padding(5.dp)) {
+fun DailyTaskCard(
+    task: DailyTask,
+    modifier: Modifier = Modifier,
+    onCompletionChange: () -> Unit = { },
+    onLongPressAction: () -> Unit = { }
+) {
+    Column(modifier = Modifier
+        .padding(5.dp)
+        .pointerInput(Unit) {
+            detectTapGestures(
+                onLongPress = { onLongPressAction() }
+            )
+        }) {
 
     Surface(
         color = getCardTitleColor(task),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
         tonalElevation = 2.dp,
         shadowElevation = 10.dp,
-        modifier = modifier
+        modifier = modifier,
     ) {
         Row(
             modifier = Modifier
