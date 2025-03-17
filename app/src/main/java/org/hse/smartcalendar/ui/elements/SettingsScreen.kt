@@ -23,25 +23,27 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import org.hse.smartcalendar.App
 import org.hse.smartcalendar.AuthViewModel
 import org.hse.smartcalendar.Screen
-import org.hse.smartcalendar.ui.theme.SmartCalendartestTheme
+import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
+import org.hse.smartcalendar.view.model.ListViewModel
 
 //здесь работает навигация
 @Preview
 @Composable
 fun SettingsScreen() {
-    SmartCalendartestTheme {
-        App(viewModel = AuthViewModel(), startDestination = Screen.Settings.name)
+    SmartCalendarTheme {
+        App(listModel = ListViewModel(-1), authModel = AuthViewModel(), startDestination = Screen.Settings.name)
     }
 }
 //это просто preview
 @Composable
 fun SettingsScreenPreview(){
-    SmartCalendartestTheme {
+    SmartCalendarTheme {
         SettingsScreen(viewModel = AuthViewModel(), navController = rememberNavController())
     }
 }

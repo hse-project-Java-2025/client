@@ -26,18 +26,18 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import org.hse.smartcalendar.AuthViewModel
-import org.hse.smartcalendar.ui.theme.SmartCalendartestTheme
+import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 
 @Preview
 @Composable
 fun ChangePassword() {
-    SmartCalendartestTheme { ChangePassword(viewModel = AuthViewModel(), navController = rememberNavController()) }
+    SmartCalendarTheme { ChangePassword(viewModel = AuthViewModel(), navController = rememberNavController()) }
 }
 
 @Preview
 @Composable
 fun ChangeLogin() {
-    SmartCalendartestTheme { ChangeLogin(viewModel = AuthViewModel(), navController = rememberNavController()) }
+    SmartCalendarTheme { ChangeLogin(viewModel = AuthViewModel(), navController = rememberNavController()) }
 }
 
 @Composable

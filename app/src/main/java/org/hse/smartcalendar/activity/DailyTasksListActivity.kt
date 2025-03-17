@@ -4,24 +4,20 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.material3.rememberDrawerState
+import androidx.navigation.compose.rememberNavController
 import org.hse.smartcalendar.ui.elements.DailyTasksList
-import org.hse.smartcalendar.ui.theme.SmartCalendartestTheme
+import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.view.model.ListViewModel
 
 class DailyTasksListActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val model = ListViewModel()
+        val viewModel = ListViewModel(intent.getLongExtra("id", -1))
         setContent {
-            SmartCalendartestTheme {
-                Row (Modifier.padding(2.dp)) {
-                    DailyTasksList(model)
-                }
+            SmartCalendarTheme {
+                DailyTasksList(viewModel, rememberNavController())
             }
         }
     }

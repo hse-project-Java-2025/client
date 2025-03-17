@@ -26,14 +26,14 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import org.hse.smartcalendar.AuthViewModel
 import org.hse.smartcalendar.Screen
-import org.hse.smartcalendar.ui.theme.SmartCalendartestTheme
+import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 
 
 
 @Preview
 @Composable
 fun CalendarScreen() {
-    SmartCalendartestTheme { CalendarScreen(viewModel = AuthViewModel(), navController = rememberNavController()) }
+    SmartCalendarTheme { CalendarScreen(viewModel = AuthViewModel(), navController = rememberNavController()) }
 }
 
 @Composable
