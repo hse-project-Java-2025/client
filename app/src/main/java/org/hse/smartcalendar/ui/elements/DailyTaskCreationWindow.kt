@@ -233,6 +233,8 @@ fun addNewTask(
     fstFiledHasFormatError: MutableState<Boolean>,
     sndFiledHasFormatError: MutableState<Boolean>,
     ) {
+    isConflictInTimeField.value = false
+    isEmptyTitle.value = false
     if (startTime.value > endTime.value) {
         isConflictInTimeField.value = true
     }
