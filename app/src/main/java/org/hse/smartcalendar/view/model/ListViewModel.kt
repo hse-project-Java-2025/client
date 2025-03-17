@@ -58,7 +58,7 @@ class ListViewModel(id: Long) : ViewModel() {
         }
     }
 
-    fun changeDailyTaskSchedule(date: LocalDate): Unit {
+    fun changeDailyTaskSchedule(date: LocalDate) {
         dailyTaskSchedule = user.getSchedule().getOrCreateDailySchedule(date)
         dailyScheduleDate.value = dailyTaskSchedule.date
         dailyTaskList.clear()
@@ -67,7 +67,7 @@ class ListViewModel(id: Long) : ViewModel() {
         }
     }
 
-    fun moveToNextDailySchedule(): Unit {
+    fun moveToNextDailySchedule() {
         val date: LocalDate = dailyTaskSchedule.date
         val nextDate: LocalDate = date.plus(
             DatePeriod(
@@ -77,7 +77,7 @@ class ListViewModel(id: Long) : ViewModel() {
         changeDailyTaskSchedule(nextDate)
     }
 
-    fun moveToPreviousDailySchedule(): Unit {
+    fun moveToPreviousDailySchedule() {
         val date: LocalDate = dailyTaskSchedule.date
         val nextDate: LocalDate = date.minus(
             DatePeriod(
