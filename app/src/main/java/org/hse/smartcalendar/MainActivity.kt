@@ -17,6 +17,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -27,7 +30,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import org.hse.smartcalendar.ui.elements.ActionTopAppbar
+import org.hse.smartcalendar.ui.elements.ChangeLogin
+import org.hse.smartcalendar.ui.elements.ChangePassword
+import org.hse.smartcalendar.ui.elements.NavigationScreen
+import org.hse.smartcalendar.ui.elements.NavigationSheet
+import org.hse.smartcalendar.ui.elements.SettingsScreen
+import org.hse.smartcalendar.ui.elements.Statistics
 import org.hse.smartcalendar.ui.theme.SmartCalendartestTheme
+
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,7 +60,13 @@ enum class Screen {
     Greeting,
     Settings,
     ChangePassword,
-    ChangeLogin
+    ChangeLogin,
+    Statistics,
+    Rating,
+    Achievements,
+    Navigation,
+    MyCalendars,
+    AIAssistant
 }
 
 @Composable
@@ -63,10 +80,12 @@ fun App(
     val currentScreen = Screen.valueOf(
         backStackEntry?.destination?.route ?: Screen.Greeting.name
     )
+    val scope = rememberCoroutineScope()
+    val isNavSheetVisible = rememberSaveable { mutableStateOf(false) }
+    //верхняя кнопка и лист навигации во всём приложении
     Scaffold(
-        topBar = {//for revert navigation
-            //...
-        }
+        topBar = { ActionTopAppbar(openMenu = {isNavSheetVisible.value = true}, elevation = 8.dp, navController = navController)
+            NavigationSheet(navController, isNavSheetVisible)},
     )
     { innerPadding->
 
@@ -84,7 +103,7 @@ fun App(
                 AuthScreen(viewModel, navController)
             }
             composable(route=Screen.Calendar.name) {
-                CalendarScreen(viewModel, navController)
+                NavigationScreen(viewModel, navController)
             }
             composable(route=Screen.Settings.name) {
                 SettingsScreen(viewModel, navController)
@@ -94,6 +113,21 @@ fun App(
             }
             composable(route=Screen.ChangeLogin.name) {
                 ChangeLogin(viewModel, navController)
+            }
+            composable(route=Screen.Statistics.name) {
+                Statistics(viewModel, navController)
+            }
+            composable(route=Screen.Rating.name) {
+                Statistics(viewModel, navController)
+            }
+            composable(route=Screen.Achievements.name) {
+                Statistics(viewModel, navController)
+            }
+            composable(route=Screen.MyCalendars.name) {
+                Statistics(viewModel, navController)
+            }
+            composable(route=Screen.AIAssistant.name) {
+                Statistics(viewModel, navController)
             }
         }
     }
