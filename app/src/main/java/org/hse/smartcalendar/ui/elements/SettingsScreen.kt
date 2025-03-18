@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,13 +24,12 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import org.hse.smartcalendar.App
+import org.hse.smartcalendar.activity.App
 import org.hse.smartcalendar.AuthViewModel
-import org.hse.smartcalendar.Screen
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
+import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.view.model.ListViewModel
 
 //здесь работает навигация
@@ -37,14 +37,7 @@ import org.hse.smartcalendar.view.model.ListViewModel
 @Composable
 fun SettingsScreen() {
     SmartCalendarTheme {
-        App(listModel = ListViewModel(-1), authModel = AuthViewModel(), startDestination = Screen.Settings.name)
-    }
-}
-//это просто preview
-@Composable
-fun SettingsScreenPreview(){
-    SmartCalendarTheme {
-        SettingsScreen(viewModel = AuthViewModel(), navController = rememberNavController())
+        App(listModel = ListViewModel(-1), authModel = AuthViewModel(), startDestination = Screens.SETTINGS.route)
     }
 }
 
@@ -58,31 +51,33 @@ private fun changeReminders(state: Boolean){
 }
 
 @Composable
-fun SettingsScreen(viewModel: AuthViewModel, navController: NavController){
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        //verticalArrangement = Arrangement.Center,
-        //horizontalAlignment = Alignment.CenterHorizontally
-    ){
-        Text("Login", fontSize = 22.sp)
-        Button(
-            onClick = { navController.navigate(Screen.ChangeLogin.name) },
+fun SettingsScreen(viewModel: AuthViewModel, navigateToChangeLogin: (()->Unit)? = null, navigateToChangePassword: (()->Unit)? = null){
+    Scaffold() {paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
         ) {
-            Text("Change")
-        }
-        Text("Password", fontSize = 22.sp)
-        Button(
-            onClick = { navController.navigate(Screen.ChangePassword.name) },
-        ) {
-            Text("Change")
-        }
-        var isSwitched by remember { mutableStateOf(true) }
+            Text("Login", fontSize = 22.sp)
+            Button(
+                onClick = { navigateToChangeLogin?.invoke()
+                          },
+            ) {
+                Text("Change")
+            }
+            Text("Password", fontSize = 22.sp)
+            Button(
+                onClick = { navigateToChangePassword?.invoke()
+                          },
+            ) {
+                Text("Change")
+            }
+            var isSwitched by remember { mutableStateOf(true) }
 
-        SwitchWithText("Reminders", isSwitched) {
-            isSwitched = it
-            changeReminders(isSwitched)
+            SwitchWithText("Reminders", isSwitched) {
+                isSwitched = it
+                changeReminders(isSwitched)
+            }
         }
     }
 }

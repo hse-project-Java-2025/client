@@ -31,22 +31,22 @@ import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 @Preview
 @Composable
 fun ChangePassword() {
-    SmartCalendarTheme { ChangePassword(viewModel = AuthViewModel(), navController = rememberNavController()) }
+    SmartCalendarTheme { ChangePassword(viewModel = AuthViewModel()) }
 }
 
 @Preview
 @Composable
 fun ChangeLogin() {
-    SmartCalendarTheme { ChangeLogin(viewModel = AuthViewModel(), navController = rememberNavController()) }
+    SmartCalendarTheme { ChangeLogin(viewModel = AuthViewModel()) }
 }
 
 @Composable
-fun ChangeLogin(viewModel: AuthViewModel, navController: NavController) {
-    ChangePassword(viewModel, navController, false)
+fun ChangeLogin(viewModel: AuthViewModel) {
+    ChangePassword(viewModel,false)
 }
 
 @Composable
-fun ChangePassword(viewModel: AuthViewModel, navController: NavController, isChangeLogin: Boolean = false) {
+fun ChangePassword(viewModel: AuthViewModel, isChangeLogin: Boolean = false) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var newPassword1 by remember { mutableStateOf("") }
