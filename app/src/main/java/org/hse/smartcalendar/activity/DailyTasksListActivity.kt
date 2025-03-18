@@ -17,7 +17,7 @@ class DailyTasksListActivity : ComponentActivity() {
         val viewModel = ListViewModel(intent.getLongExtra("id", -1))
         setContent {
             SmartCalendarTheme {
-                DailyTasksList(viewModel, rememberNavController())
+                DailyTasksList(viewModel, {})
             }
         }
     }
