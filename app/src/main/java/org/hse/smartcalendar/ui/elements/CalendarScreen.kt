@@ -21,7 +21,6 @@ import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 
 @Composable
 fun CalendarScreen( openDrawer: ()->Unit, navController: NavController) {
-    Scaffold(topBar =
-    {TopButton(navController = navController, text = "", openMenu = openDrawer)},
+    Scaffold(//topBar = {TopButton(navController = navController, text = "", openMenu = openDrawer)},
         content = {paddingValues ->  Text("kek", modifier = Modifier.padding(paddingValues))})
 }

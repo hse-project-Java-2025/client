@@ -13,7 +13,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
-import org.hse.smartcalendar.Screen
 
 
 @OptIn(ExperimentalMaterial3Api::class)

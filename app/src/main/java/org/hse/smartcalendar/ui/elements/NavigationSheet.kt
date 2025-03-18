@@ -1,25 +1,30 @@
 package org.hse.smartcalendar.ui.elements
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.core.TransitionState
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-import org.hse.smartcalendar.Screen
 import org.hse.smartcalendar.data.SettingsButton
-
+enum class Screen {
+    Login,
+    Calendar,
+    Greeting,
+    Settings,
+    ChangePassword,
+    ChangeLogin,
+    Statistics,
+    Rating,
+    Achievements,
+    Navigation,
+    MyCalendars,
+    AIAssistant
+}
 @Composable
 fun NavigationSheet(navController: NavController, isVisible: MutableState<Boolean>){
     AnimatedVisibility(enter = expandHorizontally(), exit = shrinkHorizontally(),

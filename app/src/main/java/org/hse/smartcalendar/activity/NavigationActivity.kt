@@ -1,13 +1,9 @@
-package org.hse.smartcalendar
+package org.hse.smartcalendar.activity
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,13 +14,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
-import org.hse.smartcalendar.ui.elements.CalendarScreen
+import org.hse.smartcalendar.AuthViewModel
 import org.hse.smartcalendar.ui.elements.ChangeLogin
 import org.hse.smartcalendar.ui.elements.ChangePassword
 import org.hse.smartcalendar.ui.elements.DailyTasksList
@@ -32,44 +27,31 @@ import org.hse.smartcalendar.ui.elements.SettingsScreen
 import org.hse.smartcalendar.ui.elements.Statistics
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.AppDrawer
-import org.hse.smartcalendar.utility.Destinations
+import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.utility.NavigationActions
 import org.hse.smartcalendar.view.model.ListViewModel
 
-class MainActivity : ComponentActivity() {
+class NavigationActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val authModel = ListViewModel(intent.getLongExtra("id", -1))
+        val listModel = ListViewModel(intent.getLongExtra("id", -1))
         setContent {
             SmartCalendarTheme {
-                App(AuthViewModel(), authModel)
+                App(AuthViewModel(), listModel)
             }
         }
     }
 }
 
-enum class Screen {
-    Login,
-    Calendar,
-    Greeting,
-    Settings,
-    ChangePassword,
-    ChangeLogin,
-    Statistics,
-    Rating,
-    Achievements,
-    MyCalendars,
-    AIAssistant
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App(
     authModel: AuthViewModel,
     listModel: ListViewModel,
-    startDestination: String = Destinations.CALENDAR_ROUTE
+    startDestination: String = Screens.CALENDAR.route
 ) {
     val navController = rememberNavController()
     val navigationActions = remember(navController) {
@@ -80,33 +62,51 @@ fun App(
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute =
-        navBackStackEntry?.destination?.route ?: Destinations.CALENDAR_ROUTE
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val openDrawer: () -> Unit = { coroutineScope.launch { drawerState.open() } }
-    val closeDrawer: () -> Unit = { coroutineScope.launch { drawerState.close() } }
+        navBackStackEntry?.destination?.route ?: Screens.CALENDAR.route
+    val isExpandedScreen =false
+    val DrawerState = rememberDrawerState(isExpandedScreen)
+    //Main Navigation element  - Drawer open from left side
+    //Instead of give NavController to navigate give functions to Screens/Drawer
+    //If need more Screen/add to Screen, append to AppDrawer Button with Icons
+    //Icons import from https://composeicons.com/
     ModalNavigationDrawer(
         drawerContent = {
             AppDrawer(
                 currentRoute = currentRoute,
-                navigateToHome = navigationActions.navigateToCalendar,
-                navigateToInterests = navigationActions.navigateToSettings,
-                closeDrawer = closeDrawer
+                navigateToCalendar = navigationActions.navigateToCalendar,
+                navigateToSettings = navigationActions.navigateToSettings,
+                navigateToStatistics = navigationActions.navigateToStatistics,
+                closeDrawer = { coroutineScope.launch { DrawerState.close() } }
             )
         },
-        drawerState = drawerState,
+        drawerState = DrawerState,
+        gesturesEnabled = !isExpandedScreen
     ) {
-
         NavHost(
             navController = navController,
             startDestination = startDestination,
             modifier = Modifier
-                .verticalScroll(rememberScrollState()),
         ) {
-            composable(route = Destinations.CALENDAR_ROUTE){
-                CalendarScreen(openDrawer, navController)
+            composable(route = Screens.SETTINGS.route) {
+                SettingsScreen(viewModel = authModel,
+                    navigationActions.navigateToChangeLogin, navigationActions.navigateToChangePassword
+                )
+            }
+            composable(Screens.CALENDAR.route) {
+                DailyTasksList(listModel, openDrawer = { coroutineScope.launch { DrawerState.open() }}, navController)
+            }
+            composable(route = Screens.CHANGELOGIN.route) {
+                ChangeLogin(authModel)
+            }
+            composable(route = Screens.CHANGEPASSWORD.route) {
+                ChangePassword(authModel)
+            }
+            composable(route = Screens.STATISTICS.route) {
+                Statistics()
             }
         }
     }
+
 }
 
 
@@ -114,7 +114,7 @@ fun App(
  * Determine the drawer state to pass to the modal drawer.
  */
 @Composable
-private fun rememberSizeAwareDrawerState(isExpandedScreen: Boolean): DrawerState {
+private fun rememberDrawerState(isExpandedScreen: Boolean): DrawerState {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
 
     return if (!isExpandedScreen) {

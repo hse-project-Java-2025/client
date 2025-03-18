@@ -29,9 +29,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import org.hse.smartcalendar.activity.DailyTasksListActivity
+import org.hse.smartcalendar.activity.NavigationActivity
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 
 class LoginActivity : ComponentActivity() {
@@ -39,19 +38,21 @@ class LoginActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             SmartCalendarTheme {
-                AuthScreen(viewModel = AuthViewModel(),  navController = rememberNavController())
+                AuthScreen(viewModel = AuthViewModel())
             }
         }
     }
 }
 
 @Composable
-fun AuthScreen(viewModel: AuthViewModel, navController: NavController) {
+fun AuthScreen(viewModel: AuthViewModel) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val authState by viewModel.authState.collectAsState()
+    val context = LocalContext.current
     Button(
-        onClick = { navController.navigate(Screen.Calendar.name) },
+        onClick = {val intent = Intent(context, NavigationActivity::class.java)
+            context.startActivity(intent) },
         modifier = Modifier.fillMaxWidth()
     ) {
         Text("Calendar")
@@ -112,5 +113,5 @@ fun AuthScreen(viewModel: AuthViewModel, navController: NavController) {
 @Preview
 @Composable
 fun AuthScreenPreview() {
-    SmartCalendarTheme { AuthScreen(viewModel = AuthViewModel(), navController = rememberNavController()) }
+    SmartCalendarTheme { AuthScreen(viewModel = AuthViewModel()) }
 }

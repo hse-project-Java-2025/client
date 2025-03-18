@@ -32,7 +32,7 @@ import org.hse.smartcalendar.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Statistics(viewModel: AuthViewModel, navController: NavController) {
+fun Statistics() {
     //TODO
-    Scaffold(content = {paddingValues ->  TopAppBar(title = {Text("Text")}, modifier = Modifier.padding(paddingValues)) })
+    Scaffold(content = {paddingValues ->  TopAppBar(title = {Text("TODO")}, modifier = Modifier.padding(paddingValues)) })
 }
