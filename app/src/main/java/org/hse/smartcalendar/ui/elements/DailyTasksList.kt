@@ -45,7 +45,7 @@ import org.hse.smartcalendar.view.model.ListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DailyTasksList(viewModel: ListViewModel, navController: NavController) {
+fun DailyTasksList(viewModel: ListViewModel, openDrawer: ()->Unit) {
     val taskTitle = rememberSaveable { mutableStateOf("") }
     val taskType = rememberSaveable { mutableStateOf(DailyTaskType.COMMON) }
     val taskDescription = rememberSaveable { mutableStateOf("") }
@@ -56,9 +56,12 @@ fun DailyTasksList(viewModel: ListViewModel, navController: NavController) {
     )
     val scope = rememberCoroutineScope()
     val isBottomSheetVisible = rememberSaveable { mutableStateOf(false) }
-
+    val isNavSheetVisible = rememberSaveable { mutableStateOf(false)}
     Scaffold (
-        topBar = { ListTopBar(viewModel.getScheduleDate()) },
+        topBar = {//ActionTopAppbar(openMenu = {isNavSheetVisible.value = true}, navController = navController, text = formatLocalDate(viewModel.getScheduleDate()))
+            //NavigationSheet(navController, isNavSheetVisible)
+            ListTopBar(viewModel.getScheduleDate())
+                 },
         bottomBar = { ListBottomBar(viewModel, scope, isBottomSheetVisible, sheetState) },
         content = { paddingValues ->
         LazyColumn (modifier = Modifier
@@ -176,6 +179,6 @@ fun formatLocalDate(date: LocalDate): String {
 fun DailyTaskListPreview() {
     val viewModelPreview = ListViewModel(1488)
     SmartCalendarTheme {
-        DailyTasksList(viewModelPreview, rememberNavController())
+        DailyTasksList(viewModelPreview, {})
     }
 }
