@@ -1,38 +1,26 @@
 package org.hse.smartcalendar.ui.elements
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Divider
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import kotlinx.coroutines.launch
-import org.hse.smartcalendar.AuthViewModel
+import org.hse.smartcalendar.utility.Navigation
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Statistics() {
+fun Statistics(openMenu:()->Unit, navigation:Navigation) {
     //TODO
-    Scaffold(content = {paddingValues ->  TopAppBar(title = {Text("TODO")}, modifier = Modifier.padding(paddingValues)) })
+    Scaffold(topBar =  { TopButton(openMenu, navigation, "Statistics") }){
+        paddingValues ->  Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+    ) {Text("TODO")}
+    }
 }

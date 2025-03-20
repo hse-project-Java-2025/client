@@ -31,8 +31,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
@@ -41,11 +39,13 @@ import kotlinx.datetime.format.MonthNames
 import kotlinx.datetime.format.char
 import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
+import org.hse.smartcalendar.utility.Navigation
+import org.hse.smartcalendar.utility.rememberNavigation
 import org.hse.smartcalendar.view.model.ListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DailyTasksList(viewModel: ListViewModel, openDrawer: ()->Unit, navController: NavController) {
+fun DailyTasksList(viewModel: ListViewModel, openDrawer: ()->Unit, navigation: Navigation) {
     val taskTitle = rememberSaveable { mutableStateOf("") }
     val taskType = rememberSaveable { mutableStateOf(DailyTaskType.COMMON) }
     val taskDescription = rememberSaveable { mutableStateOf("") }
@@ -59,9 +59,7 @@ fun DailyTasksList(viewModel: ListViewModel, openDrawer: ()->Unit, navController
     val isNavSheetVisible = rememberSaveable { mutableStateOf(false)}
     Scaffold (
         topBar = {
-            TopButton(openMenu = openDrawer, navController = navController, text = formatLocalDate(viewModel.getScheduleDate()))
-            //NavigationSheet(navController, isNavSheetVisible)
-            //ListTopBar(viewModel.getScheduleDate())
+            TopButton(openMenu = openDrawer, navigation = navigation, text = formatLocalDate(viewModel.getScheduleDate()))
                  },
         bottomBar = { ListBottomBar(viewModel, scope, isBottomSheetVisible, sheetState) },
         content = { paddingValues ->
@@ -180,6 +178,6 @@ fun formatLocalDate(date: LocalDate): String {
 fun DailyTaskListPreview() {
     val viewModelPreview = ListViewModel(1488)
     SmartCalendarTheme {
-        DailyTasksList(viewModelPreview, {}, rememberNavController())
+        DailyTasksList(viewModelPreview, {}, rememberNavigation())
     }
 }

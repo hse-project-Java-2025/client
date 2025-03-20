@@ -1,62 +1,45 @@
 package org.hse.smartcalendar.utility
 
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.remember
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 
 enum class Screens(val route: String) {
-    CHANGEPASSWORD("changePassword"),
-    CHANGELOGIN("changeLogin"),
+    CHANGE_PASSWORD("changePassword"),
+    CHANGE_LOGIN("changeLogin"),
     CALENDAR("calendar"),
     SETTINGS( "settings"),
     STATISTICS( "statistics"),
+    ACHIEVEMENTS("achievements"),
+    MY_CALENDARS("myCalendars"),
+    RATING("rating"),
+    AI_ASSISTANT("aiAssistant")
 }
 
+@Composable
+fun rememberNavigation(
+    navController: NavHostController = rememberNavController()
+): Navigation = remember(navController) {
+    Navigation(navController)
+}
 
-class NavigationActions(navController: NavHostController) {
-    val navigateToCalendar: () -> Unit = {
-        navController.navigate(Screens.CALENDAR.route) {
-            popUpTo(navController.graph.findStartDestination().id) {
-                saveState = true
-            }
-            launchSingleTop = true
-            restoreState = true
-        }
+@Stable
+class Navigation(val navController: NavHostController) {
+    fun upPress() {
+        navController.navigateUp()
     }
-    val navigateToSettings: () -> Unit = {
-        navController.navigate(Screens.SETTINGS.route) {
-            popUpTo(navController.graph.findStartDestination().id) {
-                saveState = true
+    fun navigateTo (route: String) {
+        if (route != navController.currentDestination?.route) {
+            navController.navigate(route) {
+                popUpTo(navController.graph.findStartDestination().id) {
+                    saveState = true
+                }
+                launchSingleTop = true
+                restoreState = true
             }
-            launchSingleTop = true
-            restoreState = true
-        }
-    }
-    val navigateToChangeLogin: () -> Unit = {
-        navController.navigate(Screens.CHANGELOGIN.route) {
-            popUpTo(navController.graph.findStartDestination().id) {
-                saveState = true
-            }
-            launchSingleTop = true
-            restoreState = true
-        }
-    }
-    val navigateToChangePassword: () -> Unit = {
-        navController.navigate(Screens.CHANGEPASSWORD.route) {
-            popUpTo(navController.graph.findStartDestination().id) {
-                saveState = true
-            }
-            launchSingleTop = true
-            restoreState = true
-        }
-    }
-    val navigateToStatistics: () -> Unit = {
-        navController.navigate(Screens.STATISTICS.route) {
-            popUpTo(navController.graph.findStartDestination().id) {
-                saveState = true
-            }
-            launchSingleTop = true
-            restoreState = true
         }
     }
 }

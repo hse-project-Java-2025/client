@@ -11,13 +11,11 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import org.hse.smartcalendar.AuthViewModel
 import org.hse.smartcalendar.ui.elements.ChangeLogin
@@ -28,7 +26,7 @@ import org.hse.smartcalendar.ui.elements.Statistics
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.AppDrawer
 import org.hse.smartcalendar.utility.Screens
-import org.hse.smartcalendar.utility.NavigationActions
+import org.hse.smartcalendar.utility.rememberNavigation
 import org.hse.smartcalendar.view.model.ListViewModel
 
 class NavigationActivity : ComponentActivity() {
@@ -53,29 +51,25 @@ fun App(
     listModel: ListViewModel,
     startDestination: String = Screens.CALENDAR.route
 ) {
-    val navController = rememberNavController()
-    val navigationActions = remember(navController) {
-        NavigationActions(navController)
-    }
-
+    val navigation = rememberNavigation()
     val coroutineScope = rememberCoroutineScope()
-
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val navBackStackEntry by navigation.navController.currentBackStackEntryAsState()
     val currentRoute =
         navBackStackEntry?.destination?.route ?: Screens.CALENDAR.route
     val isExpandedScreen =false
     val DrawerState = rememberDrawerState(isExpandedScreen)
+    val openDrawer: ()-> Unit = { coroutineScope.launch { DrawerState.open() }}
+
     //Main Navigation element  - Drawer open from left side
-    //Instead of give NavController to navigate give functions to Screens/Drawer
+    //to Navigate pass navigation to function and call navigation.navigateTo()
     //If need more Screen/add to Screen, append to AppDrawer Button with Icons
     //Icons import from https://composeicons.com/
+
     ModalNavigationDrawer(
         drawerContent = {
             AppDrawer(
                 currentRoute = currentRoute,
-                navigateToCalendar = navigationActions.navigateToCalendar,
-                navigateToSettings = navigationActions.navigateToSettings,
-                navigateToStatistics = navigationActions.navigateToStatistics,
+                navigation,
                 closeDrawer = { coroutineScope.launch { DrawerState.close() } }
             )
         },
@@ -83,26 +77,26 @@ fun App(
         gesturesEnabled = !isExpandedScreen
     ) {
         NavHost(
-            navController = navController,
+            navController = navigation.navController,
             startDestination = startDestination,
             modifier = Modifier
         ) {
             composable(route = Screens.SETTINGS.route) {
                 SettingsScreen(viewModel = authModel,
-                    navigationActions.navigateToChangeLogin, navigationActions.navigateToChangePassword
+                    navigation, openDrawer
                 )
             }
             composable(Screens.CALENDAR.route) {
-                DailyTasksList(listModel, openDrawer = { coroutineScope.launch { DrawerState.open() }}, navController)
+                DailyTasksList(listModel, openDrawer = openDrawer, navigation)
             }
-            composable(route = Screens.CHANGELOGIN.route) {
+            composable(route = Screens.CHANGE_LOGIN.route) {
                 ChangeLogin(authModel)
             }
-            composable(route = Screens.CHANGEPASSWORD.route) {
+            composable(route = Screens.CHANGE_PASSWORD.route) {
                 ChangePassword(authModel)
             }
             composable(route = Screens.STATISTICS.route) {
-                Statistics()
+                Statistics(openDrawer, navigation)
             }
         }
     }

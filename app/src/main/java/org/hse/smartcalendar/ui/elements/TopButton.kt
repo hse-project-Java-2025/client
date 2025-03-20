@@ -12,12 +12,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
+import androidx.compose.ui.tooling.preview.Preview
+import org.hse.smartcalendar.utility.Navigation
+import org.hse.smartcalendar.utility.rememberNavigation
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopButton(openMenu: (()-> Unit)? = null, navController: NavController, text: String) {
+fun TopButton(openMenu: (()-> Unit)? = null, navigation: Navigation, text: String) {
     TopAppBar(
         title = {
             Text(text = text)
@@ -32,7 +34,7 @@ fun TopButton(openMenu: (()-> Unit)? = null, navController: NavController, text:
         },
         actions = {
 
-            IconButton(onClick = { navController.navigate(Screen.Settings.name);}) {
+            IconButton(onClick = { navigation.navigateTo("Settings")}) {
                 Icon(Icons.Filled.Settings, contentDescription = null)
             }
 
@@ -50,4 +52,10 @@ fun TopButton(openMenu: (()-> Unit)? = null, navController: NavController, text:
             actionIconContentColor = MaterialTheme.colorScheme.error
         )
     )
+}
+
+@Preview
+@Composable
+fun TopButtonPreview(){
+    TopButton({}, rememberNavigation(), "TopButton")
 }

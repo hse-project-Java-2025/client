@@ -24,11 +24,10 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import org.hse.smartcalendar.activity.App
 import org.hse.smartcalendar.AuthViewModel
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
+import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.view.model.ListViewModel
 
@@ -51,8 +50,10 @@ private fun changeReminders(state: Boolean){
 }
 
 @Composable
-fun SettingsScreen(viewModel: AuthViewModel, navigateToChangeLogin: (()->Unit)? = null, navigateToChangePassword: (()->Unit)? = null){
-    Scaffold() {paddingValues ->
+fun SettingsScreen(viewModel: AuthViewModel, navigation: Navigation, openDrawer: (()->Unit)?=null){
+    Scaffold(
+        topBar = { TopButton(openDrawer, navigation, "Settings") }
+    ) {paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -60,14 +61,14 @@ fun SettingsScreen(viewModel: AuthViewModel, navigateToChangeLogin: (()->Unit)? 
         ) {
             Text("Login", fontSize = 22.sp)
             Button(
-                onClick = { navigateToChangeLogin?.invoke()
+                onClick = { navigation.navigateTo(Screens.CHANGE_LOGIN.route)
                           },
             ) {
                 Text("Change")
             }
             Text("Password", fontSize = 22.sp)
             Button(
-                onClick = { navigateToChangePassword?.invoke()
+                onClick = { navigation.navigateTo(Screens.CHANGE_PASSWORD.route)
                           },
             ) {
                 Text("Change")
