@@ -5,6 +5,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import java.util.LinkedList
+import java.util.UUID
 
 class DailySchedule (val date : LocalDate = Clock.System.now()
     .toLocalDateTime(TimeZone.currentSystemDefault()).date)
@@ -15,7 +16,7 @@ class DailySchedule (val date : LocalDate = Clock.System.now()
         val iterator = dailyTasksList.iterator()
         iterator.forEach { task ->
             if (task.isNestedTasks(newTask)) {
-                return false
+                throw NestedTaskException(task, newTask)
             }
         }
         dailyTasksList.add(newTask)
@@ -24,6 +25,16 @@ class DailySchedule (val date : LocalDate = Clock.System.now()
                 task.getDailyTaskStartTime()
         }
         return true
+    }
+
+    fun setCompletionById(id: UUID, status: Boolean): Boolean {
+        dailyTasksList.forEach { task ->
+            if (task.getId() == id) {
+                task.setCompletion(status)
+                return true
+            }
+        }
+        return false
     }
 
     fun removeDailyTask(newTask : DailyTask) : Boolean {
@@ -40,4 +51,10 @@ class DailySchedule (val date : LocalDate = Clock.System.now()
     fun getDailyTaskList() : List<DailyTask> {
         return dailyTasksList
     }
+
+    class NestedTaskException(oldTask: DailyTask, newTask: DailyTask) : IllegalArgumentException(
+        "New task have conflict schedule with previous one:\n" +
+                "Old task: start = " + oldTask.getDailyTaskStartTime() + "; end = " + oldTask.getDailyTaskEndTime() + "\n" +
+                "New task: start = " + newTask.getDailyTaskStartTime() + "; end = " + newTask.getDailyTaskEndTime()
+    )
 }

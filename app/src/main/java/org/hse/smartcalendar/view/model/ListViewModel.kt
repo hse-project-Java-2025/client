@@ -33,14 +33,14 @@ class ListViewModel(id: Long) : ViewModel() {
     }
 
     fun addDailyTask(newTask : DailyTask) {
-        if (!dailyTaskSchedule.addDailyTask(newTask)) {
-            // TODO
-        } else {
-            dailyTaskList.add(newTask)
-            dailyTaskList.sortBy {
-                    task ->
-                task.getDailyTaskStartTime()
-            }
+        try {
+            dailyTaskSchedule.addDailyTask(newTask)
+        } catch (exception: DailySchedule.NestedTaskException) {
+            throw exception
+        }
+        dailyTaskList.add(newTask)
+        dailyTaskList.sortBy { task ->
+            task.getDailyTaskStartTime()
         }
     }
 
@@ -52,7 +52,13 @@ class ListViewModel(id: Long) : ViewModel() {
         }
     }
 
-    fun changeDailyTaskSchedule(date: LocalDate): Unit {
+    fun changeTaskCompletion(task: DailyTask, status: Boolean) {
+        if (dailyTaskSchedule.setCompletionById(task.getId(), status)) {
+            task.setCompletion(status)
+        }
+    }
+
+    fun changeDailyTaskSchedule(date: LocalDate) {
         dailyTaskSchedule = user.getSchedule().getOrCreateDailySchedule(date)
         dailyScheduleDate.value = dailyTaskSchedule.date
         dailyTaskList.clear()
@@ -61,7 +67,7 @@ class ListViewModel(id: Long) : ViewModel() {
         }
     }
 
-    fun moveToNextDailySchedule(): Unit {
+    fun moveToNextDailySchedule() {
         val date: LocalDate = dailyTaskSchedule.date
         val nextDate: LocalDate = date.plus(
             DatePeriod(
@@ -71,7 +77,7 @@ class ListViewModel(id: Long) : ViewModel() {
         changeDailyTaskSchedule(nextDate)
     }
 
-    fun moveToPreviousDailySchedule(): Unit {
+    fun moveToPreviousDailySchedule() {
         val date: LocalDate = dailyTaskSchedule.date
         val nextDate: LocalDate = date.minus(
             DatePeriod(

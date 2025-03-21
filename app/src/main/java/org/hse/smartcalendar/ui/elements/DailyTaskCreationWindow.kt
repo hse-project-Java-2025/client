@@ -1,6 +1,7 @@
 package org.hse.smartcalendar.ui.elements
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,12 +29,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalTime
+import org.hse.smartcalendar.data.DailySchedule
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
@@ -53,10 +57,22 @@ fun BottomSheet(
     endTime: MutableState<Int>,
     addTask: (DailyTask) -> Unit
 ) {
-    val expendedTypeSelection = remember { mutableStateOf(false) }
+    val expendedTypeSelection = rememberSaveable { mutableStateOf(false) }
+    val isConflictInTimeField = rememberSaveable { mutableStateOf(false) }
+    val isEmptyTitle = rememberSaveable { mutableStateOf(false) }
+    val isNestedTask = rememberSaveable { mutableStateOf(false) }
+    val fstFiledHasFormatError = rememberSaveable { mutableStateOf(false) }
+    val sndFiledHasFormatError = rememberSaveable { mutableStateOf(false) }
     if (isBottomSheetVisible.value) {
         ModalBottomSheet(
-            onDismissRequest = onDismiss,
+            onDismissRequest = {
+                onDismiss()
+                isConflictInTimeField.value = false
+                isEmptyTitle.value = false
+                isNestedTask.value = false
+                fstFiledHasFormatError.value = false
+                sndFiledHasFormatError.value = false
+            },
             sheetState = sheetState,
             containerColor = Color.Transparent,
             contentColor = MaterialTheme.colorScheme.onSurface,
@@ -72,12 +88,36 @@ fun BottomSheet(
                     .fillMaxWidth()
                     .padding(12.dp) // Inner padding
             ) {
-                Spacer(modifier = Modifier.padding(12.dp))
+                Spacer(modifier = Modifier.padding(6.dp))
+
+                if (isNestedTask.value) {
+                    Box(Modifier.align(Alignment.CenterHorizontally)) {
+                        Text(
+                            text = "Conflict with previous task",
+                            color = MaterialTheme.colorScheme.error,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.padding(6.dp))
                 TextField(
                     value = taskTitle.value,
-                    onValueChange = { taskTitle.value = it },
+                    onValueChange = {
+                        taskTitle.value = it
+                        if (it.isNotEmpty()) {
+                            isEmptyTitle.value = false
+                        }
+                    },
                     label = { Text("Task Title") },
                     modifier = Modifier.fillMaxWidth(),
+                    isError = isEmptyTitle.value,
+                    supportingText = {
+                        if (isEmptyTitle.value) {
+                            Text("Empty Title")
+                        }
+                    }
                 )
                 Spacer(modifier = Modifier.padding(12.dp))
                 ExposedTypeSelectionMenu(
@@ -95,7 +135,10 @@ fun BottomSheet(
                 Spacer(modifier = Modifier.padding(12.dp))
                 TimeSelectorRow(
                     startTime = startTime,
-                    endTime = endTime
+                    endTime = endTime,
+                    isConflictInTimeField = isConflictInTimeField,
+                    fstFiledHasFormatError = fstFiledHasFormatError,
+                    sndFiledHasFormatError = sndFiledHasFormatError
                 )
 
                 Spacer(modifier = Modifier.padding(12.dp))
@@ -108,9 +151,14 @@ fun BottomSheet(
                         taskType = taskType,
                         taskDescription = taskDescription,
                         startTime = startTime,
-                        endTime = endTime
-                    )}
-
+                        endTime = endTime,
+                        isConflictInTimeField = isConflictInTimeField,
+                        isEmptyTitle = isEmptyTitle,
+                        isNestedTask = isNestedTask,
+                        fstFiledHasFormatError = fstFiledHasFormatError,
+                        sndFiledHasFormatError = sndFiledHasFormatError
+                    )
+                    },
                 ) {
                     Text("Add task")
                 }
@@ -123,22 +171,30 @@ fun BottomSheet(
 fun TimeSelectorRow(
     modifier: Modifier = Modifier,
     startTime: MutableState<Int>,
-    endTime: MutableState<Int>
+    endTime: MutableState<Int>,
+    isConflictInTimeField: MutableState<Boolean>,
+    fstFiledHasFormatError: MutableState<Boolean>,
+    sndFiledHasFormatError: MutableState<Boolean>,
 ) {
     Row(
         modifier = modifier.fillMaxWidth()
     ) {
         TimeInputField(
-            text = "start",
+            label = "start",
             modifier = Modifier.weight(1f),
-            time = startTime
+            timeInMinutes = startTime,
+            formatHasError = fstFiledHasFormatError
         )
-        Text(text = "  due to",
-            modifier = Modifier.weight(0.5f))
+        Text(
+            text = "  due to",
+            modifier = Modifier.weight(0.5f),
+        )
         TimeInputField(
-            text = "end",
+            label = "end",
             modifier = Modifier.weight(1f),
-            time = endTime
+            timeInMinutes = endTime,
+            isConflictInTimeField = isConflictInTimeField,
+            formatHasError = sndFiledHasFormatError
         )
     }
 }
@@ -148,10 +204,17 @@ fun TimeSelectorRow(
 fun TimeSelectorRowPreview() {
     val startTime = rememberSaveable { mutableIntStateOf(0) }
     val endTime = rememberSaveable { mutableIntStateOf(0) }
+    val isConflictInTimeField = rememberSaveable { mutableStateOf(false) }
+    val fstFiledHasFormatError = rememberSaveable { mutableStateOf(false) }
+    val sndFiledHasFormatError = rememberSaveable { mutableStateOf(false) }
+
     MaterialTheme {
         TimeSelectorRow(
             startTime = startTime,
-            endTime = endTime
+            endTime = endTime,
+            isConflictInTimeField = isConflictInTimeField,
+            fstFiledHasFormatError = fstFiledHasFormatError,
+            sndFiledHasFormatError = sndFiledHasFormatError
         )
     }
 }
@@ -164,56 +227,100 @@ fun addNewTask(
     taskDescription: MutableState<String>,
     startTime: MutableState<Int>,
     endTime: MutableState<Int>,
+    isConflictInTimeField: MutableState<Boolean>,
+    isEmptyTitle: MutableState<Boolean>,
+    isNestedTask: MutableState<Boolean>,
+    fstFiledHasFormatError: MutableState<Boolean>,
+    sndFiledHasFormatError: MutableState<Boolean>,
     ) {
-    addTask(
-        DailyTask(
+    isConflictInTimeField.value = false
+    isEmptyTitle.value = false
+    if (startTime.value > endTime.value) {
+        isConflictInTimeField.value = true
+    }
+    if (taskTitle.value.isEmpty()) {
+        isEmptyTitle.value = true
+    }
+    if (isConflictInTimeField.value || isEmptyTitle.value) {
+        return
+    }
+
+    val newTask = DailyTask(
             title = taskTitle.value,
             type = taskType.value,
             description = taskDescription.value,
-            duration = LocalTime.fromMinutesOfDay(
-                endTime.value - startTime.value
-            ),
-            start = LocalTime.fromMinutesOfDay(startTime.value)
+            start = LocalTime.fromMinutesOfDay(startTime.value),
+            end = LocalTime.fromMinutesOfDay(endTime.value),
         )
-    )
+
+    try {
+        addTask(
+            newTask
+        )
+    } catch (exception: DailySchedule.NestedTaskException) {
+        isNestedTask.value = true
+        return
+    }
+
     isBottomSheetVisible.value = false
     taskTitle.value = ""
     taskDescription.value = ""
     startTime.value = 0
     endTime.value = 0
+    isConflictInTimeField.value = false
+    isEmptyTitle.value = false
+    isNestedTask.value = false
+    fstFiledHasFormatError.value = false
+    sndFiledHasFormatError.value = false
 
 }
 
-
-//TODO Добавить обработку не валидных случаев
 @Composable
 fun TimeInputField(
     modifier: Modifier = Modifier,
-    text: String = "",
-    time: MutableState<Int>
+    label: String = "",
+    timeInMinutes: MutableState<Int>,
+    isConflictInTimeField: MutableState<Boolean> = mutableStateOf(false),
+    formatHasError: MutableState<Boolean>
 ) {
-    var timeText by remember { mutableStateOf(TextFieldValue("")) }
+    var timeTextValue by remember { mutableStateOf(TextFieldValue("")) }
     TextField(
-        value = timeText,
+        value = timeTextValue,
         onValueChange = { newText ->
             val formattedText = formatTimeInput(newText.text)
-            timeText = TextFieldValue(formattedText, newText.selection)
+            timeTextValue = TextFieldValue(formattedText, newText.selection)
+            if (timeTextValue.selection == TextRange(3)) {
+                timeTextValue = TextFieldValue(timeTextValue.text, TextRange(4))
+            }
             if (formattedText.length == 5) {
-                time.value = LocalTime.toMinutesOfDay(LocalTime.parse(formattedText))
+                try {
+                timeInMinutes.value = LocalTime.toMinutesOfDay(LocalTime.parse(formattedText))
+                } catch (exception: IllegalArgumentException) {
+                    val maxLocalTime = LocalTime(23, 59)
+                    timeInMinutes.value = LocalTime.toMinutesOfDay(maxLocalTime)
+                    timeTextValue = TextFieldValue(maxLocalTime.toString(), newText.selection)
+                }
             }
         },
         keyboardOptions = KeyboardOptions.Default.copy(
             keyboardType = KeyboardType.Number
         ),
         label = { Text(
-            text = text
+            text = label
         ) },
         modifier = modifier,
-        singleLine = true
+        singleLine = true,
+        isError = formatHasError.value || isConflictInTimeField.value,
+        supportingText = {
+            if (formatHasError.value) {
+                Text("Invalid format")
+            } else if (isConflictInTimeField.value) {
+                Text("Time conflict")
+            }
+        }
     )
 }
 
-// TODO Попытаться написать перенос.
 fun formatTimeInput(input: String): String {
     val digitsOnly = input.filter { it.isDigit() }
     val formatted = StringBuilder()
@@ -234,11 +341,15 @@ fun formatTimeInput(input: String): String {
 @Preview(showBackground = true)
 @Composable
 fun TimeInputFieldPreview() {
-    val time = remember { mutableIntStateOf(0) }
-    MaterialTheme {
+    val time = rememberSaveable { mutableIntStateOf(0) }
+    val isConflictInTimeField = rememberSaveable { mutableStateOf(false) }
+    val formatHasError = rememberSaveable { mutableStateOf(false) }
+    SmartCalendarTheme {
             TimeInputField(
-                text = "time",
-                time = time
+                label = "time",
+                timeInMinutes = time,
+                isConflictInTimeField = isConflictInTimeField,
+                formatHasError = formatHasError
             )
     }
 }
@@ -257,7 +368,7 @@ fun BottomSheetPreview() {
             skipPartiallyExpanded = true
         )
         val scope = rememberCoroutineScope()
-        val isBottomSheetVisible = remember { mutableStateOf(true)}
+        val isBottomSheetVisible = rememberSaveable { mutableStateOf(true) }
 
         BottomSheet(
             isBottomSheetVisible = isBottomSheetVisible,
