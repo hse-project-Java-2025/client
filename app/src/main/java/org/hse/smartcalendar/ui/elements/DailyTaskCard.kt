@@ -114,12 +114,13 @@ fun DailyTaskCard(
 @Composable
 @Preview(showBackground = true)
 fun DailyTaskCardPreview() {
+
     val previewCommonTask = DailyTask(
         title = "Common title example",
         type = DailyTaskType.COMMON,
         description = "Common description Example",
         start = LocalTime(4, 0),
-        end = LocalTime(5, 0),
+        end = LocalTime(5, 0)
     )
 
 

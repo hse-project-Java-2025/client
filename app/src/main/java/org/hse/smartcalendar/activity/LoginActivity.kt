@@ -52,7 +52,6 @@ fun AuthScreen(viewModel: AuthViewModel) {
     val context = LocalContext.current
     Button(
         onClick = {val intent = Intent(context, NavigationActivity::class.java)
-            intent.put
             context.startActivity(intent) },
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -81,7 +80,9 @@ fun AuthScreen(viewModel: AuthViewModel) {
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(
-            onClick = { viewModel.login(username, password) },
+            onClick = { viewModel.login(username, password)
+
+                      },
             modifier = Modifier
                 .fillMaxWidth()
                 .testTag("loginButtonTest")
@@ -98,9 +99,9 @@ fun AuthScreen(viewModel: AuthViewModel) {
                 Thread.sleep(1000)
                 val id: Long = 1488
                 // TODO Видимо тут должна быть синхронизация.
-                val intent = Intent(LocalContext.current, DailyTasksListActivity::class.java)
+                val intent = Intent(LocalContext.current, NavigationActivity::class.java)
                 intent.putExtra("id", id)
-                LocalContext.current.startActivity(intent)
+                context.startActivity(intent)
             }
             is AuthViewModel.AuthState.Error -> {
                 Text("Error: ${state.message}", color = MaterialTheme.colorScheme.error)

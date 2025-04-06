@@ -16,6 +16,8 @@ enum class Screens(val route: String) {
     ACHIEVEMENTS("achievements"),
     MY_CALENDARS("myCalendars"),
     RATING("rating"),
+    LOGIN("LOGIN"),
+    GREETING("GREETING"),
     AI_ASSISTANT("aiAssistant")
 }
 

@@ -17,9 +17,27 @@ class DailyTask (
     private var description : String,
     private var start : LocalTime,
     private var end: LocalTime,
+    //private var date: LocalDate,
     ) {
-
-
+    constructor(
+        title: String,
+        isComplete: Boolean,
+        type: String,
+        description: String,
+        start: Pair<Int, Int>,
+        end: Pair<Int, Int>,
+        //day: Int, month: Int, year: Int
+    ) :
+            this(
+                title = title,
+                isComplete = isComplete,
+                type = DailyTaskType.fromString(type),
+                description = description,
+                start = LocalTime(hour = start.first, minute = start.second),
+                end = LocalTime(hour = end.first, minute = end.second),
+                //date = LocalDate(day, month, year)
+            ) {
+    }
     init {
         if (title.isEmpty()) {
             throw EmptyTitleException()
