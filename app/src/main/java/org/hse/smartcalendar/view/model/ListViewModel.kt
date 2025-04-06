@@ -22,7 +22,11 @@ class ListViewModel(id: Long) : ViewModel() {
     )
     var dailyTaskList: SnapshotStateList<DailyTask>
     private val user: User = User(id)
-
+    val TotalDays = 1
+    val DailyWorktime = 0
+    val DailyCompleteWorktime = 0
+    val TotalWorktime = 0
+    val AverageWorktime = TotalWorktime/TotalDays
     init {
         val date: LocalDate =
             Clock.System.now()

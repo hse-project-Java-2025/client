@@ -37,6 +37,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format
 import kotlinx.datetime.format.MonthNames
 import kotlinx.datetime.format.char
+import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.Navigation
@@ -54,9 +55,10 @@ fun DailyTasksList(viewModel: ListViewModel, openDrawer: ()->Unit, navigation: N
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
+    fun serverAddTask(dailyTask: DailyTask){
+    }
     val scope = rememberCoroutineScope()
     val isBottomSheetVisible = rememberSaveable { mutableStateOf(false) }
-    val isNavSheetVisible = rememberSaveable { mutableStateOf(false)}
     Scaffold (
         topBar = {
             TopButton(openMenu = openDrawer, navigation = navigation, text = formatLocalDate(viewModel.getScheduleDate()))
@@ -84,7 +86,7 @@ fun DailyTasksList(viewModel: ListViewModel, openDrawer: ()->Unit, navigation: N
             taskDescription = taskDescription,
             startTime = startTime,
             endTime = endTime,
-            addTask = viewModel::addDailyTask
+            addTask = {task -> viewModel.addDailyTask(task); serverAddTask(task)}
         )
         }
     )

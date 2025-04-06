@@ -52,6 +52,7 @@ fun AuthScreen(viewModel: AuthViewModel) {
     val context = LocalContext.current
     Button(
         onClick = {val intent = Intent(context, NavigationActivity::class.java)
+            intent.put
             context.startActivity(intent) },
         modifier = Modifier.fillMaxWidth()
     ) {

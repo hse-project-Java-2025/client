@@ -34,7 +34,7 @@ class NavigationActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val listModel = ListViewModel(intent.getLongExtra("id", -1))
+        val listModel = getViewModel()
         setContent {
             SmartCalendarTheme {
                 App(AuthViewModel(), listModel)
@@ -42,6 +42,12 @@ class NavigationActivity : ComponentActivity() {
         }
     }
 }
+
+fun getViewModel(): ListViewModel {
+    //TODO: connect to server
+    return ListViewModel(-1)
+}
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
