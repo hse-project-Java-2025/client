@@ -39,11 +39,13 @@ import kotlinx.datetime.format.MonthNames
 import kotlinx.datetime.format.char
 import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
+import org.hse.smartcalendar.utility.Navigation
+import org.hse.smartcalendar.utility.rememberNavigation
 import org.hse.smartcalendar.view.model.ListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DailyTasksList(viewModel: ListViewModel) {
+fun DailyTasksList(viewModel: ListViewModel, openDrawer: ()->Unit, navigation: Navigation) {
     val taskTitle = rememberSaveable { mutableStateOf("") }
     val taskType = rememberSaveable { mutableStateOf(DailyTaskType.COMMON) }
     val taskDescription = rememberSaveable { mutableStateOf("") }
@@ -54,9 +56,11 @@ fun DailyTasksList(viewModel: ListViewModel) {
     )
     val scope = rememberCoroutineScope()
     val isBottomSheetVisible = rememberSaveable { mutableStateOf(false) }
-
+    val isNavSheetVisible = rememberSaveable { mutableStateOf(false)}
     Scaffold (
-        topBar = { ListTopBar(viewModel.getScheduleDate()) },
+        topBar = {
+            TopButton(openMenu = openDrawer, navigation = navigation, text = formatLocalDate(viewModel.getScheduleDate()))
+                 },
         bottomBar = { ListBottomBar(viewModel, scope, isBottomSheetVisible, sheetState) },
         content = { paddingValues ->
         LazyColumn (modifier = Modifier
@@ -176,6 +180,6 @@ fun formatLocalDate(date: LocalDate): String {
 fun DailyTaskListPreview() {
     val viewModelPreview = ListViewModel(1488)
     SmartCalendarTheme {
-        DailyTasksList(viewModelPreview)
+        DailyTasksList(viewModelPreview, {}, rememberNavigation())
     }
 }

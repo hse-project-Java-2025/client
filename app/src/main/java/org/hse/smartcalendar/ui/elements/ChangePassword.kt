@@ -1,9 +1,5 @@
-package org.hse.smartcalendar
+package org.hse.smartcalendar.ui.elements
 
-import android.content.Intent
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -24,39 +20,36 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import org.hse.smartcalendar.activity.DailyTasksListActivity
-import org.hse.smartcalendar.activity.NavigationActivity
+import org.hse.smartcalendar.AuthViewModel
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 
-class LoginActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            SmartCalendarTheme {
-                AuthScreen(viewModel = AuthViewModel())
-            }
-        }
-    }
+@Preview
+@Composable
+fun ChangePassword() {
+    SmartCalendarTheme { ChangePassword(viewModel = AuthViewModel()) }
+}
+
+@Preview
+@Composable
+fun ChangeLogin() {
+    SmartCalendarTheme { ChangeLogin(viewModel = AuthViewModel()) }
 }
 
 @Composable
-fun AuthScreen(viewModel: AuthViewModel) {
+fun ChangeLogin(viewModel: AuthViewModel) {
+    ChangePassword(viewModel,false)
+}
+
+@Composable
+fun ChangePassword(viewModel: AuthViewModel, isChangeLogin: Boolean = false) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var newPassword1 by remember { mutableStateOf("") }
+    var newPassword2 by remember { mutableStateOf("") }
     val authState by viewModel.authState.collectAsState()
-    val context = LocalContext.current
-    Button(
-        onClick = {val intent = Intent(context, NavigationActivity::class.java)
-            context.startActivity(intent) },
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text("Calendar")
-    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -78,14 +71,29 @@ fun AuthScreen(viewModel: AuthViewModel) {
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation()
         )
+        Spacer(modifier = Modifier.height(8.dp))
+        TextField(
+            value = newPassword1,
+            onValueChange = { newPassword1 = it },
+            label = { if (isChangeLogin) Text("New login") else {Text("New password")} },
+            modifier = Modifier.fillMaxWidth(),
+            visualTransformation = PasswordVisualTransformation()
+        )
+        TextField(
+            value = newPassword2,
+            onValueChange = { newPassword2 = it },
+            label = { if (isChangeLogin) Text("Repeat new login") else {Text("Repeat new password")} },
+            modifier = Modifier.fillMaxWidth(),
+            visualTransformation = PasswordVisualTransformation()
+        )
         Spacer(modifier = Modifier.height(16.dp))
         Button(
-            onClick = { viewModel.login(username, password) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .testTag("loginButtonTest")
+            onClick = {
+                if (isChangeLogin) viewModel.changeLogin(username, password, newPassword1, newPassword2) else
+                viewModel.changePassword(username, password, newPassword1, newPassword2)},
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Login")
+            if (isChangeLogin) Text("Change login") else Text("Change password")
         }
         Spacer(modifier = Modifier.height(16.dp))
         when (val state = authState) {
@@ -93,13 +101,7 @@ fun AuthScreen(viewModel: AuthViewModel) {
                 CircularProgressIndicator()
             }
             is AuthViewModel.AuthState.Success -> {
-                Text("Login successful! Token: ${state.token}")
-                Thread.sleep(1000)
-                val id: Long = 1488
-                // TODO Видимо тут должна быть синхронизация.
-                val intent = Intent(LocalContext.current, DailyTasksListActivity::class.java)
-                intent.putExtra("id", id)
-                LocalContext.current.startActivity(intent)
+                Text("Change password successful")
             }
             is AuthViewModel.AuthState.Error -> {
                 Text("Error: ${state.message}", color = MaterialTheme.colorScheme.error)
@@ -107,11 +109,4 @@ fun AuthScreen(viewModel: AuthViewModel) {
             else -> {}
         }
     }
-}
-
-
-@Preview
-@Composable
-fun AuthScreenPreview() {
-    SmartCalendarTheme { AuthScreen(viewModel = AuthViewModel()) }
 }

@@ -1,4 +1,4 @@
-package org.hse.smartcalendar.view.model
+package org.hse.smartcalendar
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -32,5 +32,20 @@ class AuthViewModel : ViewModel() {
                 _authState.value = AuthState.Error(e.message ?: "Unknown error")
             }
         }
+    }
+
+    fun changePassword(username: String, password: String, newPassword1: String, newPassword2: String) {
+        if (newPassword1!=newPassword2){
+            _authState.value = AuthState.Error("New passwords are different")
+        }
+        //авторизация
+
+    }
+
+    fun changeLogin(username: String, password: String, newPassword1: String, newPassword2: String) {
+        if (newPassword1!=newPassword2){
+            _authState.value = AuthState.Error("New passwords are different")
+        }
+        //авторизация
     }
 }
