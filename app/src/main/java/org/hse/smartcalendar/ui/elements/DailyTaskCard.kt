@@ -180,7 +180,11 @@ fun getCardTitleColor(task: DailyTask): Color {
 
 
 fun getCardDescriptionColor(task: DailyTask): Color {
-    return when (task.getDailyTaskType()) {
+    return getTaskDescriptionColor(task.getDailyTaskType())
+}
+
+fun getTaskDescriptionColor(taskType: DailyTaskType): Color {
+    return when (taskType) {
         DailyTaskType.FITNESS -> Color.Red
         DailyTaskType.WORK -> Color.DarkGray
         DailyTaskType.STUDIES -> Color.Green

@@ -36,10 +36,18 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
 }
 
 dependencies {
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    implementation(libs.androidx.core.ktx)
+    implementation("com.squareup.okhttp3:okhttp:4.7.2")
+    //implementation(libs.okhttp3)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.picasso)
     implementation(libs.androidx.navigation.compose.v240beta02)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.datetime)

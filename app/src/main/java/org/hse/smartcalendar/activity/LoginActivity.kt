@@ -33,9 +33,11 @@ import org.hse.smartcalendar.activity.DailyTasksListActivity
 import org.hse.smartcalendar.activity.NavigationActivity
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 
+
 class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             SmartCalendarTheme {
                 AuthScreen(viewModel = AuthViewModel())

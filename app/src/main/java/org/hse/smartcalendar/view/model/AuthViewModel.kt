@@ -1,5 +1,6 @@
 package org.hse.smartcalendar
 
+import AuthRequest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,13 +22,15 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
             try {
+                RetrofitInstance.api.authUser(AuthRequest("kek", "lol", "arbidol"))
+                _authState.value = AuthState.Success("fake_token")
                 // По-хорошему, тут должна быть сама авторизация.
                 Thread.sleep(1000)
-                if (username == "user" && password == "password") {
-                    _authState.value = AuthState.Success("fake_token")
-                } else {
-                    _authState.value = AuthState.Error("Invalid credentials")
-                }
+//                if (username == "user" && password == "password") {
+//                    _authState.value = AuthState.Success("fake_token")
+//                } else {
+//                    _authState.value = AuthState.Error("Invalid credentials")
+//                }
             } catch (e: Exception) {
                 _authState.value = AuthState.Error(e.message ?: "Unknown error")
             }
