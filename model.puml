@@ -1,0 +1,67 @@
+@startuml
+class ListViewModel {
+- DailySchedule dailyTaskSchedule
+- SnapshotStateList<DailyTask> dailyTaskList
++ void addDailyTask(DailyTask)
++ void removeDailyTask(DailyTask)
+}
+
+
+class MainActivity {
++ void onCreate(Bundle?)
+}
+
+class DailySchedule {
+- LocalDate date
+- LinkedList<DailyTask> dailyTasksList
++ Boolean addDailyTask(DailyTask)
++ Boolean removeDailyTask(DailyTask)
+}
+
+
+class AuthViewModel {
+- StateFlow<AuthState> authState
++ void login(String,String)
+}
+
+
+class User {
+- String name
+- Long id
+}
+
+class DailyTask {
+- String title
+- String description
+- LocalTime start
+- LocalTime duration
+- LocalDateTime creationTime
++ String getDailyTaskArrangementString()
++ Boolean isNestedTasks(DailyTask)
+}
+
+class DailyTasksListActivity {
++ void onCreate(Bundle?)
+}
+
+class LoginActivity {
+- AuthViewModel viewModel
++ void onCreate(Bundle?)
+}
+
+
+
+
+DailySchedule o-- DailyTask
+ListViewModel <..> DailySchedule
+ListViewModel o-- User
+'ViewModel <|-- ListViewModel
+'ComponentActivity <|-- MainActivity
+'ViewModel <|-- AuthViewModel
+'ComponentActivity <|-- DailyTasksListActivity
+'ComponentActivity <|-- LoginActivity
+ListViewModel <...> DailyTasksListActivity
+AuthViewModel <.. LoginActivity
+MainActivity --> LoginActivity
+LoginActivity --> DailyTasksListActivity
+@enduml
