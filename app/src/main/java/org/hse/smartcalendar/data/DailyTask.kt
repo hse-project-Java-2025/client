@@ -49,12 +49,21 @@ class DailyTask (
         return title
     }
 
+    fun setDailyTaskTitle(newTitle: String) {
+        title = newTitle
+    }
+
+
     fun getDailyTaskType(): DailyTaskType {
         return type
     }
 
     fun getDailyTaskDescription() : String {
         return description
+    }
+
+    fun setDailyTaskDescription(newDescription: String) {
+        description = newDescription
     }
 
     fun getDailyTaskStartTime() : LocalTime {
