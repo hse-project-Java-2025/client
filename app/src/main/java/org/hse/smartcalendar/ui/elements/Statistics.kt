@@ -37,13 +37,13 @@ fun Statistics(navigation: Navigation, openMenu: () -> Unit, statisticsModel: St
         ) {
             Text(
                 "You work " + statisticsModel.getTodayCompletedTime()
-                    .toPrettyString() + " from " + statisticsModel.getTodayWorkTime().toPrettyString() + " planned today"
+                    .toPrettyString() + " from " + statisticsModel.getTodayPlannedTime().toPrettyString() + " planned today"
             )
             LinearProgressIndicator(
                 progress = {
                     safeDelete(
                         statisticsModel.getTodayCompletedTime().toMinutes(),
-                        statisticsModel.getTodayWorkTime().toMinutes()
+                        statisticsModel.getTodayPlannedTime().toMinutes()
                     )
                 },
                 modifier = Modifier
@@ -53,15 +53,15 @@ fun Statistics(navigation: Navigation, openMenu: () -> Unit, statisticsModel: St
                 color = Color.Blue
             )
             Text(
-                "You average day work time is " + statisticsModel.getDailyWorkTime()
-                    .toPrettyString() + ", now you work " + statisticsModel.getTodayWorkTime()
+                "You average day work time is " + statisticsModel.getAverageDailyTime()
+                    .toPrettyString() + ", now you work " + statisticsModel.getTodayPlannedTime()
                     .toPrettyString() + " of it"
             )
             LinearProgressIndicator(
                 progress = {
                     safeDelete(
-                        dividend = statisticsModel.getTodayWorkTime().toMinutes(),
-                        divisor = statisticsModel.getDailyWorkTime().toMinutes()
+                        dividend = statisticsModel.getTodayPlannedTime().toMinutes(),
+                        divisor = statisticsModel.getAverageDailyTime().toMinutes()
                     )
                 },
                 modifier = Modifier
@@ -89,6 +89,7 @@ fun Statistics(navigation: Navigation, openMenu: () -> Unit, statisticsModel: St
                 color = Color.Blue
             )
             Text("You total work time is " + statisticsModel.getTotalWorkTime().toPrettyString())
+
         }
     }
 }
