@@ -41,11 +41,14 @@ android {
 }
 
 dependencies {
+    implementation("androidx.compose.runtime:runtime-livedata:1.7.8")
+    val retrofitVersion = "2.11.0"
+    implementation("com.squareup.retrofit2:converter-gson:$retrofitVersion")
+    implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     implementation(libs.androidx.core.ktx)
     implementation("com.squareup.okhttp3:okhttp:4.7.2")
     //implementation(libs.okhttp3)
-    implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.picasso)
     implementation(libs.androidx.navigation.compose.v240beta02)
