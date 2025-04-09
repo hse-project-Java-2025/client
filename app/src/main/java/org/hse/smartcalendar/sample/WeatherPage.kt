@@ -1,4 +1,4 @@
-package org.hse.smartcalendar.server
+package org.hse.smartcalendar.sample
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -56,13 +55,13 @@ fun WeatherPage(viewModel: WeatherViewModel){
                 contentDescription = "Search for any location")
         }
         when (val result = weatherResult.value){
-            is NetworkResponse.Error -> {
+            is NetworkResponseSample.Error -> {
                 Text(text = result.message)
             }
-            NetworkResponse.Loading -> {
+            NetworkResponseSample.Loading -> {
                 CircularProgressIndicator()
             }
-            is NetworkResponse.Success ->{
+            is NetworkResponseSample.Success ->{
                 Text(text = result.data.toString())
             }
             null -> {}

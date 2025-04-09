@@ -1,4 +1,4 @@
-package org.hse.smartcalendar.server
+package org.hse.smartcalendar.sample
 
 import retrofit2.Response
 import retrofit2.http.GET

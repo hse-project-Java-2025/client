@@ -18,8 +18,11 @@
             android:name=".activity.NavigationActivity"
             android:exported="true" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".RegisterActivity"
             android:exported="true" />
+        <activity
+                android:name=".LoginActivity"
+                android:exported="true" />
         <activity
             android:name=".activity.DailyTasksListActivity"
             android:exported="true" />
