@@ -15,6 +15,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -24,6 +25,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.hse.smartcalendar.AuthViewModel
+import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 
 @Preview
@@ -49,7 +51,7 @@ fun ChangePassword(viewModel: AuthViewModel, isChangeLogin: Boolean = false) {
     var password by remember { mutableStateOf("") }
     var newPassword1 by remember { mutableStateOf("") }
     var newPassword2 by remember { mutableStateOf("") }
-    val authState by viewModel.authState.collectAsState()
+    val authState by viewModel.registerResult.observeAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -97,13 +99,13 @@ fun ChangePassword(viewModel: AuthViewModel, isChangeLogin: Boolean = false) {
         }
         Spacer(modifier = Modifier.height(16.dp))
         when (val state = authState) {
-            is AuthViewModel.AuthState.Loading -> {
+            is NetworkResponse.Loading -> {
                 CircularProgressIndicator()
             }
-            is AuthViewModel.AuthState.Success -> {
+            is NetworkResponse.Success -> {
                 Text("Change password successful")
             }
-            is AuthViewModel.AuthState.Error -> {
+            is NetworkResponse.Error -> {
                 Text("Error: ${state.message}", color = MaterialTheme.colorScheme.error)
             }
             else -> {}

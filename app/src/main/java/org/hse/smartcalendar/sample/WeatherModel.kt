@@ -1,4 +1,4 @@
-package org.hse.smartcalendar.server;
+package org.hse.smartcalendar.sample;
 
 data class WeatherModel (
     val location: Location,

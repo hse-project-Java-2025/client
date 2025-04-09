@@ -1,4 +1,4 @@
-package org.hse.smartcalendar.server
+package org.hse.smartcalendar.sample
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
