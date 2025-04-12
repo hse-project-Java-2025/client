@@ -80,6 +80,14 @@ class DailyTask (
                 task.getDailyTaskStartTime() >= this.getDailyTaskEndTime())
     }
 
+    fun updateDailyTask(task: DailyTask) {
+        title = task.title
+        type = task.type
+        description = task.description
+        start = task.start
+        end = task.end
+    }
+
     class TimeConflictException(start: LocalTime, end: LocalTime) : IllegalArgumentException(
         "Illegal start and end time: start = " +
                 start.toString() +
