@@ -91,6 +91,17 @@ class ListViewModel(id: Long) : ViewModel() {
         return dailyScheduleDate.value
     }
 
+    fun isUpdatable(oldTask: DailyTask, newTask: DailyTask): Boolean {
+        dailyTaskSchedule.getDailyTaskList().forEach { task ->
+            if (task != oldTask) {
+                if (oldTask.isNestedTasks(newTask)) {
+                    throw NestedTask(task)
+                }
+            }
+        }
+        return true
+    }
+
     private fun <T> SnapshotStateList(dailyTaskList: List<T>): SnapshotStateList<T> {
         val result: SnapshotStateList<T> = SnapshotStateList()
         dailyTaskList.forEach { task ->
@@ -98,4 +109,8 @@ class ListViewModel(id: Long) : ViewModel() {
         }
         return result
     }
+
+
+    class NestedTask(val nestedTask: DailyTask) :
+        Exception("Collision in list in case of updating")
 }
