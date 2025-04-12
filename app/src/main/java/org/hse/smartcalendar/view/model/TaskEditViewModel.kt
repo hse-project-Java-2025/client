@@ -12,16 +12,23 @@ class TaskEditViewModel(
         description = "Preview description",
         start = LocalTime(0, 0),
         end = LocalTime(23, 59)
-    )
+    ),
+    val listViewModel: ListViewModel
 ) : ViewModel() {
-    private val _task = mutableStateOf(task)
+    private var _task = mutableStateOf(task)
+    val changes = task
+    var test = task
     val task: State<DailyTask> = _task
 
-    fun updateTitle(newTitle: String) {
-        _task.value.setDailyTaskTitle(newTitle)
+    fun setTask(newTask: DailyTask) {
+        _task = mutableStateOf(newTask)
+        test = newTask
+        changes.updateDailyTask(newTask)
     }
 
-    fun updateDescription(newDescription: String) {
-        _task.value.setDailyTaskDescription(newDescription)
+    fun updateTask() {
+        if (listViewModel.isUpdatable(_task.value, changes)) {
+            _task.value.updateDailyTask(changes)
+        }
     }
 }
