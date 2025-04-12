@@ -20,7 +20,6 @@ import kotlinx.coroutines.launch
 import org.hse.smartcalendar.AuthViewModel
 import org.hse.smartcalendar.ui.elements.ChangeLogin
 import org.hse.smartcalendar.ui.elements.ChangePassword
-import org.hse.smartcalendar.ui.elements.DailyTasksList
 import org.hse.smartcalendar.ui.elements.SettingsScreen
 import org.hse.smartcalendar.ui.elements.Statistics
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
@@ -86,9 +85,9 @@ fun App(
                     navigation, openDrawer
                 )
             }
-            composable(Screens.CALENDAR.route) {
-                DailyTasksList(listModel, openDrawer = openDrawer, navigation)
-            }
+//            composable(Screens.CALENDAR.route) {
+//                DailyTasksList(listModel, openDrawer = openDrawer)
+//            }
             composable(route = Screens.CHANGE_LOGIN.route) {
                 ChangeLogin(authModel)
             }
