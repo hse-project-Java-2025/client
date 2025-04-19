@@ -16,8 +16,10 @@ class TaskEditViewModel(
         end = LocalTime(23, 59)
     )
     val changes = task
-    var test = task
-    val task: State<DailyTask> = _task
+
+    fun getTask(): DailyTask {
+        return task
+    }
 
     fun setTask(newTask: DailyTask) {
         task = newTask
