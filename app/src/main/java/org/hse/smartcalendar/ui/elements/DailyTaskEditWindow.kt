@@ -3,6 +3,7 @@ package org.hse.smartcalendar.ui.elements
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,12 +28,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.wear.compose.material3.Text
 import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailyTask
-import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.utility.Screens
+import org.hse.smartcalendar.utility.fromMinutesOfDay
+import org.hse.smartcalendar.utility.toMinutesOfDay
 import org.hse.smartcalendar.view.model.ListViewModel
 import org.hse.smartcalendar.view.model.TaskEditViewModel
 
@@ -46,12 +49,14 @@ fun TaskEditWindow(
     taskEditViewModel: TaskEditViewModel,
     navController: NavController
 ) {
-    val taskState = taskEditViewModel.task
-    val titleState = remember { mutableStateOf(taskState.value.getDailyTaskTitle()) }
-    val taskType = rememberSaveable { mutableStateOf(DailyTaskType.COMMON) }
-    val descriptionState = remember { mutableStateOf(taskState.value.getDailyTaskDescription()) }
-    val startTime = rememberSaveable { mutableIntStateOf(0) }
-    val endTime = rememberSaveable { mutableIntStateOf(0) }
+    val taskState = taskEditViewModel.getTask()
+    val titleState = remember { mutableStateOf(taskState.getDailyTaskTitle()) }
+    val taskType = rememberSaveable { mutableStateOf(taskState.getDailyTaskType()) }
+    val descriptionState = remember { mutableStateOf(taskState.getDailyTaskDescription()) }
+    val startTime =
+        rememberSaveable { mutableIntStateOf(LocalTime.toMinutesOfDay(taskState.getDailyTaskStartTime())) }
+    val endTime =
+        rememberSaveable { mutableIntStateOf(LocalTime.toMinutesOfDay(taskState.getDailyTaskEndTime())) }
 
     val isConflictInTimeField = rememberSaveable { mutableStateOf(false) }
     val isEmptyTitle = rememberSaveable { mutableStateOf(false) }
@@ -81,7 +86,7 @@ fun TaskEditWindow(
                     navController.navigate(Screens.CALENDAR.route)
                 },
                 onDelete = {
-                    onDelete(taskEditViewModel.test)
+                    onDelete(taskEditViewModel.getTask())
                     navController.navigate(Screens.CALENDAR.route)
                 }
             )
@@ -103,7 +108,13 @@ fun TaskEditWindow(
                         taskEditViewModel.changes.setDailyTaskTitle(it)
                     },
                     label = { Text("Title") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = isEmptyTitle.value,
+                    supportingText = {
+                        if (isEmptyTitle.value) {
+                            androidx.compose.material3.Text("Empty Title")
+                        }
+                    }
                 )
 
                 Spacer(modifier = Modifier.padding(12.dp))
@@ -131,6 +142,17 @@ fun TaskEditWindow(
                     fstFiledHasFormatError = fstFiledHasFormatError,
                     sndFiledHasFormatError = sndFiledHasFormatError
                 )
+
+                if (isNestedTask.value) {
+                    Box(Modifier.align(Alignment.CenterHorizontally)) {
+                        androidx.compose.material3.Text(
+                            text = "Conflict with previous task",
+                            color = MaterialTheme.colorScheme.error,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
+                }
             }
         }
     )

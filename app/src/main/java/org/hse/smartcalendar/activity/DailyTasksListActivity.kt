@@ -49,9 +49,8 @@ fun ListNavigation(
             )
         }
         composable(Screens.EDIT_TASK.route) {
-            TaskEditWindow(onSave = {
-                taskEditViewModel.updateTask()
-            },
+            TaskEditWindow(
+                onSave = {},
                 onDelete = { task ->
                     listViewModel.removeDailyTask(task)
 
