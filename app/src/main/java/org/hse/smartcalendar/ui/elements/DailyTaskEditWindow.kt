@@ -69,17 +69,22 @@ fun TaskEditWindow(
         bottomBar = {
             TaskEditBottomBar(
                 onSave = {
-                    taskEditViewModel.changes.updateDailyTask(
-                        DailyTask(
-                            title = titleState.value,
-                            type = taskType.value,
-                            description = descriptionState.value,
-                            start = LocalTime.fromSecondOfDay(startTime.intValue),
-                            end = LocalTime.fromSecondOfDay(endTime.intValue)
+                    taskEditViewModel.changes.setDailyTaskStartTime(
+                        LocalTime.fromMinutesOfDay(
+                            startTime.intValue
                         )
                     )
+                    taskEditViewModel.changes.setDailyTaskEndTime(LocalTime.fromMinutesOfDay(endTime.intValue))
+                    taskEditViewModel.changes.setDailyTaskType(taskType.value)
+                    taskEditViewModel.updateInnerTask(
+                        isEmptyTitle,
+                        isConflictInTimeField,
+                        isNestedTask
+                    )
                     onSave()
-                    navController.navigate(Screens.CALENDAR.route)
+                    if (!isEmptyTitle.value && !isConflictInTimeField.value && !isNestedTask.value) {
+                        navController.navigate(Screens.CALENDAR.route)
+                    }
                 },
                 onCancel = {
                     onCancel()
