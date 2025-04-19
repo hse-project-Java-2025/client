@@ -1,34 +1,41 @@
 package org.hse.smartcalendar.view.model
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailyTask
+import org.hse.smartcalendar.utility.editHandler
 
 class TaskEditViewModel(
-    task: DailyTask = DailyTask(
+    val listViewModel: ListViewModel
+) : ViewModel() {
+    private var task: DailyTask = DailyTask(
         title = "Preview title",
         description = "Preview description",
         start = LocalTime(0, 0),
         end = LocalTime(23, 59)
-    ),
-    val listViewModel: ListViewModel
-) : ViewModel() {
-    private var _task = mutableStateOf(task)
+    )
     val changes = task
     var test = task
     val task: State<DailyTask> = _task
 
     fun setTask(newTask: DailyTask) {
-        _task = mutableStateOf(newTask)
-        test = newTask
+        task = newTask
         changes.updateDailyTask(newTask)
     }
 
-    fun updateTask() {
-        if (listViewModel.isUpdatable(_task.value, changes)) {
-            _task.value.updateDailyTask(changes)
-        }
+    fun updateInnerTask(
+        isEmptyTitle: MutableState<Boolean>,
+        isConflictInTimeField: MutableState<Boolean>,
+        isNestedTask: MutableState<Boolean>,
+    ) {
+        editHandler(
+            oldTask = task,
+            newTask = changes,
+            viewModel = listViewModel,
+            isEmptyTitle = isEmptyTitle,
+            isConflictInTimeField = isConflictInTimeField,
+            isNestedTask = isNestedTask
+        )
     }
 }
