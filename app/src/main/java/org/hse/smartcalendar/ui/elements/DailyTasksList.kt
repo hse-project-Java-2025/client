@@ -31,21 +31,37 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.format
 import kotlinx.datetime.format.MonthNames
 import kotlinx.datetime.format.char
+import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.Navigation
+import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.utility.rememberNavigation
 import org.hse.smartcalendar.view.model.ListViewModel
+import org.hse.smartcalendar.view.model.TaskEditViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DailyTasksList(viewModel: ListViewModel, openDrawer: ()->Unit, navigation: Navigation) {
+fun DailyTasksList(
+    viewModel: ListViewModel,
+    taskEditViewModel: TaskEditViewModel = TaskEditViewModel(
+        listViewModel = viewModel
+    ),
+    openDrawer: () -> Unit,
+    navigation: Navigation,
+    navController: NavController
+) {
     val taskTitle = rememberSaveable { mutableStateOf("") }
     val taskType = rememberSaveable { mutableStateOf(DailyTaskType.COMMON) }
     val taskDescription = rememberSaveable { mutableStateOf("") }
@@ -67,9 +83,15 @@ fun DailyTasksList(viewModel: ListViewModel, openDrawer: ()->Unit, navigation: N
             .fillMaxSize()
             .padding(paddingValues)) {
             items(viewModel.dailyTaskList) {
-                DailyTaskCard(it, onCompletionChange = {
-                    viewModel.changeTaskCompletion(it, !it.isComplete())
-                })
+                DailyTaskCard(it,
+                    onCompletionChange = {
+                        viewModel.changeTaskCompletion(it, !it.isComplete())
+                    },
+                    taskEditViewModel = taskEditViewModel,
+                    onLongPressAction = {
+                        navController.navigate(Screens.EDIT_TASK.route)
+                    }
+                )
             }
         }
         BottomSheet(
@@ -178,8 +200,40 @@ fun formatLocalDate(date: LocalDate): String {
 @Composable
 @Preview(showBackground = true)
 fun DailyTaskListPreview() {
-    val viewModelPreview = ListViewModel(1488)
+    val listViewModel = ListViewModel(1488)
+    listViewModel.addDailyTask(
+        DailyTask(
+            title = "sss",
+            description = "sss",
+            start = LocalTime(0, 0),
+            end = LocalTime(1, 0)
+        )
+    )
+    val taskEditViewModel = TaskEditViewModel(
+        listViewModel = listViewModel
+    )
+    val navController = rememberNavController()
+    NavHost(navController, startDestination = Screens.CALENDAR.route) {
+        composable(Screens.CALENDAR.route) {
+            DailyTasksList(
+                listViewModel,
+                taskEditViewModel,
+                {},
+                rememberNavigation(),
+                navController
+            )
+        }
+        composable("EDIT_TASK") {
+            TaskEditWindow(
+                onSave = { navController.popBackStack() },
+                onCancel = { navController.popBackStack() },
+                taskEditViewModel = taskEditViewModel,
+                navController = navController,
+                onDelete = { }
+            )
+        }
+    }
     SmartCalendarTheme {
-        DailyTasksList(viewModelPreview, {}, rememberNavigation())
+        DailyTasksList(listViewModel, taskEditViewModel, {}, rememberNavigation(), navController)
     }
 }

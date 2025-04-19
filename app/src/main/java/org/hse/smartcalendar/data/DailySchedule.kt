@@ -48,6 +48,16 @@ class DailySchedule (val date : LocalDate = Clock.System.now()
         return false
     }
 
+    fun removeById(id: UUID): Boolean {
+        dailyTasksList.forEach { task ->
+            if (task.getId() == id) {
+                removeDailyTask(task)
+                return true
+            }
+        }
+        return false
+    }
+
     fun getDailyTaskList() : List<DailyTask> {
         return dailyTasksList
     }
