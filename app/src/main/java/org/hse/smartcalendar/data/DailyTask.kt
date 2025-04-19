@@ -18,8 +18,6 @@ class DailyTask (
     private var start : LocalTime,
     private var end: LocalTime,
     ) {
-
-
     init {
         if (title.isEmpty()) {
             throw EmptyTitleException()
@@ -53,6 +51,13 @@ class DailyTask (
         title = newTitle
     }
 
+    fun setDailyTaskStartTime(newStart: LocalTime) {
+        start = newStart
+    }
+
+    fun setDailyTaskEndTime(newEnd: LocalTime) {
+        end = newEnd
+    }
 
     fun getDailyTaskType(): DailyTaskType {
         return type
@@ -60,6 +65,10 @@ class DailyTask (
 
     fun getDailyTaskDescription() : String {
         return description
+    }
+
+    fun setDailyTaskType(newType: DailyTaskType) {
+        type = newType
     }
 
     fun setDailyTaskDescription(newDescription: String) {
