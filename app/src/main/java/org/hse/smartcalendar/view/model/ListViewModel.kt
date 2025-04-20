@@ -1,11 +1,13 @@
 package org.hse.smartcalendar.view.model
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
@@ -13,6 +15,7 @@ import kotlinx.datetime.toLocalDateTime
 import org.hse.smartcalendar.data.DailySchedule
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.User
+import java.io.File
 
 class ListViewModel(id: Long) : ViewModel() {
     private var dailyTaskSchedule: DailySchedule
@@ -91,11 +94,36 @@ class ListViewModel(id: Long) : ViewModel() {
         return dailyScheduleDate.value
     }
 
+    fun sendAudio(
+        audioFile: MutableState<File?>,
+        description: AudioDescription,
+    ): DailyTask? {
+        // TODO Надо написать отправку файла и обработку ответа.
+        Thread.sleep(1000)
+        val task: DailyTask = DailyTask(
+            title = "TODO",
+            description = "TODO",
+            start = LocalTime(0, 0),
+            end = LocalTime(0, 0)
+        )
+        return task
+    }
+
     private fun <T> SnapshotStateList(dailyTaskList: List<T>): SnapshotStateList<T> {
         val result: SnapshotStateList<T> = SnapshotStateList()
         dailyTaskList.forEach { task ->
             result.add(task)
         }
         return result
+    }
+
+    enum class AudioDescription(private val toString: String) {
+        CONVERT_AUDIO("TODO Convert audio"),
+        SUGGESTIONS("TODO Suggestions");
+
+        @Override
+        override fun toString(): String {
+            return toString
+        }
     }
 }
