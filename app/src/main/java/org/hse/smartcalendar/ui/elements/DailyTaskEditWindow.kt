@@ -199,17 +199,6 @@ fun TaskEditBottomBar(
         ) {
             Button(
                 onClick = {
-                    onSave()
-                },
-                modifier = Modifier
-                    .testTag("updateTaskButton")
-                    .weight(1f)
-            ) {
-                androidx.compose.material3.Text("Update")
-            }
-            Spacer(modifier = Modifier.padding(5.dp))
-            Button(
-                onClick = {
                     onDelete()
                 },
                 modifier = Modifier
@@ -217,6 +206,18 @@ fun TaskEditBottomBar(
                     .weight(1f)
             ) {
                 androidx.compose.material3.Text("Delete")
+            }
+
+            Spacer(modifier = Modifier.padding(5.dp))
+            Button(
+                onClick = {
+                    onSave()
+                },
+                modifier = Modifier
+                    .testTag("updateTaskButton")
+                    .weight(1f)
+            ) {
+                androidx.compose.material3.Text("Update")
             }
             Spacer(modifier = Modifier.padding(5.dp))
             Button(
