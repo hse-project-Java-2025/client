@@ -53,7 +53,7 @@ fun App(
     listModel: ListViewModel,
     startDestination: String = Screens.CALENDAR.route
 ) {
-    val statisticsModel: StatisticsViewModel = StatisticsViewModel()
+    val statisticsModel = StatisticsViewModel()
     val navigation = rememberNavigation()
     val coroutineScope = rememberCoroutineScope()
     val navBackStackEntry by navigation.navController.currentBackStackEntryAsState()

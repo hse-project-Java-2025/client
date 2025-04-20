@@ -25,8 +25,9 @@ class AuthViewModel : ViewModel() {
     fun signup(username: String, email: String, password: String) {
         viewModelScope.launch {
             _registerResult.value = NetworkResponse.Loading
-            val weatherResponse = weatherApi.getWeather(Constant.apiKey, "London")
+            //val weatherResponse = weatherApi.getWeather(Constant.apiKey, "London")
             try {
+                val weatherResponse = weatherApi.getWeather(Constant.apiKey, "London")
                 val response = api.registerUser(username, email, password)
                 if (response.isSuccessful){
                     response.body()?.let{
