@@ -6,12 +6,25 @@ import org.hse.smartcalendar.utility.DaysAmount
 import org.hse.smartcalendar.utility.TimePeriod
 
 class StatisticsViewModel:ViewModel() {
+    companion object {
+        private fun getPercent(part: Long, all: Long): Float {
+            return Math.round(part.toFloat() / all * 1000).toFloat() / 10
+        }
+        fun toPercent(part: Float):Float{
+            return Math.round(part*1000).toFloat()/10
+        }
+    }
     class TotalTimeTaskTypes(val common: Long, val work: Long, val study: Long, val fitness: Long){
         val All: TimePeriod = TimePeriod(work+study+common+fitness)
         val Study: TimePeriod = TimePeriod(study)
         val Common: TimePeriod = TimePeriod(common)
         val Fitness: TimePeriod = TimePeriod(fitness)
         val Work: TimePeriod = TimePeriod(work)
+        private val totalMinutes = common+study+work+fitness
+        val StudyPercent: Float = getPercent(study, totalMinutes)
+        val CommonPercent: Float = getPercent(common, totalMinutes)
+        val FitnessPercent: Float = getPercent(fitness, totalMinutes)
+        val WorkPercent: Float = getPercent(work, totalMinutes)
     }
     private class TodayTimeVars(val planned: Long, val completed: Long){
         val Planned: DayPeriod = DayPeriod(planned)
@@ -62,4 +75,5 @@ class StatisticsViewModel:ViewModel() {
     fun getTotalTimeActivityTypes():TotalTimeTaskTypes{
         return TotalTimeTaskTypes(TotalTime.common, TotalTime.work, TotalTime.study, TotalTime.fitness)
     }
+
 }
