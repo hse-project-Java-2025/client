@@ -1,6 +1,7 @@
 package org.hse.smartcalendar.ui.elements
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,6 +44,7 @@ import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.fromMinutesOfDay
 import org.hse.smartcalendar.utility.toMinutesOfDay
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,6 +52,8 @@ fun BottomSheet(
     isBottomSheetVisible: MutableState<Boolean>,
     sheetState: SheetState,
     onDismiss: () -> Unit,
+    onRecordStop: () -> DailyTask? = { null },
+    audioFile: MutableState<File?>,
     taskTitle: MutableState<String>,
     taskType: MutableState<DailyTaskType>,
     taskDescription: MutableState<String>,
@@ -63,6 +67,9 @@ fun BottomSheet(
     val isNestedTask = rememberSaveable { mutableStateOf(false) }
     val fstFiledHasFormatError = rememberSaveable { mutableStateOf(false) }
     val sndFiledHasFormatError = rememberSaveable { mutableStateOf(false) }
+
+    val isErrorInRecorder = rememberSaveable { mutableStateOf(false) }
+
     if (isBottomSheetVisible.value) {
         ModalBottomSheet(
             onDismissRequest = {
@@ -142,25 +149,68 @@ fun BottomSheet(
                 )
 
                 Spacer(modifier = Modifier.padding(12.dp))
-                Button(
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    onClick = {addNewTask(
-                        addTask = addTask,
-                        isBottomSheetVisible = isBottomSheetVisible,
-                        taskTitle = taskTitle,
-                        taskType = taskType,
-                        taskDescription = taskDescription,
-                        startTime = startTime,
-                        endTime = endTime,
-                        isConflictInTimeField = isConflictInTimeField,
-                        isEmptyTitle = isEmptyTitle,
-                        isNestedTask = isNestedTask,
-                        fstFiledHasFormatError = fstFiledHasFormatError,
-                        sndFiledHasFormatError = sndFiledHasFormatError
-                    )
-                    },
+
+                Box(Modifier.align(Alignment.CenterHorizontally)) {
+                    if (isErrorInRecorder.value) {
+                        Text(
+                            text = "Error in Audio",
+                            color = MaterialTheme.colorScheme.error,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    } else {
+                        Text(
+                            text = "",
+                            fontSize = 12.sp
+                        )
+                    }
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    Text("Add task")
+                    AudioRecorderButton(
+                        modifier = Modifier.weight(1.0f),
+                        audioFile = audioFile,
+                        onStop = {
+                            val task = onRecordStop()
+                            if (task != null) {
+                                isErrorInRecorder.value = false
+                                taskTitle.value = task.getDailyTaskTitle()
+                                taskDescription.value = task.getDailyTaskDescription()
+                                taskType.value = task.getDailyTaskType()
+                                startTime.value =
+                                    LocalTime.toMinutesOfDay(task.getDailyTaskStartTime())
+                                endTime.value = LocalTime.toMinutesOfDay(task.getDailyTaskEndTime())
+                            } else {
+                                isErrorInRecorder.value = true
+                            }
+                        }
+                    )
+                    Spacer(modifier = Modifier.padding(12.dp))
+                    Button(
+                        modifier = Modifier.weight(1.0f),
+                        onClick = {
+                            addNewTask(
+                                addTask = addTask,
+                                isBottomSheetVisible = isBottomSheetVisible,
+                                taskTitle = taskTitle,
+                                taskType = taskType,
+                                taskDescription = taskDescription,
+                                startTime = startTime,
+                                endTime = endTime,
+                                isConflictInTimeField = isConflictInTimeField,
+                                isEmptyTitle = isEmptyTitle,
+                                isNestedTask = isNestedTask,
+                                fstFiledHasFormatError = fstFiledHasFormatError,
+                                sndFiledHasFormatError = sndFiledHasFormatError
+                            )
+                        },
+                    ) {
+                        Text("Add task")
+                    }
                 }
             }
         }
@@ -359,6 +409,7 @@ fun TimeInputFieldPreview() {
 @Composable
 fun BottomSheetPreview() {
     SmartCalendarTheme {
+        val audioFile: MutableState<File?> = rememberSaveable { mutableStateOf(null) }
         val taskTitle = rememberSaveable { mutableStateOf("") }
         val taskType = rememberSaveable { mutableStateOf(DailyTaskType.COMMON) }
         val taskDirection = rememberSaveable { mutableStateOf("") }
@@ -382,7 +433,8 @@ fun BottomSheetPreview() {
             startTime = startTime,
             endTime = endTime,
             addTask = {},
-            taskType = taskType
+            taskType = taskType,
+            audioFile = audioFile,
         )
     }
 }

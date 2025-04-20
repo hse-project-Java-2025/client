@@ -42,10 +42,12 @@ import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.rememberNavigation
 import org.hse.smartcalendar.view.model.ListViewModel
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DailyTasksList(viewModel: ListViewModel, openDrawer: ()->Unit, navigation: Navigation) {
+    val audioFile: MutableState<File?> = rememberSaveable { mutableStateOf(null) }
     val taskTitle = rememberSaveable { mutableStateOf("") }
     val taskType = rememberSaveable { mutableStateOf(DailyTaskType.COMMON) }
     val taskDescription = rememberSaveable { mutableStateOf("") }
@@ -79,6 +81,13 @@ fun DailyTasksList(viewModel: ListViewModel, openDrawer: ()->Unit, navigation: N
                 scope.launch { sheetState.hide() }
                     .invokeOnCompletion { isBottomSheetVisible.value = false }
             },
+            onRecordStop = {
+                viewModel.sendAudio(
+                    audioFile = audioFile,
+                    description = ListViewModel.AudioDescription.CONVERT_AUDIO,
+                )
+            },
+            audioFile = audioFile,
             taskTitle = taskTitle,
             taskType = taskType,
             taskDescription = taskDescription,
