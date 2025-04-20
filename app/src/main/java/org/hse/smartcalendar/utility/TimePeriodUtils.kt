@@ -28,7 +28,7 @@ class TimePeriod(minute: Long){
 class DaysAmount(amount: Int){
     private var amount: Int = amount
     fun toPrettyString():String{
-        return if (amount ==0) "$amount day" else "1 day"
+        return if (amount !=1) "$amount days" else "1 day"
     }
     fun getAmount(): Int{
         return amount
@@ -40,7 +40,7 @@ class DayPeriod(minute: Long){
     fun toMinutes(): Long{
         return (minutes).toLong()+60*hours
     }
-    fun toPrettyString(): String{
+    fun toFullString(): String{
         var stringBuilder:StringBuilder = StringBuilder()
         stringBuilder.append(numberToWord(hours, "hour"))
         stringBuilder.append(numberToWord(minutes, "minute"))
