@@ -6,44 +6,74 @@ import org.hse.smartcalendar.utility.DaysAmount
 import org.hse.smartcalendar.utility.TimePeriod
 
 class StatisticsViewModel:ViewModel() {
-    private var TotalWorkTime: TimePeriod = TimePeriod(1000000)//In minutes
-    private var TotalDays:DaysAmount = DaysAmount(365)
-    private var DailyWorkTime: DayPeriod = DayPeriod(555)
-    private var TodayWorkTime: DayPeriod = DayPeriod(228)
-    private var TodayCompletedTime:DayPeriod = DayPeriod(60)
-    private var RecordContiniusSuccessDays: DaysAmount
-    private var TodayContinusSuccessDays: DaysAmount
+    companion object {
+        private fun getPercent(part: Long, all: Long): Float {
+            return Math.round(part.toFloat() / all * 1000).toFloat() / 10
+        }
+        fun toPercent(part: Float):Float{
+            return Math.round(part*1000).toFloat()/10
+        }
+    }
+    class TotalTimeTaskTypes(val common: Long, val work: Long, val study: Long, val fitness: Long){
+        val All: TimePeriod = TimePeriod(work+study+common+fitness)
+        val Study: TimePeriod = TimePeriod(study)
+        val Common: TimePeriod = TimePeriod(common)
+        val Fitness: TimePeriod = TimePeriod(fitness)
+        val Work: TimePeriod = TimePeriod(work)
+        private val totalMinutes = common+study+work+fitness
+        val StudyPercent: Float = getPercent(study, totalMinutes)
+        val CommonPercent: Float = getPercent(common, totalMinutes)
+        val FitnessPercent: Float = getPercent(fitness, totalMinutes)
+        val WorkPercent: Float = getPercent(work, totalMinutes)
+    }
+    private class TodayTimeVars(val planned: Long, val completed: Long){
+        val Planned: DayPeriod = DayPeriod(planned)
+        val Completed: DayPeriod = DayPeriod(completed)
+    }
+    private class ContiniusSuccessDaysVars(val record: Int, val now: Int){
+        val Record: DaysAmount = DaysAmount(record)
+        val Now: DaysAmount = DaysAmount(now)
+    }
+    private class AverageDayTimeVars(val totalWorkMinutes: Long, val totalDays: Long){
+        val All: DayPeriod = DayPeriod(totalWorkMinutes/totalDays)
+    }
+    private var ContiniusSuccessDays: ContiniusSuccessDaysVars
+    private var TotalTime: TotalTimeTaskTypes = TotalTimeTaskTypes(10000, 1000, 4000, 4000)
+    private val AverageDayTime: AverageDayTimeVars
+    private var TodayTime: TodayTimeVars = TodayTimeVars(228, 60)
     //TODO Fitness/Common/Study CircularProgressBar
     init{
-        RecordContiniusSuccessDays = DaysAmount(6)
-        TodayContinusSuccessDays = DaysAmount(5)
+        ContiniusSuccessDays = ContiniusSuccessDaysVars(6, 5)
+        AverageDayTime = AverageDayTimeVars(10000, 365)
     }
     fun update(){
+        TotalTime = TotalTimeTaskTypes(60, 20, 60, 229)
         //TODO: connect to server
     }
 
     fun getTotalWorkTime():TimePeriod{
-        return TotalWorkTime
+        return TotalTime.All
     }
 
-    fun getTotalDays(): DaysAmount{
-        return TotalDays
+    fun getTodayPlannedTime(): DayPeriod{
+        return TodayTime.Planned
     }
-    fun getTodayWorkTime(): DayPeriod{
-        return TodayWorkTime
-    }
-    fun getDailyWorkTime():DayPeriod{
-        return DailyWorkTime
+    fun getAverageDailyTime():DayPeriod{
+        return AverageDayTime.All
     }
 
     fun getTodayCompletedTime():DayPeriod{
-        return TodayCompletedTime
+        return TodayTime.Completed
     }
 
     fun getRecordContiniusSuccessDays():DaysAmount{
-        return RecordContiniusSuccessDays
+        return ContiniusSuccessDays.Record
     }
     fun getTodayContinusSuccessDays():DaysAmount{
-        return TodayContinusSuccessDays
+        return ContiniusSuccessDays.Now
     }
+    fun getTotalTimeActivityTypes():TotalTimeTaskTypes{
+        return TotalTimeTaskTypes(TotalTime.common, TotalTime.work, TotalTime.study, TotalTime.fitness)
+    }
+
 }
