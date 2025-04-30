@@ -1,10 +1,16 @@
 package org.hse.smartcalendar.activity
 
+import NotificationScreen
+import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -21,31 +27,40 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import org.hse.smartcalendar.LoginActivity
 import org.hse.smartcalendar.RegisterActivity
+import org.hse.smartcalendar.notification.ReminderScreen
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 
 class MainActivity : ComponentActivity() {
+    //@RequiresApi(Build.VERSION_CODES.O, Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val notificationChannel = NotificationChannel(
+            "notification_channel_id",
+            "Notification name",
+            NotificationManager.IMPORTANCE_HIGH
+        )
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        // Setting up the channel
+        notificationManager.createNotificationChannel(notificationChannel)
         enableEdgeToEdge()
-        //val weatherViewModel = ViewModelProvider(this)[WeatherViewModel::class.java]
         setContent {
             SmartCalendarTheme {
-//                Surface(
-//                    modifier = Modifier.fillMaxSize(),
-//                    color = MaterialTheme.colorScheme.background
-//                ){
-//                    WeatherPage(weatherViewModel)
+                ReminderScreen()
+                //NotificationScreen(this)
+//                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+//                    Greeting(
+//                        name = "User",
+//                        modifier = Modifier.padding(innerPadding)
+//                    )
 //                }
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "User",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
             }
         }
+    }
+    companion object {
+        const val CHANNEL_ID = "reminder_id"
     }
 }
 

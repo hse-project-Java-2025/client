@@ -41,7 +41,12 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.work.runtime.ktx)
+
+    //reminder
+    implementation("com.google.accompanist:accompanist-permissions:0.31.1-alpha")
     implementation("androidx.compose.runtime:runtime-livedata:1.7.8")
+    //retrofit
     val retrofitVersion = "2.11.0"
     implementation("com.squareup.retrofit2:converter-gson:$retrofitVersion")
     implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")

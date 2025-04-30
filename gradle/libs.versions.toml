@@ -19,12 +19,14 @@ navigationComposeVersion = "2.4.0-beta02"
 material3WindowSizeClassAndroid = "1.3.1"
 okhttp3 = "okhttp4.7.2"
 picasso = "2.8"
+workRuntimeKtx = "2.10.1"
 
 
 [libraries]
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-navigation-compose-v240beta02 = { module = "androidx.navigation:navigation-compose", version.ref = "navigationComposeVersion" }
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
