@@ -15,6 +15,9 @@ import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.User
 
 class ListViewModel(id: Long) : ViewModel() {
+    fun getScreenDate(): LocalDate{
+        return dailyTaskSchedule.date
+    }
     private var dailyTaskSchedule: DailySchedule
     private var dailyScheduleDate = mutableStateOf(
         Clock.System.now()

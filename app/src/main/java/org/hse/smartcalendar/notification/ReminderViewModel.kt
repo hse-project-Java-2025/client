@@ -6,32 +6,38 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
+import org.hse.smartcalendar.data.DailyTask
+import org.hse.smartcalendar.utility.prettyPrint
+import org.hse.smartcalendar.utility.toEpochMilliseconds
 import java.util.concurrent.TimeUnit
 
 class ReminderViewModel(application: Application): ViewModel() {
 
-    private val itemsList = DataSource.plants
     private val workManager = WorkManager.getInstance(application)
 
     internal fun scheduleReminder(
-        duration: Long,
-        unit: TimeUnit,
-        plantName: String
+        task: DailyTask,
+        minutesBefore: Int,
     ) {
-        // create a Data instance with the plantName passed to it
         val myWorkRequestBuilder = OneTimeWorkRequestBuilder<ReminderWorker>()
-        for (items in itemsList.toMutableList()) {
-            if (items.name == plantName) {
-                myWorkRequestBuilder.setInputData(
-                    workDataOf(
-                        "NAME" to items.name,
-                        "MESSAGE" to items.description
-                    )
-                )
-                break
-            }
-        }
-        myWorkRequestBuilder.setInitialDelay(duration, unit)
+        myWorkRequestBuilder.setInputData(
+            workDataOf(
+                ReminderWorker.TYPE_KEY to task.getDailyTaskType().toString().lowercase(),
+                ReminderWorker.BEFORE_KEY to minutesBefore,
+                ReminderWorker.TITLE_KEY to task.getDailyTaskTitle(),
+                ReminderWorker.MESSAGE_KEY to task.getDailyTaskDescription(),
+                ReminderWorker.START_KEY to LocalTime.prettyPrint(task.getDailyTaskStartTime()),
+                ReminderWorker.END_KEY to LocalTime.prettyPrint(task.getDailyTaskEndTime()),
+            )
+        )
+        val millisecondsReminder = LocalDate.toEpochMilliseconds(task.getTaskDate()) +
+                task.getDailyTaskStartTime().toMillisecondOfDay()- minutesBefore*60*1000
+        val millisecondsNow = Clock.System.now().toEpochMilliseconds()
+        val millisecondsDelay = millisecondsReminder-millisecondsNow
+        myWorkRequestBuilder.setInitialDelay(millisecondsDelay, TimeUnit.MILLISECONDS)
         workManager.enqueue(myWorkRequestBuilder.build())
     }
 }

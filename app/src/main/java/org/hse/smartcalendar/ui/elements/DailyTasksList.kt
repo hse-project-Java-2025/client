@@ -1,5 +1,6 @@
 package org.hse.smartcalendar.ui.elements
 
+import android.app.Application
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,9 +29,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
@@ -39,6 +42,8 @@ import kotlinx.datetime.format.MonthNames
 import kotlinx.datetime.format.char
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
+import org.hse.smartcalendar.notification.ReminderViewModel
+import org.hse.smartcalendar.notification.ReminderViewModelFactory
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.rememberNavigation
@@ -47,6 +52,11 @@ import org.hse.smartcalendar.view.model.ListViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DailyTasksList(viewModel: ListViewModel, openDrawer: ()->Unit, navigation: Navigation) {
+    val reminderModel: ReminderViewModel = viewModel(
+        factory = ReminderViewModelFactory(
+            LocalContext.current.applicationContext as Application
+        )
+    )
     val taskTitle = rememberSaveable { mutableStateOf("") }
     val taskType = rememberSaveable { mutableStateOf(DailyTaskType.COMMON) }
     val taskDescription = rememberSaveable { mutableStateOf("") }
@@ -62,32 +72,35 @@ fun DailyTasksList(viewModel: ListViewModel, openDrawer: ()->Unit, navigation: N
     Scaffold (
         topBar = {
             TopButton(openMenu = openDrawer, navigation = navigation, text = formatLocalDate(viewModel.getScheduleDate()))
-                 },
+        },
         bottomBar = { ListBottomBar(viewModel, scope, isBottomSheetVisible, sheetState) },
         content = { paddingValues ->
-        LazyColumn (modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)) {
-            items(viewModel.dailyTaskList) {
-                DailyTaskCard(it, onCompletionChange = {
-                    viewModel.changeTaskCompletion(it, !it.isComplete())
-                })
+            LazyColumn (modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)) {
+                items(viewModel.dailyTaskList) {
+                    DailyTaskCard(it, onCompletionChange = {
+                        viewModel.changeTaskCompletion(it, !it.isComplete())
+                    })
+                }
             }
-        }
-        BottomSheet(
-            isBottomSheetVisible = isBottomSheetVisible,
-            sheetState = sheetState,
-            onDismiss = {
-                scope.launch { sheetState.hide() }
-                    .invokeOnCompletion { isBottomSheetVisible.value = false }
-            },
-            taskTitle = taskTitle,
-            taskType = taskType,
-            taskDescription = taskDescription,
-            startTime = startTime,
-            endTime = endTime,
-            addTask = {task -> viewModel.addDailyTask(task); serverAddTask(task)}
-        )
+            BottomSheet(
+                isBottomSheetVisible = isBottomSheetVisible,
+                sheetState = sheetState,
+                onDismiss = {
+                    scope.launch { sheetState.hide() }
+                        .invokeOnCompletion { isBottomSheetVisible.value = false }
+                },
+                taskTitle = taskTitle,
+                taskType = taskType,
+                taskDescription = taskDescription,
+                startTime = startTime,
+                endTime = endTime,
+                viewModel = viewModel,
+                addTask = {task -> viewModel.addDailyTask(task); serverAddTask(task);
+                    reminderModel.scheduleReminder(task, 10)
+                }
+            )
         }
     )
 }

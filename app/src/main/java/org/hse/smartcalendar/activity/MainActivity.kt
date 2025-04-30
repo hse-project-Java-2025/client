@@ -1,10 +1,10 @@
 package org.hse.smartcalendar.activity
 
-import NotificationScreen
-import android.app.Application
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -27,40 +27,50 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import org.hse.smartcalendar.LoginActivity
 import org.hse.smartcalendar.RegisterActivity
 import org.hse.smartcalendar.notification.ReminderScreen
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 
+
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun getNotificationsPermissions(){
+        val permissionPostState =
+            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+        val permissionNotificationState =
+            checkSelfPermission(Manifest.permission.ACCESS_NOTIFICATION_POLICY)
+        if (permissionPostState == PackageManager.PERMISSION_DENIED
+            || permissionNotificationState == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(
+                    Manifest.permission.ACCESS_NOTIFICATION_POLICY,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ),
+                11
+            )
+        }
+    }
     //@RequiresApi(Build.VERSION_CODES.O, Build.VERSION_CODES.TIRAMISU)
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val notificationChannel = NotificationChannel(
-            "notification_channel_id",
-            "Notification name",
-            NotificationManager.IMPORTANCE_HIGH
-        )
-        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        // Setting up the channel
-        notificationManager.createNotificationChannel(notificationChannel)
         enableEdgeToEdge()
         setContent {
             SmartCalendarTheme {
+                getNotificationsPermissions()
                 ReminderScreen()
-                //NotificationScreen(this)
-//                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-//                    Greeting(
-//                        name = "User",
-//                        modifier = Modifier.padding(innerPadding)
-//                    )
-//                }
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    Greeting(
+                        name = "User",
+                        modifier = Modifier.padding(innerPadding)
+                    )
+                }
             }
         }
-    }
-    companion object {
-        const val CHANNEL_ID = "reminder_id"
     }
 }
 

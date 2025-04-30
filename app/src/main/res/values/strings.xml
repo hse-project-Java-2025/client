@@ -2,4 +2,5 @@
     <string name="app_name">SmartCalendar-test</string>
     <string name="channel_name">reminder_channel</string>
     <string name="channel_description">reminder_reminder</string>
+    <string name="ic_arrow_forward"><![CDATA[<vector xmlns:android=\"http://schemas.android.com/apk/res/android\"\n        android:width=\"24.0dp\"\n        android:height=\"24.0dp\"\n        android:viewportWidth=\"24.0\"\n        android:viewportHeight=\"24.0\">\n    <path\n        android:fillColor=\"#FF000000\"\n        android:pathData=\"M12.0,4.0l-1.41,1.41L16.17,11.0L4.0,11.0l0.0,2.0l12.17,0.0l-5.58,5.59L12.0,20.0l8.0,-8.0z\"/>\n</vector>]]></string>
 </resources>

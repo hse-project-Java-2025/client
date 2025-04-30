@@ -73,13 +73,6 @@ fun AuthScreen(viewModel: AuthViewModel, authType:AuthType) {
     val authState by viewModel.registerResult.observeAsState()
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    Button(
-        onClick = {val intent = Intent(context, NavigationActivity::class.java)
-            context.startActivity(intent) },
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text("Calendar")
-    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -87,6 +80,13 @@ fun AuthScreen(viewModel: AuthViewModel, authType:AuthType) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Button(
+            onClick = {val intent = Intent(context, NavigationActivity::class.java)
+                context.startActivity(intent) },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Calendar")
+        }
         TextField(
             value = username,
             onValueChange = { username = it },

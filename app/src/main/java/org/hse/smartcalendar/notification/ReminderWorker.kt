@@ -27,15 +27,19 @@ class ReminderWorker(
         }
 
         val pendingIntent: PendingIntent = PendingIntent.getActivity(
-            applicationContext, 0, intent, PendingIntent.FLAG_IMMUTABLE
+            applicationContext, 0, intent, PendingIntent.FLAG_IMMUTABLE//maybe change
         )
 
-        val plantName = inputData.getString(nameKey)
+        val type = inputData.getString(TYPE_KEY)
+        val title = inputData.getString(TITLE_KEY)
+        val startTime = inputData.getString(START_KEY)
+        val endTime = inputData.getString(END_KEY)
+        val desc = inputData.getString(MESSAGE_KEY)
 
-        val body = "Hello, It's time to water your $plantName and spray pesticides to avoid powdery mildew."
+        val body = "The task \"$title\"($startTime - $endTime) type $type sport starts in 10 minutes"
         val builder = NotificationCompat.Builder(applicationContext, BaseApplication.CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_android_black_24dp)
-            .setContentTitle("Reminder App.")
+            .setContentTitle("Smart Calendar")
             .setContentText(body)
             .setStyle(NotificationCompat.BigTextStyle().bigText(body))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -50,6 +54,11 @@ class ReminderWorker(
     }
 
     companion object {
-        const val nameKey = "NAME"
+        const val TYPE_KEY = "TYPE"
+        const val TITLE_KEY = "TITLE"
+        const val START_KEY = "START"
+        const val END_KEY = "END"
+        const val MESSAGE_KEY = "MESSAGE"
+        const val BEFORE_KEY = "BEFORE"
     }
 }
