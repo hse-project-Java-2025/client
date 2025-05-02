@@ -2,6 +2,10 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
+//    id("com.google.devtools.ksp") // Use KSP instead of kapt
+//    id("dagger.hilt.android.plugin") // Apply Hilt plugin
 }
 
 android {
@@ -41,9 +45,15 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.work.runtime.ktx)
-
+    implementation(libs.hilt.android.v2481)
+    implementation(libs.androidx.hilt.navigation.compose)
+    kapt(libs.hilt.compiler)
+    //hilt for ViewModel providing without pass in function
+//    implementation(libs.hilt.android)
+//    implementation(libs.hilt.compiler)
+//    implementation(libs.androidx.hilt.navigation.compose)
     //reminder
+    implementation(libs.androidx.work.runtime.ktx)
     implementation("com.google.accompanist:accompanist-permissions:0.31.1-alpha")
     implementation("androidx.compose.runtime:runtime-livedata:1.7.8")
     //retrofit
