@@ -34,6 +34,7 @@ import org.hse.smartcalendar.utility.AppDrawer
 import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.utility.rememberNavigation
 import org.hse.smartcalendar.view.model.ListViewModel
+import org.hse.smartcalendar.view.model.SettingsViewModel
 import org.hse.smartcalendar.view.model.StatisticsViewModel
 
 class NavigationActivity : ComponentActivity() {
@@ -71,7 +72,7 @@ fun App(
         val currentRoute = navigation.navController.currentDestination?.route
         coroutineScope.launch { DrawerState.open() }
     }
-
+    var settingsViewModel=SettingsViewModel()
     //Main Navigation element  - Drawer open from left side
     //to Navigate pass navigation to function and call navigation.navigateTo()
     //If need more Screen/add to Screen, append to AppDrawer Button with Icons
@@ -99,7 +100,7 @@ fun App(
                 )
             }
             composable(Screens.CALENDAR.route) {
-                DailyTasksList(listModel, openDrawer = openDrawer, navigation)
+                DailyTasksList(listModel, openDrawer = openDrawer, navigation, settingsViewModel)
             }
             composable(route = Screens.CHANGE_LOGIN.route) {
                 ChangeLogin(authModel)

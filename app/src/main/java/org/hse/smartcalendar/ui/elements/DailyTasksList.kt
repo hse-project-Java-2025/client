@@ -48,10 +48,12 @@ import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.rememberNavigation
 import org.hse.smartcalendar.view.model.ListViewModel
+import org.hse.smartcalendar.view.model.SettingsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DailyTasksList(viewModel: ListViewModel, openDrawer: ()->Unit, navigation: Navigation) {
+fun DailyTasksList(viewModel: ListViewModel, openDrawer: ()->Unit, navigation: Navigation,
+                   settingsModel: SettingsViewModel) {
     val reminderModel: ReminderViewModel = viewModel(
         factory = ReminderViewModelFactory(
             LocalContext.current.applicationContext as Application
@@ -98,7 +100,7 @@ fun DailyTasksList(viewModel: ListViewModel, openDrawer: ()->Unit, navigation: N
                 endTime = endTime,
                 viewModel = viewModel,
                 addTask = {task -> viewModel.addDailyTask(task); serverAddTask(task);
-                    reminderModel.scheduleReminder(task, 10)
+                    reminderModel.scheduleReminder(task, 10, settingsModel)
                 }
             )
         }
@@ -195,6 +197,6 @@ fun formatLocalDate(date: LocalDate): String {
 fun DailyTaskListPreview() {
     val viewModelPreview = ListViewModel(1488)
     SmartCalendarTheme {
-        DailyTasksList(viewModelPreview, {}, rememberNavigation())
+        DailyTasksList(viewModelPreview, {}, rememberNavigation(), SettingsViewModel())
     }
 }

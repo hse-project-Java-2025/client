@@ -10,6 +10,7 @@ import org.hse.smartcalendar.ui.elements.DailyTasksList
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.rememberNavigation
 import org.hse.smartcalendar.view.model.ListViewModel
+import org.hse.smartcalendar.view.model.SettingsViewModel
 
 class DailyTasksListActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,7 +19,7 @@ class DailyTasksListActivity : ComponentActivity() {
         val viewModel = ListViewModel(intent.getLongExtra("id", -1))
         setContent {
             SmartCalendarTheme {
-                DailyTasksList(viewModel, {}, rememberNavigation())
+                DailyTasksList(viewModel, {}, rememberNavigation(), SettingsViewModel())
             }
         }
     }

@@ -2,10 +2,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("kotlin-kapt")
-    id("com.google.dagger.hilt.android")
-//    id("com.google.devtools.ksp") // Use KSP instead of kapt
-//    id("dagger.hilt.android.plugin") // Apply Hilt plugin
 }
 
 android {
@@ -29,6 +25,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
         }
     }
     compileOptions {
@@ -45,9 +42,7 @@ android {
 }
 
 dependencies {
-    implementation(libs.hilt.android.v2481)
-    implementation(libs.androidx.hilt.navigation.compose)
-    kapt(libs.hilt.compiler)
+    //kapt(libs.hilt.compiler)
     //hilt for ViewModel providing without pass in function
 //    implementation(libs.hilt.android)
 //    implementation(libs.hilt.compiler)
