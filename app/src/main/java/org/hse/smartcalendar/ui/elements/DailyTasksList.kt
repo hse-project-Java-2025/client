@@ -55,9 +55,7 @@ import org.hse.smartcalendar.view.model.TaskEditViewModel
 @Composable
 fun DailyTasksList(
     viewModel: ListViewModel,
-    taskEditViewModel: TaskEditViewModel = TaskEditViewModel(
-        listViewModel = viewModel
-    ),
+    taskEditViewModel: TaskEditViewModel,
     openDrawer: () -> Unit,
     navigation: Navigation,
     navController: NavController
