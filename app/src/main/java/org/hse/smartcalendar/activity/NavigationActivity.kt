@@ -23,21 +23,23 @@ import org.hse.smartcalendar.ui.elements.ChangePassword
 import org.hse.smartcalendar.ui.elements.DailyTasksList
 import org.hse.smartcalendar.ui.elements.SettingsScreen
 import org.hse.smartcalendar.ui.elements.Statistics
+import org.hse.smartcalendar.ui.elements.TaskEditWindow
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.AppDrawer
 import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.utility.rememberNavigation
 import org.hse.smartcalendar.view.model.ListViewModel
+import org.hse.smartcalendar.view.model.TaskEditViewModel
 
 class NavigationActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val listModel = ListViewModel(intent.getLongExtra("id", -1))
+        val editModel = TaskEditViewModel(listModel)
         setContent {
             SmartCalendarTheme {
-                App(AuthViewModel(), listModel)
+                App(AuthViewModel(), listModel, editModel)
             }
         }
     }
@@ -49,6 +51,7 @@ class NavigationActivity : ComponentActivity() {
 fun App(
     authModel: AuthViewModel,
     listModel: ListViewModel,
+    editModel: TaskEditViewModel,
     startDestination: String = Screens.CALENDAR.route
 ) {
     val navigation = rememberNavigation()
@@ -87,7 +90,12 @@ fun App(
                 )
             }
             composable(Screens.CALENDAR.route) {
-                DailyTasksList(listModel, openDrawer = openDrawer, navigation)
+                DailyTasksList(
+                    listModel, openDrawer = openDrawer,
+                    taskEditViewModel = editModel,
+                    navigation = navigation,
+                    navController = navigation.navController
+                )
             }
             composable(route = Screens.CHANGE_LOGIN.route) {
                 ChangeLogin(authModel)
@@ -97,6 +105,16 @@ fun App(
             }
             composable(route = Screens.STATISTICS.route) {
                 Statistics(openDrawer, navigation)
+            }
+            composable(Screens.EDIT_TASK.route) {
+                TaskEditWindow(
+                    onSave = {},
+                    onDelete = { task ->
+                        listModel.removeDailyTask(task)
+
+                    }, onCancel = {},
+                    taskEditViewModel = editModel, navController = navigation.navController
+                )
             }
         }
     }
