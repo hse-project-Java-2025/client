@@ -15,7 +15,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -25,7 +24,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.hse.smartcalendar.AuthViewModel
-import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 
 @Preview
@@ -51,7 +49,7 @@ fun ChangePassword(viewModel: AuthViewModel, isChangeLogin: Boolean = false) {
     var password by remember { mutableStateOf("") }
     var newPassword1 by remember { mutableStateOf("") }
     var newPassword2 by remember { mutableStateOf("") }
-    val authState by viewModel.registerResult.observeAsState()
+    val authState by viewModel.authState.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -92,20 +90,20 @@ fun ChangePassword(viewModel: AuthViewModel, isChangeLogin: Boolean = false) {
         Button(
             onClick = {
                 if (isChangeLogin) viewModel.changeLogin(username, password, newPassword1, newPassword2) else
-                viewModel.changePassword(username, password, newPassword1, newPassword2)},
+                    viewModel.changePassword(username, password, newPassword1, newPassword2)},
             modifier = Modifier.fillMaxWidth()
         ) {
             if (isChangeLogin) Text("Change login") else Text("Change password")
         }
         Spacer(modifier = Modifier.height(16.dp))
         when (val state = authState) {
-            is NetworkResponse.Loading -> {
+            is AuthViewModel.AuthState.Loading -> {
                 CircularProgressIndicator()
             }
-            is NetworkResponse.Success -> {
+            is AuthViewModel.AuthState.Success -> {
                 Text("Change password successful")
             }
-            is NetworkResponse.Error -> {
+            is AuthViewModel.AuthState.Error -> {
                 Text("Error: ${state.message}", color = MaterialTheme.colorScheme.error)
             }
             else -> {}

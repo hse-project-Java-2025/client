@@ -17,11 +17,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,49 +29,27 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModelProvider
-import kotlinx.coroutines.launch
+import org.hse.smartcalendar.activity.DailyTasksListActivity
 import org.hse.smartcalendar.activity.NavigationActivity
-import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 
-enum class AuthType(val title: String){
-    Login("Login"),
-    Register("Register")
-}
-
-
-class RegisterActivity : ComponentActivity() {
+class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val authViewModel = ViewModelProvider(this)[AuthViewModel::class.java]
         setContent {
             SmartCalendarTheme {
-                AuthScreen(authViewModel, AuthType.Register)
-            }
-        }
-    }
-}
-class LoginActivity: ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val authViewModel = ViewModelProvider(this)[AuthViewModel::class.java]
-        setContent {
-            SmartCalendarTheme {
-                AuthScreen(authViewModel, AuthType.Login)
+                AuthScreen(viewModel = AuthViewModel())
             }
         }
     }
 }
 
 @Composable
-fun AuthScreen(viewModel: AuthViewModel, authType:AuthType) {
+fun AuthScreen(viewModel: AuthViewModel) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    val authState by viewModel.registerResult.observeAsState()
+    val authState by viewModel.authState.collectAsState()
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -93,15 +70,6 @@ fun AuthScreen(viewModel: AuthViewModel, authType:AuthType) {
             label = { Text("Username") },
             modifier = Modifier.fillMaxWidth()
         )
-        if (authType == AuthType.Register){
-            Spacer(modifier = Modifier.height(8.dp))
-            TextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Email") },
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
         Spacer(modifier = Modifier.height(8.dp))
         TextField(
             value = password,
@@ -112,32 +80,28 @@ fun AuthScreen(viewModel: AuthViewModel, authType:AuthType) {
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(
-            onClick = { if (authType==AuthType.Register)
-                viewModel.signup(username, email, password)
-                      else
-                viewModel.login(username, password)},
+            onClick = { viewModel.login(username, password) },
             modifier = Modifier
                 .fillMaxWidth()
-                .testTag(if (authType==AuthType.Register)
-                    "signupButtonTest"
-                    else
-                    "loginButtonTest")
+                .testTag("loginButtonTest")
         ) {
-            Text(authType.title)
+            Text("Login")
         }
+        Spacer(modifier = Modifier.height(16.dp))
         when (val state = authState) {
-            is NetworkResponse.Loading -> {
+            is AuthViewModel.AuthState.Loading -> {
                 CircularProgressIndicator()
             }
-            is NetworkResponse.Success -> {
-                Text("Login successful! Token: ${state.data.id}")
+            is AuthViewModel.AuthState.Success -> {
+                Text("Login successful! Token: ${state.token}")
                 Thread.sleep(1000)
-                val id = state.data.id
-                val intent = Intent(LocalContext.current, NavigationActivity::class.java)
+                val id: Long = 1488
+                // TODO Видимо тут должна быть синхронизация.
+                val intent = Intent(LocalContext.current, DailyTasksListActivity::class.java)
                 intent.putExtra("id", id)
-                context.startActivity(intent)
+                LocalContext.current.startActivity(intent)
             }
-            is NetworkResponse.Error -> {
+            is AuthViewModel.AuthState.Error -> {
                 Text("Error: ${state.message}", color = MaterialTheme.colorScheme.error)
             }
             else -> {}
@@ -149,11 +113,5 @@ fun AuthScreen(viewModel: AuthViewModel, authType:AuthType) {
 @Preview
 @Composable
 fun AuthScreenPreview() {
-    SmartCalendarTheme { AuthScreen(viewModel = AuthViewModel(), AuthType.Login) }
-}
-
-@Preview
-@Composable
-fun RegisterScreenPreview() {
-    SmartCalendarTheme { AuthScreen(viewModel = AuthViewModel(), AuthType.Register) }
+    SmartCalendarTheme { AuthScreen(viewModel = AuthViewModel()) }
 }
