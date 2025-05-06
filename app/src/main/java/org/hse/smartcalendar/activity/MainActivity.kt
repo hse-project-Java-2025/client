@@ -30,8 +30,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import org.hse.smartcalendar.LoginActivity
-import org.hse.smartcalendar.RegisterActivity
-import org.hse.smartcalendar.notification.ReminderScreen
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 
 
@@ -62,7 +60,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             SmartCalendarTheme {
                 getNotificationsPermissions()
-                ReminderScreen()
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Greeting(
                         name = "User",
@@ -101,16 +98,6 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
                 .fillMaxWidth()
                 .testTag("authorizationButtonTest")) {
             Text("Authorization")
-        }
-        Button(
-            onClick = {
-                val intent = Intent(context, RegisterActivity::class.java)
-                context.startActivity(intent)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .testTag("registerButtonTest")) {
-            Text("Signup")
         }
     }
 }
