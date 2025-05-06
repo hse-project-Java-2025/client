@@ -29,6 +29,7 @@ import org.hse.smartcalendar.utility.AppDrawer
 import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.utility.rememberNavigation
 import org.hse.smartcalendar.view.model.ListViewModel
+import org.hse.smartcalendar.view.model.StatisticsViewModel
 import org.hse.smartcalendar.view.model.TaskEditViewModel
 
 class NavigationActivity : ComponentActivity() {
@@ -54,14 +55,18 @@ fun App(
     editModel: TaskEditViewModel,
     startDestination: String = Screens.CALENDAR.route
 ) {
+    val statisticsModel: StatisticsViewModel = StatisticsViewModel()
     val navigation = rememberNavigation()
     val coroutineScope = rememberCoroutineScope()
     val navBackStackEntry by navigation.navController.currentBackStackEntryAsState()
-    val currentRoute =
+    val initialRoute =
         navBackStackEntry?.destination?.route ?: Screens.CALENDAR.route
     val isExpandedScreen =false
     val DrawerState = rememberDrawerState(isExpandedScreen)
-    val openDrawer: ()-> Unit = { coroutineScope.launch { DrawerState.open() }}
+    val openDrawer: ()-> Unit = { 
+        val currentRoute = navigation.navController.currentDestination?.route
+        coroutineScope.launch { DrawerState.open() }
+    }
 
     //Main Navigation element  - Drawer open from left side
     //to Navigate pass navigation to function and call navigation.navigateTo()
@@ -71,7 +76,7 @@ fun App(
     ModalNavigationDrawer(
         drawerContent = {
             AppDrawer(
-                currentRoute = currentRoute,
+                currentRoute = initialRoute,
                 navigation,
                 closeDrawer = { coroutineScope.launch { DrawerState.close() } }
             )
@@ -104,7 +109,7 @@ fun App(
                 ChangePassword(authModel)
             }
             composable(route = Screens.STATISTICS.route) {
-                Statistics(openDrawer, navigation)
+                Statistics(navigation, openDrawer, statisticsModel)
             }
             composable(Screens.EDIT_TASK.route) {
                 TaskEditWindow(

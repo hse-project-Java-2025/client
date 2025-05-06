@@ -126,7 +126,7 @@ fun DailyTaskCardPreview() {
         type = DailyTaskType.COMMON,
         description = "Common description Example",
         start = LocalTime(4, 0),
-        end = LocalTime(5, 0),
+        end = LocalTime(5, 0)
     )
 
 

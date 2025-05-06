@@ -17,6 +17,7 @@ class DailyTask (
     private var description : String,
     private var start : LocalTime,
     private var end: LocalTime,
+    //private var date: LocalDate,
     ) {
     init {
         if (title.isEmpty()) {

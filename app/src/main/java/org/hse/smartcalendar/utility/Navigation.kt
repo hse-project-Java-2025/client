@@ -17,6 +17,8 @@ enum class Screens(val route: String) {
     EDIT_TASK("editTask"),
     MY_CALENDARS("myCalendars"),
     RATING("rating"),
+    LOGIN("LOGIN"),
+    GREETING("GREETING"),
     AI_ASSISTANT("aiAssistant")
 }
 
