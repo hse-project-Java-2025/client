@@ -19,25 +19,6 @@ class DailyTask (
     private var end: LocalTime,
     //private var date: LocalDate,
     ) {
-    constructor(
-        title: String,
-        isComplete: Boolean,
-        type: String,
-        description: String,
-        start: Pair<Int, Int>,
-        end: Pair<Int, Int>,
-        //day: Int, month: Int, year: Int
-    ) :
-            this(
-                title = title,
-                isComplete = isComplete,
-                type = DailyTaskType.fromString(type),
-                description = description,
-                start = LocalTime(hour = start.first, minute = start.second),
-                end = LocalTime(hour = end.first, minute = end.second),
-                //date = LocalDate(day, month, year)
-            ) {
-    }
     init {
         if (title.isEmpty()) {
             throw EmptyTitleException()
@@ -67,12 +48,32 @@ class DailyTask (
         return title
     }
 
+    fun setDailyTaskTitle(newTitle: String) {
+        title = newTitle
+    }
+
+    fun setDailyTaskStartTime(newStart: LocalTime) {
+        start = newStart
+    }
+
+    fun setDailyTaskEndTime(newEnd: LocalTime) {
+        end = newEnd
+    }
+
     fun getDailyTaskType(): DailyTaskType {
         return type
     }
 
     fun getDailyTaskDescription() : String {
         return description
+    }
+
+    fun setDailyTaskType(newType: DailyTaskType) {
+        type = newType
+    }
+
+    fun setDailyTaskDescription(newDescription: String) {
+        description = newDescription
     }
 
     fun getDailyTaskStartTime() : LocalTime {
@@ -87,6 +88,14 @@ class DailyTask (
     fun isNestedTasks(task : DailyTask) : Boolean {
         return !(this.getDailyTaskStartTime() >= task.getDailyTaskEndTime() ||
                 task.getDailyTaskStartTime() >= this.getDailyTaskEndTime())
+    }
+
+    fun updateDailyTask(task: DailyTask) {
+        title = task.title
+        type = task.type
+        description = task.description
+        start = task.start
+        end = task.end
     }
 
     class TimeConflictException(start: LocalTime, end: LocalTime) : IllegalArgumentException(
