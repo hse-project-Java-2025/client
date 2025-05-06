@@ -39,7 +39,8 @@ fun DailyTaskCard(
     modifier: Modifier = Modifier,
     onCompletionChange: () -> Unit = { },
     onLongPressAction: () -> Unit = { },
-    taskEditViewModel: TaskEditViewModel
+    taskEditViewModel: TaskEditViewModel,
+    isSuggestion: Boolean = false
 ) {
     Column(modifier = Modifier
         .padding(5.dp)
@@ -64,22 +65,24 @@ fun DailyTaskCard(
                 .fillMaxWidth()
                 .padding(6.dp)
         ) {
-            var isComplete by remember { mutableStateOf(task.isComplete()) }
-            RadioButton(
-                onClick = {
-                    onCompletionChange()
-                    isComplete = !isComplete
-                },
-                selected = isComplete,
-                modifier = Modifier,
-                enabled = true,
-                colors = RadioButtonColors(
-                    selectedColor = MaterialTheme.colorScheme.primary,
-                    unselectedColor = MaterialTheme.colorScheme.secondary,
-                    disabledSelectedColor = Color.Blue,
-                    disabledUnselectedColor = Color.Red
+            if (!isSuggestion) {
+                var isComplete by remember { mutableStateOf(task.isComplete()) }
+                RadioButton(
+                    onClick = {
+                        onCompletionChange()
+                        isComplete = !isComplete
+                    },
+                    selected = isComplete,
+                    modifier = Modifier,
+                    enabled = true,
+                    colors = RadioButtonColors(
+                        selectedColor = MaterialTheme.colorScheme.primary,
+                        unselectedColor = MaterialTheme.colorScheme.secondary,
+                        disabledSelectedColor = Color.Blue,
+                        disabledUnselectedColor = Color.Red
+                    )
                 )
-            )
+            }
             Text(
                 text = task.getDailyTaskTitle(),
                 style = MaterialTheme.typography.headlineSmall,
