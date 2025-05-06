@@ -38,7 +38,7 @@ class ReminderWorker(
 
         val body = "The task \"$title\"($startTime - $endTime) type $type sport starts in 10 minutes"
         val builder = NotificationCompat.Builder(applicationContext, BaseApplication.CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_android_black_24dp)
+            .setSmallIcon(R.drawable.timer)
             .setContentTitle("Smart Calendar")
             .setContentText(body)
             .setStyle(NotificationCompat.BigTextStyle().bigText(body))

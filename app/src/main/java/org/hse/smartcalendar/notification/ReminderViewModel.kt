@@ -3,7 +3,10 @@ package org.hse.smartcalendar.notification
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
@@ -12,6 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
+import org.hse.smartcalendar.activity.BaseApplication
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.utility.prettyPrint
 import org.hse.smartcalendar.utility.toEpochMilliseconds

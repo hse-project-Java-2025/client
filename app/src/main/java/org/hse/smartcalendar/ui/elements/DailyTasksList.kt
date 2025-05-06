@@ -40,12 +40,15 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format
 import kotlinx.datetime.format.MonthNames
 import kotlinx.datetime.format.char
+import org.hse.smartcalendar.AuthViewModel
+import org.hse.smartcalendar.activity.App
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.notification.ReminderViewModel
 import org.hse.smartcalendar.notification.ReminderViewModelFactory
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.Navigation
+import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.utility.rememberNavigation
 import org.hse.smartcalendar.view.model.ListViewModel
 import org.hse.smartcalendar.view.model.SettingsViewModel
@@ -53,12 +56,7 @@ import org.hse.smartcalendar.view.model.SettingsViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DailyTasksList(viewModel: ListViewModel, openDrawer: ()->Unit, navigation: Navigation,
-                   settingsModel: SettingsViewModel) {
-    val reminderModel: ReminderViewModel = viewModel(
-        factory = ReminderViewModelFactory(
-            LocalContext.current.applicationContext as Application
-        )
-    )
+                   settingsModel: SettingsViewModel, reminderModel: ReminderViewModel ) {
     val taskTitle = rememberSaveable { mutableStateOf("") }
     val taskType = rememberSaveable { mutableStateOf(DailyTaskType.COMMON) }
     val taskDescription = rememberSaveable { mutableStateOf("") }
@@ -195,8 +193,7 @@ fun formatLocalDate(date: LocalDate): String {
 @Composable
 @Preview(showBackground = true)
 fun DailyTaskListPreview() {
-    val viewModelPreview = ListViewModel(1488)
     SmartCalendarTheme {
-        DailyTasksList(viewModelPreview, {}, rememberNavigation(), SettingsViewModel())
+        App(listModel = ListViewModel(-1), authModel = AuthViewModel(), startDestination = Screens.CALENDAR.route)
     }
 }

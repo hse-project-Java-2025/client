@@ -1,6 +1,5 @@
 package org.hse.smartcalendar.ui.elements
 
-import android.app.Application
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,18 +32,15 @@ import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.view.model.ListViewModel
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.unit.TextUnit
 import org.hse.smartcalendar.notification.ReminderViewModel
-import org.hse.smartcalendar.notification.ReminderViewModelFactory
-import org.hse.smartcalendar.view.model.SettingsViewModel
 
 //здесь работает навигация
 @Preview
 @Composable
-fun SettingsScreen() {
+fun SettingsScreenPreview() {
     SmartCalendarTheme {
         App(listModel = ListViewModel(-1), authModel = AuthViewModel(), startDestination = Screens.SETTINGS.route)
     }
@@ -54,12 +50,9 @@ fun SettingsScreen() {
 @Composable
 fun SettingsScreen(viewModel: AuthViewModel,
                    navigation: Navigation,
-                   openDrawer: (()->Unit)?=null){
-    val reminderModel: ReminderViewModel = viewModel(
-        factory = ReminderViewModelFactory(
-            LocalContext.current.applicationContext as Application
-        )
-    )
+                   openDrawer: (()->Unit)?=null,
+                   reminderModel: ReminderViewModel){
+    val fontSize = 22.sp
     Scaffold(
         topBar = { TopButton(openDrawer, navigation, "Settings") }
     ) {paddingValues ->
@@ -68,21 +61,13 @@ fun SettingsScreen(viewModel: AuthViewModel,
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            Text("Login", fontSize = 22.sp)
-            Button(
-                onClick = { navigation.navigateTo(Screens.CHANGE_LOGIN.route)
-                          },
-            ) {
-                Text("Change")
+            SettingsClickableComp(Person, "Login", fontSize, null){
+                navigation.navigateTo(Screens.CHANGE_LOGIN.route)
             }
-            Text("Password", fontSize = 22.sp)
-            Button(
-                onClick = { navigation.navigateTo(Screens.CHANGE_PASSWORD.route)
-                          },
-            ) {
-                Text("Change")
+            SettingsClickableComp(Password, "Password", fontSize, null){
+                navigation.navigateTo(Screens.CHANGE_PASSWORD.route)
             }
-            SettingsClickableComp(Reminder, "Reminder", reminderModel.isReminders.collectAsState()){
+            SettingsClickableComp(Reminder, "Reminder", state = reminderModel.isReminders.collectAsState(), fontSize = fontSize){
                 reminderModel.switchReminders()
             }
         }
@@ -94,7 +79,8 @@ fun SettingsScreen(viewModel: AuthViewModel,
 fun SettingsClickableComp(
     imageVector: ImageVector,
     title: String,
-    state: State<Boolean>,
+    fontSize: TextUnit,
+    state: State<Boolean>?,
     onClick: () -> Unit
 ) {
     Surface(
@@ -124,13 +110,22 @@ fun SettingsClickableComp(
                             .padding(16.dp),
                         textAlign = TextAlign.Start,
                         overflow = TextOverflow.Ellipsis,
+                        fontSize = fontSize
                     )
                 }
                 Spacer(modifier = Modifier.weight(1.0f))
-                Switch(
-                    checked = state.value,
-                    onCheckedChange = { onClick() }
-                )
+                if (state!=null) {
+                    Switch(
+                        checked = state.value,
+                        onCheckedChange = { onClick() }
+                    )
+                } else {
+                    Button(
+                        onClick = onClick
+                    ) {
+                        Text("Change")
+                    }
+                }
             }
             HorizontalDivider()
         }
