@@ -24,6 +24,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import kotlinx.coroutines.launch
 import org.hse.smartcalendar.AuthViewModel
+import org.hse.smartcalendar.ui.elements.AchievementsScreen
 import org.hse.smartcalendar.ui.elements.ChangeLogin
 import org.hse.smartcalendar.ui.elements.ChangePassword
 import org.hse.smartcalendar.ui.elements.DailyTasksList
@@ -110,6 +111,9 @@ fun App(
             }
             composable(route = Screens.STATISTICS.route) {
                 Statistics(navigation, openDrawer, statisticsModel)
+            }
+            composable(route = Screens.ACHIEVEMENTS.route) {
+                AchievementsScreen(statisticsModel)
             }
         }
     }
