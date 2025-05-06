@@ -35,10 +35,11 @@ class ReminderWorker(
         val startTime = inputData.getString(START_KEY)
         val endTime = inputData.getString(END_KEY)
         val desc = inputData.getString(MESSAGE_KEY)
+        val delayMinutes = inputData.getInt(BEFORE_KEY, -1)
 
-        val body = "The task \"$title\"($startTime - $endTime) type $type sport starts in 10 minutes"
+        val body = "The task \"$title\"($startTime - $endTime) type $type starts in $delayMinutes minutes"
         val builder = NotificationCompat.Builder(applicationContext, BaseApplication.CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_android_black_24dp)
+            .setSmallIcon(R.drawable.timer)
             .setContentTitle("Smart Calendar")
             .setContentText(body)
             .setStyle(NotificationCompat.BigTextStyle().bigText(body))
