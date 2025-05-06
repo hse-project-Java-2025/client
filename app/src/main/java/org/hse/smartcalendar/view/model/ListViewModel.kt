@@ -94,6 +94,20 @@ class ListViewModel(id: Long) : ViewModel() {
         return dailyScheduleDate.value
     }
 
+    fun isUpdatable(oldTask: DailyTask, newTask: DailyTask): Boolean {
+        if (!dailyTaskSchedule.getDailyTaskList().contains(oldTask)) {
+            return false
+        }
+        dailyTaskSchedule.getDailyTaskList().forEach { task ->
+            if (task != oldTask) {
+                if (task.isNestedTasks(newTask)) {
+                    return false
+                }
+            }
+        }
+        return true
+    }
+
     fun sendAudio(
         audioFile: MutableState<File?>,
         description: AudioDescription,
@@ -116,6 +130,9 @@ class ListViewModel(id: Long) : ViewModel() {
         }
         return result
     }
+
+    class NestedTask(val nestedTask: DailyTask) :
+        Exception("Collision in list in case of updating")
 
     enum class AudioDescription(private val toString: String) {
         CONVERT_AUDIO("TODO Convert audio"),
