@@ -30,6 +30,8 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
+import org.hse.smartcalendar.view.model.ListViewModel
+import org.hse.smartcalendar.view.model.TaskEditViewModel
 
 
 @Composable
@@ -37,13 +39,17 @@ fun DailyTaskCard(
     task: DailyTask,
     modifier: Modifier = Modifier,
     onCompletionChange: () -> Unit = { },
-    onLongPressAction: () -> Unit = { }
+    onLongPressAction: () -> Unit = { },
+    taskEditViewModel: TaskEditViewModel
 ) {
     Column(modifier = Modifier
         .padding(5.dp)
         .pointerInput(Unit) {
             detectTapGestures(
-                onLongPress = { onLongPressAction() }
+                onLongPress = {
+                    taskEditViewModel.setTask(task)
+                    onLongPressAction()
+                }
             )
         }) {
 
@@ -115,7 +121,7 @@ fun DailyTaskCard(
 @Composable
 @Preview(showBackground = true)
 fun DailyTaskCardPreview() {
-
+    val taskEditViewModel = TaskEditViewModel(listViewModel = ListViewModel(1488))
     val previewCommonTask = DailyTask(
         title = "Common title example",
         type = DailyTaskType.COMMON,
@@ -157,19 +163,23 @@ fun DailyTaskCardPreview() {
     Column {
         DailyTaskCard(
             task = previewCommonTask,
-            onCompletionChange = { previewCommonTask.setCompletion(!previewCommonTask.isComplete()) }
+            onCompletionChange = { previewCommonTask.setCompletion(!previewCommonTask.isComplete()) },
+            taskEditViewModel = taskEditViewModel
         )
         DailyTaskCard(
             task = previewFitnessTask,
-            onCompletionChange = { previewFitnessTask.setCompletion(!previewFitnessTask.isComplete()) }
+            onCompletionChange = { previewFitnessTask.setCompletion(!previewFitnessTask.isComplete()) },
+            taskEditViewModel = taskEditViewModel
         )
         DailyTaskCard(
             task = previewWorkTask,
-            onCompletionChange = { previewWorkTask.setCompletion(!previewWorkTask.isComplete()) }
+            onCompletionChange = { previewWorkTask.setCompletion(!previewWorkTask.isComplete()) },
+            taskEditViewModel = taskEditViewModel
         )
         DailyTaskCard(
             task = previewStudiesTask,
-            onCompletionChange = { previewStudiesTask.setCompletion(!previewStudiesTask.isComplete()) }
+            onCompletionChange = { previewStudiesTask.setCompletion(!previewStudiesTask.isComplete()) },
+            taskEditViewModel = taskEditViewModel
         )
     }
 }

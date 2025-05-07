@@ -1,4 +1,6 @@
 [versions]
+accompanistPermissions = "<version>"
+accompanistVersion = "0.34.0"
 agp = "8.8.1"
 converterGson = "2.9.0"
 kotlin = "2.0.0"
@@ -23,6 +25,7 @@ workRuntimeKtx = "2.10.1"
 
 
 [libraries]
+accompanist-permissions-v0340 = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistVersion" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-navigation-compose-v240beta02 = { module = "androidx.navigation:navigation-compose", version.ref = "navigationComposeVersion" }

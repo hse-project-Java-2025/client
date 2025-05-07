@@ -34,9 +34,14 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.format
 import kotlinx.datetime.format.MonthNames
 import kotlinx.datetime.format.char
@@ -46,17 +51,28 @@ import org.hse.smartcalendar.notification.ReminderViewModel
 import org.hse.smartcalendar.notification.ReminderViewModelFactory
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.Navigation
+import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.utility.rememberNavigation
 import org.hse.smartcalendar.view.model.ListViewModel
+import java.io.File
+import org.hse.smartcalendar.view.model.TaskEditViewModel
+import kotlin.time.toDuration
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DailyTasksList(viewModel: ListViewModel, openDrawer: ()->Unit, navigation: Navigation) {
+fun DailyTasksList(
+    viewModel: ListViewModel,
+    taskEditViewModel: TaskEditViewModel,
+    openDrawer: () -> Unit,
+    navigation: Navigation,
+    navController: NavController
+) {
     val reminderModel: ReminderViewModel = viewModel(
         factory = ReminderViewModelFactory(
             LocalContext.current.applicationContext as Application
         )
     )
+    val audioFile: MutableState<File?> = rememberSaveable { mutableStateOf(null) }
     val taskTitle = rememberSaveable { mutableStateOf("") }
     val taskType = rememberSaveable { mutableStateOf(DailyTaskType.COMMON) }
     val taskDescription = rememberSaveable { mutableStateOf("") }
@@ -75,32 +91,44 @@ fun DailyTasksList(viewModel: ListViewModel, openDrawer: ()->Unit, navigation: N
         },
         bottomBar = { ListBottomBar(viewModel, scope, isBottomSheetVisible, sheetState) },
         content = { paddingValues ->
-            LazyColumn (modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)) {
-                items(viewModel.dailyTaskList) {
-                    DailyTaskCard(it, onCompletionChange = {
+        LazyColumn (modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)) {
+            items(viewModel.dailyTaskList) {
+                DailyTaskCard(it,
+                    onCompletionChange = {
                         viewModel.changeTaskCompletion(it, !it.isComplete())
-                    })
-                }
+                    },
+                    taskEditViewModel = taskEditViewModel,
+                    onLongPressAction = {
+                        navController.navigate(Screens.EDIT_TASK.route)
+                    }
+                )
             }
-            BottomSheet(
-                isBottomSheetVisible = isBottomSheetVisible,
-                sheetState = sheetState,
-                onDismiss = {
-                    scope.launch { sheetState.hide() }
-                        .invokeOnCompletion { isBottomSheetVisible.value = false }
-                },
-                taskTitle = taskTitle,
-                taskType = taskType,
-                taskDescription = taskDescription,
-                startTime = startTime,
-                endTime = endTime,
-                viewModel = viewModel,
-                addTask = {task -> viewModel.addDailyTask(task); serverAddTask(task);
-                    reminderModel.scheduleReminder(task, 10)
-                }
-            )
+        }
+        BottomSheet(
+            isBottomSheetVisible = isBottomSheetVisible,
+            sheetState = sheetState,
+            onDismiss = {
+                scope.launch { sheetState.hide() }
+                    .invokeOnCompletion { isBottomSheetVisible.value = false }
+            },
+            onRecordStop = {
+                viewModel.sendAudio(
+                    audioFile = audioFile,
+                    description = ListViewModel.AudioDescription.CONVERT_AUDIO,
+                )
+            },
+            audioFile = audioFile,
+            taskTitle = taskTitle,
+            taskType = taskType,
+            taskDescription = taskDescription,
+            startTime = startTime,
+            endTime = endTime,
+            viewModel = viewModel,
+            addTask = {task -> viewModel.addDailyTask(task); serverAddTask(task);
+                reminderModel.scheduleReminder(task, 10)}
+        )
         }
     )
 }
@@ -193,8 +221,41 @@ fun formatLocalDate(date: LocalDate): String {
 @Composable
 @Preview(showBackground = true)
 fun DailyTaskListPreview() {
-    val viewModelPreview = ListViewModel(1488)
+    val listViewModel = ListViewModel(1488)
+    listViewModel.addDailyTask(
+        DailyTask(
+            title = "sss",
+            description = "sss",
+            start = LocalTime(0, 0),
+            end = LocalTime(1, 0),
+            date = LocalDate(2022, 5, 4)
+        )
+    )
+    val taskEditViewModel = TaskEditViewModel(
+        listViewModel = listViewModel
+    )
+    val navController = rememberNavController()
+    NavHost(navController, startDestination = Screens.CALENDAR.route) {
+        composable(Screens.CALENDAR.route) {
+            DailyTasksList(
+                listViewModel,
+                taskEditViewModel,
+                {},
+                rememberNavigation(),
+                navController
+            )
+        }
+        composable("EDIT_TASK") {
+            TaskEditWindow(
+                onSave = { navController.popBackStack() },
+                onCancel = { navController.popBackStack() },
+                taskEditViewModel = taskEditViewModel,
+                navController = navController,
+                onDelete = { }
+            )
+        }
+    }
     SmartCalendarTheme {
-        DailyTasksList(viewModelPreview, {}, rememberNavigation())
+        DailyTasksList(listViewModel, taskEditViewModel, {}, rememberNavigation(), navController)
     }
 }
