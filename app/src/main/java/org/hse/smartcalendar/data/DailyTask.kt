@@ -52,6 +52,18 @@ class DailyTask (
         return title
     }
 
+    fun setDailyTaskTitle(newTitle: String) {
+        title = newTitle
+    }
+
+    fun setDailyTaskStartTime(newStart: LocalTime) {
+        start = newStart
+    }
+
+    fun setDailyTaskEndTime(newEnd: LocalTime) {
+        end = newEnd
+    }
+
     fun getDailyTaskType(): DailyTaskType {
         return type
     }
@@ -66,6 +78,14 @@ class DailyTask (
         return date
     }
 
+    fun setDailyTaskType(newType: DailyTaskType) {
+        type = newType
+    }
+
+    fun setDailyTaskDescription(newDescription: String) {
+        description = newDescription
+    }
+
     fun getDailyTaskStartTime() : LocalTime {
         return start
     }
@@ -78,6 +98,14 @@ class DailyTask (
     fun isNestedTasks(task : DailyTask) : Boolean {
         return !(this.getDailyTaskStartTime() >= task.getDailyTaskEndTime() ||
                 task.getDailyTaskStartTime() >= this.getDailyTaskEndTime())
+    }
+
+    fun updateDailyTask(task: DailyTask) {
+        title = task.title
+        type = task.type
+        description = task.description
+        start = task.start
+        end = task.end
     }
 
     class TimeConflictException(start: LocalTime, end: LocalTime) : IllegalArgumentException(

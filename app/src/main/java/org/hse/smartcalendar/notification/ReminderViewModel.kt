@@ -42,8 +42,7 @@ class ReminderViewModel(application: Application): ViewModel() {
 
     internal fun scheduleReminder(
         task: DailyTask,
-        minutesBefore: Int,
-        settingsModel: SettingsViewModel
+        minutesBefore: Int
     ): Boolean {
         //ReminderVm ff62295
         //разные ссылки на VM
