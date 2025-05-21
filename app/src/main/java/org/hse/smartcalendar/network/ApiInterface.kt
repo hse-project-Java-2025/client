@@ -14,4 +14,8 @@ interface ApiInterface {
     suspend fun loginUser(
         @Body request: AuthRequest,
     ) : Response<ResponseBody>
+    @POST("api/auth/change-credentials")
+    suspend fun changeCredentials(
+        @Body request: ChangeCredentialsRequest,
+    ) : Response<ResponseBody>
 }

@@ -51,7 +51,7 @@ fun ChangePassword(viewModel: AuthViewModel, isChangeLogin: Boolean = false) {
     var password by remember { mutableStateOf("") }
     var newPassword1 by remember { mutableStateOf("") }
     var newPassword2 by remember { mutableStateOf("") }
-    val authState by viewModel.registerResult.observeAsState()
+    val credentionalsState by viewModel.changeCredentialsResult.observeAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -98,7 +98,7 @@ fun ChangePassword(viewModel: AuthViewModel, isChangeLogin: Boolean = false) {
             if (isChangeLogin) Text("Change login") else Text("Change password")
         }
         Spacer(modifier = Modifier.height(16.dp))
-        when (val state = authState) {
+        when (val state = credentionalsState) {
             is NetworkResponse.Loading -> {
                 CircularProgressIndicator()
             }

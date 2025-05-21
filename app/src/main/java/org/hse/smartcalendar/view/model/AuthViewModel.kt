@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import okhttp3.Response
 import org.hse.smartcalendar.network.ApiClient
 import org.hse.smartcalendar.network.AuthRequest
 import org.hse.smartcalendar.network.LoginResponse
@@ -14,41 +15,25 @@ import org.hse.smartcalendar.network.RegisterResponse
 
 class AuthViewModel : ViewModel() {
     private val api = ApiClient.authApiService
-    private val _registerResult = MutableLiveData<NetworkResponse<RegisterResponse>>()
     private val _loginResult = MutableLiveData<NetworkResponse<LoginResponse>>()
-    val registerResult: LiveData<NetworkResponse<RegisterResponse>> = _registerResult
     val loginResult: LiveData<NetworkResponse<LoginResponse>> = _loginResult
 
+    val _changeCredentialsResult = MutableLiveData<NetworkResponse<Response>>()
+    val changeCredentialsResult = _changeCredentialsResult
      fun signup(username: String, email: String, password: String) {
         viewModelScope.launch {
-            _registerResult.value = NetworkResponse.Loading
+            _loginResult.value = NetworkResponse.Loading
             try {
                 val registerResponse = api.register(RegisterRequest(username, email, password));
                 if (!registerResponse.isSuccessful){
-                    _registerResult.value = NetworkResponse.Error("register failed with Code: "+registerResponse.code())
                     _loginResult.value = NetworkResponse.Error("register failed with Code: "+registerResponse.code())
                     return@launch
                 }
                 login(username, password)
             } catch (e: Exception) {
-                _registerResult.value = NetworkResponse.Error(e.message ?: "exception")
+                _loginResult.value = NetworkResponse.Error(e.message ?: "exception")
             }
         }
-    }
-
-    fun changePassword(username: String, password: String, newPassword1: String, newPassword2: String) {
-        if (newPassword1!=newPassword2){
-            _registerResult.value = NetworkResponse.Error("New passwords are different")
-        }
-        //авторизация
-
-    }
-
-    fun changeLogin(username: String, password: String, newPassword1: String, newPassword2: String) {
-        if (newPassword1!=newPassword2){
-            _registerResult.value = NetworkResponse.Error("New passwords are different")
-        }
-        //авторизация
     }
 
     fun login(username: String, password: String) {
@@ -70,5 +55,21 @@ class AuthViewModel : ViewModel() {
                 _loginResult.value = NetworkResponse.Error(e.message ?: "exception")
             }
         }
+    }
+
+    fun changePassword(username: String, password: String, newPassword1: String, newPassword2: String) {
+        if (newPassword1!=newPassword2){
+            _changeCredentialsResult.value = NetworkResponse.Error("New passwords are different")
+        }
+
+        //авторизация
+
+    }
+
+    fun changeLogin(username: String, password: String, newPassword1: String, newPassword2: String) {
+        if (newPassword1!=newPassword2){
+            changeCredentialsResult.value = NetworkResponse.Error("New passwords are different")
+        }
+        //авторизация
     }
 }
