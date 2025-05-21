@@ -27,26 +27,28 @@ import androidx.compose.ui.unit.dp
 import org.hse.smartcalendar.AuthViewModel
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
+import org.hse.smartcalendar.utility.Navigation
+import org.hse.smartcalendar.utility.rememberNavigation
 
 @Preview
 @Composable
 fun ChangePassword() {
-    SmartCalendarTheme { ChangePassword(viewModel = AuthViewModel()) }
+    SmartCalendarTheme { ChangePassword(viewModel = AuthViewModel(), rememberNavigation()) }
 }
 
 @Preview
 @Composable
 fun ChangeLogin() {
-    SmartCalendarTheme { ChangeLogin(viewModel = AuthViewModel()) }
+    SmartCalendarTheme { ChangeLogin(viewModel = AuthViewModel(), rememberNavigation()) }
 }
 
 @Composable
-fun ChangeLogin(viewModel: AuthViewModel) {
-    ChangePassword(viewModel,false)
+fun ChangeLogin(viewModel: AuthViewModel, navigation: Navigation) {
+    ChangePassword(viewModel, navigation, false)
 }
 
 @Composable
-fun ChangePassword(viewModel: AuthViewModel, isChangeLogin: Boolean = false) {
+fun ChangePassword(viewModel: AuthViewModel, navigation: Navigation, isChangeLogin: Boolean = false) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var newPassword1 by remember { mutableStateOf("") }
@@ -104,9 +106,13 @@ fun ChangePassword(viewModel: AuthViewModel, isChangeLogin: Boolean = false) {
             }
             is NetworkResponse.Success -> {
                 Text("Change password successful")
+                Thread.sleep(1000)
+                navigation.upPress()
             }
             is NetworkResponse.Error -> {
                 Text("Error: ${state.message}", color = MaterialTheme.colorScheme.error)
+                Thread.sleep(1000)
+                navigation.navController.navigateUp()
             }
             else -> {}
         }

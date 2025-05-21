@@ -98,10 +98,10 @@ fun App(
                 DailyTasksList(listModel, openDrawer = openDrawer, navigation)
             }
             composable(route = Screens.CHANGE_LOGIN.route) {
-                ChangeLogin(authModel)
+                ChangeLogin(authModel, navigation)
             }
             composable(route = Screens.CHANGE_PASSWORD.route) {
-                ChangePassword(authModel)
+                ChangePassword(authModel, navigation)
             }
             composable(route = Screens.STATISTICS.route) {
                 Statistics(navigation, openDrawer, statisticsModel)

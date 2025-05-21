@@ -14,3 +14,6 @@ data class RegisterResponse (
 data class LoginResponse(
     val token: String
 )
+data class CredentialsResponse(
+    val message: String
+)
