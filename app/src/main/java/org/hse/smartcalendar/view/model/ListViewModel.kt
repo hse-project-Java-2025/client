@@ -25,14 +25,12 @@ class ListViewModel(id: Long) : ViewModel() {
     )
     var dailyTaskList: SnapshotStateList<DailyTask>
     private val user: User = User(id)
-
     init {
         val date: LocalDate =
             Clock.System.now()
                 .toLocalDateTime(TimeZone.currentSystemDefault()).date
         dailyTaskSchedule = user.getSchedule().getOrCreateDailySchedule(date)
         dailyTaskList = SnapshotStateList(dailyTaskSchedule.getDailyTaskList())
-
     }
 
     fun addDailyTask(newTask : DailyTask) {

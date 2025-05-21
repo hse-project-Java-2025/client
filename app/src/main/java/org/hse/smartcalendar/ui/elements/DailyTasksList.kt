@@ -70,9 +70,10 @@ fun DailyTasksList(
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
+    fun serverAddTask(dailyTask: DailyTask){
+    }
     val scope = rememberCoroutineScope()
     val isBottomSheetVisible = rememberSaveable { mutableStateOf(false) }
-    val isNavSheetVisible = rememberSaveable { mutableStateOf(false)}
     Scaffold (
         topBar = {
             TopButton(openMenu = openDrawer, navigation = navigation, text = formatLocalDate(viewModel.getScheduleDate()))
@@ -113,7 +114,7 @@ fun DailyTasksList(
             taskDescription = taskDescription,
             startTime = startTime,
             endTime = endTime,
-            addTask = viewModel::addDailyTask
+            addTask = {task -> viewModel.addDailyTask(task); serverAddTask(task)}
         )
         }
     )
