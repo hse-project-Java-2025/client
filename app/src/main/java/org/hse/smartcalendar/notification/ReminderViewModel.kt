@@ -41,9 +41,7 @@ class ReminderViewModel(application: Application): ViewModel() {
     private val workManager = WorkManager.getInstance(application)
 
     internal fun scheduleReminder(
-        task: DailyTask,
-        minutesBefore: Int
-    ): Boolean {
+        task: DailyTask): Boolean {
         //ReminderVm ff62295
         //разные ссылки на VM
         if (!isReminders.value){
@@ -58,7 +56,7 @@ class ReminderViewModel(application: Application): ViewModel() {
             return false
         }
         var realMinutesBefore = minutesDelay.value//= minutesBefore
-        if (minutesBefore.toDuration(DurationUnit.MINUTES).inWholeMilliseconds>millisecondsDelay){
+        if (minutesDelay.value.toDuration(DurationUnit.MINUTES).inWholeMilliseconds>millisecondsDelay){
             realMinutesBefore = millisecondsDelay.toDuration(DurationUnit.MILLISECONDS).inWholeMinutes.toInt()
             myWorkRequestBuilder.setInitialDelay(0, TimeUnit.MILLISECONDS)
         }else {

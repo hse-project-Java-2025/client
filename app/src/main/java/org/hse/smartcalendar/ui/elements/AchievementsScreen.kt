@@ -13,8 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Card
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,14 +29,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.hse.smartcalendar.AuthViewModel
 import org.hse.smartcalendar.R
+import org.hse.smartcalendar.activity.App
 import org.hse.smartcalendar.ui.theme.*
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
+import org.hse.smartcalendar.utility.Navigation
+import org.hse.smartcalendar.utility.Screens
+import org.hse.smartcalendar.view.model.ListViewModel
 import org.hse.smartcalendar.view.model.StatisticsViewModel
-import org.hse.smartcalendar.view.model.StatisticsViewModel.TotalTimeTaskTypes
+import org.hse.smartcalendar.view.model.TaskEditViewModel
 
 @Composable
-fun AchievementsScreen(statisticsModel: StatisticsViewModel) {
+fun AchievementsScreen(navigation: Navigation,
+                       openDrawer: (()->Unit)?=null,
+                       statisticsModel: StatisticsViewModel) {
     val fire = AchievementData(
         "Eternal Flame",
         R.drawable.fire,
@@ -81,13 +88,19 @@ fun AchievementsScreen(statisticsModel: StatisticsViewModel) {
     )
     val itemsData =
         listOf(fire, plan, common, taskByTask, automatic, totallyBalanced)
-    LazyColumn (
-        content = {
-            items(itemsData.size){index->
-                AchievementCard(itemsData[index])
+    Scaffold(
+        topBar = { TopButton(openDrawer, navigation, "Achievements") }
+    ) {paddingValues->
+        LazyColumn(modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
+            content = {
+                items(itemsData.size) { index ->
+                    AchievementCard(itemsData[index])
+                }
             }
-        }
-    )
+        )
+    }
 
 }
 
@@ -174,11 +187,18 @@ data class AchievementData(
 
 @Preview
 @Composable
-fun AchievementScreenPreview() {
+fun AchievementsScreenPreview() {
     SmartCalendarTheme {
-        AchievementsScreen(StatisticsViewModel())
+        val listModel = ListViewModel(-1)
+        App(
+            listModel = listModel,
+            authModel = AuthViewModel(),
+            editModel = TaskEditViewModel(listModel),
+            startDestination = Screens.ACHIEVEMENTS.route
+        )
     }
 }
+
 
 @Preview
 @Composable

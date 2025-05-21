@@ -65,15 +65,11 @@ import org.hse.smartcalendar.view.model.TaskEditViewModel
 fun DailyTasksList(
     viewModel: ListViewModel,
     taskEditViewModel: TaskEditViewModel,
+    reminderModel: ReminderViewModel,
     openDrawer: () -> Unit,
     navigation: Navigation,
     navController: NavController
 ) {
-    val reminderModel: ReminderViewModel = viewModel(
-        factory = ReminderViewModelFactory(
-            LocalContext.current.applicationContext as Application
-        )
-    )
     val audioFile: MutableState<File?> = rememberSaveable { mutableStateOf(null) }
     val taskTitle = rememberSaveable { mutableStateOf("") }
     val taskType = rememberSaveable { mutableStateOf(DailyTaskType.COMMON) }
@@ -128,8 +124,10 @@ fun DailyTasksList(
             startTime = startTime,
             endTime = endTime,
             viewModel = viewModel,
-            addTask = {task -> viewModel.addDailyTask(task); serverAddTask(task);
-                reminderModel.scheduleReminder(task, 10)}
+            addTask = {task -> viewModel.addDailyTask(task);
+                serverAddTask(task);
+                reminderModel.scheduleReminder(task)
+            }
         )
         }
     )
@@ -237,11 +235,15 @@ fun DailyTaskListPreview() {
         listViewModel = listViewModel
     )
     val navController = rememberNavController()
+    val reminderModel: ReminderViewModel = viewModel(factory = ReminderViewModelFactory(
+        LocalContext.current.applicationContext as Application
+    ))
     NavHost(navController, startDestination = Screens.CALENDAR.route) {
         composable(Screens.CALENDAR.route) {
             DailyTasksList(
                 listViewModel,
                 taskEditViewModel,
+                reminderModel,
                 {},
                 rememberNavigation(),
                 navController
@@ -258,6 +260,7 @@ fun DailyTaskListPreview() {
         }
     }
     SmartCalendarTheme {
-        DailyTasksList(listViewModel, taskEditViewModel, {}, rememberNavigation(), navController)
+        DailyTasksList(listViewModel, taskEditViewModel,
+            reminderModel, {}, rememberNavigation(), navController)
     }
 }

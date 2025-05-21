@@ -102,7 +102,7 @@ fun App(
         ) {
             composable(route = Screens.SETTINGS.route) {
                 SettingsScreen(viewModel = authModel,
-                    navigation, openDrawer, reminderModel,
+                    navigation, openDrawer, reminderModel
                 )
             }
             composable(Screens.CALENDAR.route) {
@@ -110,7 +110,8 @@ fun App(
                     listModel, openDrawer = openDrawer,
                     taskEditViewModel = editModel,
                     navigation = navigation,
-                    navController = navigation.navController
+                    navController = navigation.navController,
+                    reminderModel = reminderModel
                 )
             }
             composable(route = Screens.CHANGE_LOGIN.route) {
@@ -123,7 +124,7 @@ fun App(
                 Statistics(navigation, openDrawer, statisticsModel)
             }
             composable(route = Screens.ACHIEVEMENTS.route) {
-                AchievementsScreen(statisticsModel)
+                AchievementsScreen(navigation, openDrawer, statisticsModel)
             }
             composable(Screens.EDIT_TASK.route) {
                 TaskEditWindow(
