@@ -1,10 +1,16 @@
 package org.hse.smartcalendar.activity
 
+import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -21,52 +27,39 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import org.hse.smartcalendar.LoginActivity
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.io.OutputStreamWriter
-import java.net.HttpURLConnection
-import java.net.URL
-import java.net.URLEncoder
 
-fun sendPostRequest(userName:String, password:String, email: String) {
 
-    var reqParam = URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(userName, "UTF-8")
-    reqParam += "&" + URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(password, "UTF-8")
-    reqParam += "&" + URLEncoder.encode("email", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8")
-    val mURL = URL("/api/auth/signup")
-
-    with(mURL.openConnection() as HttpURLConnection) {
-        // optional default is GET
-        requestMethod = "POST"
-
-        val wr = OutputStreamWriter(getOutputStream());
-        wr.write(reqParam);
-        wr.flush();
-
-        println("URL : $url")
-        println("Response Code : $responseCode")
-
-        BufferedReader(InputStreamReader(inputStream)).use {
-            val response = StringBuffer()
-
-            var inputLine = it.readLine()
-            while (inputLine != null) {
-                response.append(inputLine)
-                inputLine = it.readLine()
-            }
-            println("Response : $response")
+class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun getNotificationsPermissions(){
+        val permissionPostState =
+            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+        val permissionNotificationState =
+            checkSelfPermission(Manifest.permission.ACCESS_NOTIFICATION_POLICY)
+        if (permissionPostState == PackageManager.PERMISSION_DENIED
+            || permissionNotificationState == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(
+                    Manifest.permission.ACCESS_NOTIFICATION_POLICY,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ),
+                11
+            )
         }
     }
-}
-class MainActivity : ComponentActivity() {
+    //@RequiresApi(Build.VERSION_CODES.O, Build.VERSION_CODES.TIRAMISU)
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
-        //sendPostRequest("user1", "pass1", "mail")
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             SmartCalendarTheme {
+                getNotificationsPermissions()
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Greeting(
                         name = "User",

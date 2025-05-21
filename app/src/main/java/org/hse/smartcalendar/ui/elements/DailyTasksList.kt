@@ -1,5 +1,6 @@
 package org.hse.smartcalendar.ui.elements
 
+import android.app.Application
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,9 +29,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -44,6 +47,8 @@ import kotlinx.datetime.format.MonthNames
 import kotlinx.datetime.format.char
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
+import org.hse.smartcalendar.notification.ReminderViewModel
+import org.hse.smartcalendar.notification.ReminderViewModelFactory
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.Screens
@@ -51,6 +56,7 @@ import org.hse.smartcalendar.utility.rememberNavigation
 import org.hse.smartcalendar.view.model.ListViewModel
 import java.io.File
 import org.hse.smartcalendar.view.model.TaskEditViewModel
+import kotlin.time.toDuration
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,6 +67,11 @@ fun DailyTasksList(
     navigation: Navigation,
     navController: NavController
 ) {
+    val reminderModel: ReminderViewModel = viewModel(
+        factory = ReminderViewModelFactory(
+            LocalContext.current.applicationContext as Application
+        )
+    )
     val audioFile: MutableState<File?> = rememberSaveable { mutableStateOf(null) }
     val taskTitle = rememberSaveable { mutableStateOf("") }
     val taskType = rememberSaveable { mutableStateOf(DailyTaskType.COMMON) }
@@ -77,7 +88,7 @@ fun DailyTasksList(
     Scaffold (
         topBar = {
             TopButton(openMenu = openDrawer, navigation = navigation, text = formatLocalDate(viewModel.getScheduleDate()))
-                 },
+        },
         bottomBar = { ListBottomBar(viewModel, scope, isBottomSheetVisible, sheetState) },
         content = { paddingValues ->
         LazyColumn (modifier = Modifier
@@ -114,7 +125,9 @@ fun DailyTasksList(
             taskDescription = taskDescription,
             startTime = startTime,
             endTime = endTime,
-            addTask = {task -> viewModel.addDailyTask(task); serverAddTask(task)}
+            viewModel = viewModel,
+            addTask = {task -> viewModel.addDailyTask(task); serverAddTask(task);
+                reminderModel.scheduleReminder(task, 10)}
         )
         }
     )
@@ -214,7 +227,8 @@ fun DailyTaskListPreview() {
             title = "sss",
             description = "sss",
             start = LocalTime(0, 0),
-            end = LocalTime(1, 0)
+            end = LocalTime(1, 0),
+            date = LocalDate(2022, 5, 4)
         )
     )
     val taskEditViewModel = TaskEditViewModel(

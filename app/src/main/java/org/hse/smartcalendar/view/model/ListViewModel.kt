@@ -18,6 +18,9 @@ import org.hse.smartcalendar.data.User
 import java.io.File
 
 class ListViewModel(id: Long) : ViewModel() {
+    fun getScreenDate(): LocalDate{
+        return dailyTaskSchedule.date
+    }
     private var dailyTaskSchedule: DailySchedule
     private var dailyScheduleDate = mutableStateOf(
         Clock.System.now()
@@ -116,7 +119,8 @@ class ListViewModel(id: Long) : ViewModel() {
             title = "TODO",
             description = "TODO",
             start = LocalTime(0, 0),
-            end = LocalTime(0, 0)
+            end = LocalTime(0, 0),
+            date = DailyTask.DefaultDate.date
         )
         return task
     }

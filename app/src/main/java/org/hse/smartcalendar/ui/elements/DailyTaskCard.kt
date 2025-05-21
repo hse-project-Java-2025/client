@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
@@ -126,7 +127,8 @@ fun DailyTaskCardPreview() {
         type = DailyTaskType.COMMON,
         description = "Common description Example",
         start = LocalTime(4, 0),
-        end = LocalTime(5, 0)
+        end = LocalTime(5, 0),
+        date = DailyTask.date
     )
 
 
@@ -136,6 +138,7 @@ fun DailyTaskCardPreview() {
         description = "Fitness description Example",
         start = LocalTime(4, 0),
         end = LocalTime(5, 0),
+        date = DailyTask.date
     )
 
     val previewWorkTask = DailyTask(
@@ -144,6 +147,7 @@ fun DailyTaskCardPreview() {
         description = "Work description Example",
         start = LocalTime(4, 0),
         end = LocalTime(5, 0),
+        date = DailyTask.date
     )
 
     val previewStudiesTask = DailyTask(
@@ -153,6 +157,7 @@ fun DailyTaskCardPreview() {
         description = "Studies description Example",
         start = LocalTime(4, 0),
         end = LocalTime(5, 0),
+        date = DailyTask.date
     )
 
     Column {
@@ -190,7 +195,11 @@ fun getCardTitleColor(task: DailyTask): Color {
 
 
 fun getCardDescriptionColor(task: DailyTask): Color {
-    return when (task.getDailyTaskType()) {
+    return getTaskDescriptionColor(task.getDailyTaskType())
+}
+
+fun getTaskDescriptionColor(taskType: DailyTaskType): Color {
+    return when (taskType) {
         DailyTaskType.FITNESS -> Color.Red
         DailyTaskType.WORK -> Color.DarkGray
         DailyTaskType.STUDIES -> Color.Green

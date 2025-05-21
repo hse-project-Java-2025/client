@@ -90,7 +90,7 @@ fun ChangePassword(viewModel: AuthViewModel, isChangeLogin: Boolean = false) {
         Button(
             onClick = {
                 if (isChangeLogin) viewModel.changeLogin(username, password, newPassword1, newPassword2) else
-                viewModel.changePassword(username, password, newPassword1, newPassword2)},
+                    viewModel.changePassword(username, password, newPassword1, newPassword2)},
             modifier = Modifier.fillMaxWidth()
         ) {
             if (isChangeLogin) Text("Change login") else Text("Change password")

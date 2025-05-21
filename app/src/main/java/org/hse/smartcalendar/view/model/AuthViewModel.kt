@@ -31,7 +31,6 @@ class AuthViewModel : ViewModel() {
             } catch (e: Exception) {
                 _authState.value = AuthState.Error(e.message ?: "Unknown error")
             }
-            _authState.value = AuthState.Success("0")
         }
     }
 

@@ -50,13 +50,6 @@ fun AuthScreen(viewModel: AuthViewModel) {
     var password by remember { mutableStateOf("") }
     val authState by viewModel.authState.collectAsState()
     val context = LocalContext.current
-    Button(
-        onClick = {val intent = Intent(context, NavigationActivity::class.java)
-            context.startActivity(intent) },
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text("Calendar")
-    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -64,6 +57,13 @@ fun AuthScreen(viewModel: AuthViewModel) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Button(
+            onClick = {val intent = Intent(context, NavigationActivity::class.java)
+                context.startActivity(intent) },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Calendar")
+        }
         TextField(
             value = username,
             onValueChange = { username = it },
@@ -80,9 +80,7 @@ fun AuthScreen(viewModel: AuthViewModel) {
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(
-            onClick = { viewModel.login(username, password)
-
-                      },
+            onClick = { viewModel.login(username, password) },
             modifier = Modifier
                 .fillMaxWidth()
                 .testTag("loginButtonTest")
@@ -99,9 +97,9 @@ fun AuthScreen(viewModel: AuthViewModel) {
                 Thread.sleep(1000)
                 val id: Long = 1488
                 // TODO Видимо тут должна быть синхронизация.
-                val intent = Intent(LocalContext.current, NavigationActivity::class.java)
+                val intent = Intent(LocalContext.current, DailyTasksListActivity::class.java)
                 intent.putExtra("id", id)
-                context.startActivity(intent)
+                LocalContext.current.startActivity(intent)
             }
             is AuthViewModel.AuthState.Error -> {
                 Text("Error: ${state.message}", color = MaterialTheme.colorScheme.error)

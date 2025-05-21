@@ -13,7 +13,8 @@ class TaskEditViewModel(
         title = "Preview title",
         description = "Preview description",
         start = LocalTime(0, 0),
-        end = LocalTime(23, 59)
+        end = LocalTime(23, 59),
+        date = DailyTask.DefaultDate.date
     )
     val changes = task
 

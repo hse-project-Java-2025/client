@@ -36,7 +36,9 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailySchedule
 import org.hse.smartcalendar.data.DailyTask
@@ -44,8 +46,8 @@ import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.fromMinutesOfDay
 import org.hse.smartcalendar.utility.toMinutesOfDay
+import org.hse.smartcalendar.view.model.ListViewModel
 import java.io.File
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomSheet(
@@ -59,7 +61,8 @@ fun BottomSheet(
     taskDescription: MutableState<String>,
     startTime: MutableState<Int>,
     endTime: MutableState<Int>,
-    addTask: (DailyTask) -> Unit
+    viewModel: ListViewModel,
+    addTask: (DailyTask) -> Unit,
 ) {
     val expendedTypeSelection = rememberSaveable { mutableStateOf(false) }
     val isConflictInTimeField = rememberSaveable { mutableStateOf(false) }
@@ -149,7 +152,6 @@ fun BottomSheet(
                 )
 
                 Spacer(modifier = Modifier.padding(12.dp))
-
                 Box(Modifier.align(Alignment.CenterHorizontally)) {
                     if (isErrorInRecorder.value) {
                         Text(
@@ -201,6 +203,7 @@ fun BottomSheet(
                                 taskDescription = taskDescription,
                                 startTime = startTime,
                                 endTime = endTime,
+                                viewModel = viewModel,
                                 isConflictInTimeField = isConflictInTimeField,
                                 isEmptyTitle = isEmptyTitle,
                                 isNestedTask = isNestedTask,
@@ -277,6 +280,7 @@ fun addNewTask(
     taskDescription: MutableState<String>,
     startTime: MutableState<Int>,
     endTime: MutableState<Int>,
+    viewModel: ListViewModel,
     isConflictInTimeField: MutableState<Boolean>,
     isEmptyTitle: MutableState<Boolean>,
     isNestedTask: MutableState<Boolean>,
@@ -301,6 +305,7 @@ fun addNewTask(
             description = taskDescription.value,
             start = LocalTime.fromMinutesOfDay(startTime.value),
             end = LocalTime.fromMinutesOfDay(endTime.value),
+            date = viewModel.getScreenDate()
         )
 
     try {
@@ -415,18 +420,18 @@ fun BottomSheetPreview() {
         val taskDirection = rememberSaveable { mutableStateOf("") }
         val startTime = rememberSaveable { mutableIntStateOf( 0) }
         val endTime = rememberSaveable { mutableIntStateOf( 0) }
+        //val date = rememberSaveable { mutableStateOf( LocalDate.fromEpochDays(0)) }
         val sheetState = rememberModalBottomSheetState(
             skipPartiallyExpanded = true
         )
         val scope = rememberCoroutineScope()
         val isBottomSheetVisible = rememberSaveable { mutableStateOf(true) }
-
         BottomSheet(
             isBottomSheetVisible = isBottomSheetVisible,
             sheetState = sheetState,
             onDismiss = {
                 scope.launch { sheetState.hide() }
-                .invokeOnCompletion { isBottomSheetVisible.value = false }
+                    .invokeOnCompletion { isBottomSheetVisible.value = false }
             },
             taskTitle = taskTitle,
             taskDescription = taskDirection,
@@ -434,6 +439,8 @@ fun BottomSheetPreview() {
             endTime = endTime,
             addTask = {},
             taskType = taskType,
+            viewModel = ListViewModel(1),
+            onRecordStop = TODO(),
             audioFile = audioFile,
         )
     }

@@ -1,6 +1,7 @@
 package org.hse.smartcalendar.data
 
 import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
@@ -17,8 +18,11 @@ class DailyTask (
     private var description : String,
     private var start : LocalTime,
     private var end: LocalTime,
-    //private var date: LocalDate,
+    private var date: LocalDate,
     ) {
+    companion object DefaultDate{//затычка, можешь убрать
+        val date = LocalDate.fromEpochDays((Clock.System.now().toEpochMilliseconds()/1000/60/60/24).toInt())
+    }
     init {
         if (title.isEmpty()) {
             throw EmptyTitleException()
@@ -66,6 +70,12 @@ class DailyTask (
 
     fun getDailyTaskDescription() : String {
         return description
+    }
+    fun getDailyTaskCreationTime() : LocalDateTime {
+        return creationTime
+    }
+    fun getTaskDate() : LocalDate {
+        return date
     }
 
     fun setDailyTaskType(newType: DailyTaskType) {
