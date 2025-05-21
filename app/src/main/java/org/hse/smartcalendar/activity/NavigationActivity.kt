@@ -37,6 +37,8 @@ class NavigationActivity : ComponentActivity() {
         enableEdgeToEdge()
         //ListViewModel have User, which connect to server
         val listModel = ListViewModel(intent.getLongExtra("id", -1))//check, it not -1. Maybe write throw exception
+        val token = intent.getStringExtra("token")
+        val token2 = token + token
         setContent {
             SmartCalendarTheme {
                 App(AuthViewModel(), listModel)

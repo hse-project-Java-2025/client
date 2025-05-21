@@ -1,11 +1,11 @@
 package org.hse.smartcalendar.network
 
 data class AuthRequest(
-    val name: String,
+    val username: String,
     val password: String
 )
 data class RegisterRequest(
-    val name: String,
+    val username: String,
     val email: String,
     val password: String
 )

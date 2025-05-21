@@ -70,7 +70,8 @@ fun AuthScreen(viewModel: AuthViewModel, authType:AuthType) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
-    val authState by viewModel.registerResult.observeAsState()
+    //val authState by viewModel.registerResult.observeAsState()
+    val loginState by viewModel.loginResult.observeAsState()
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     Button(
@@ -125,16 +126,15 @@ fun AuthScreen(viewModel: AuthViewModel, authType:AuthType) {
         ) {
             Text(authType.title)
         }
-        when (val state = authState) {
+        when (val state = loginState) {
             is NetworkResponse.Loading -> {
                 CircularProgressIndicator()
             }
             is NetworkResponse.Success -> {
-                Text("Login successful! Token: ${state.data.id}")
+                Text("Login successful! Token: ${state.data.token}")
                 Thread.sleep(1000)
-                val id = state.data.id
                 val intent = Intent(LocalContext.current, NavigationActivity::class.java)
-                intent.putExtra("id", id)
+                intent.putExtra("token", state.data.token)
                 context.startActivity(intent)
             }
             is NetworkResponse.Error -> {
