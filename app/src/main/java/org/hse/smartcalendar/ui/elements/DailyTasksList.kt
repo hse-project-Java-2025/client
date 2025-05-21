@@ -45,6 +45,8 @@ import kotlinx.datetime.LocalTime
 import kotlinx.datetime.format
 import kotlinx.datetime.format.MonthNames
 import kotlinx.datetime.format.char
+import org.hse.smartcalendar.AuthViewModel
+import org.hse.smartcalendar.activity.App
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.notification.ReminderViewModel
@@ -54,24 +56,20 @@ import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.utility.rememberNavigation
 import org.hse.smartcalendar.view.model.ListViewModel
+import org.hse.smartcalendar.view.model.SettingsViewModel
 import java.io.File
 import org.hse.smartcalendar.view.model.TaskEditViewModel
-import kotlin.time.toDuration
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DailyTasksList(
     viewModel: ListViewModel,
     taskEditViewModel: TaskEditViewModel,
+    reminderModel: ReminderViewModel,
     openDrawer: () -> Unit,
     navigation: Navigation,
     navController: NavController
 ) {
-    val reminderModel: ReminderViewModel = viewModel(
-        factory = ReminderViewModelFactory(
-            LocalContext.current.applicationContext as Application
-        )
-    )
     val audioFile: MutableState<File?> = rememberSaveable { mutableStateOf(null) }
     val taskTitle = rememberSaveable { mutableStateOf("") }
     val taskType = rememberSaveable { mutableStateOf(DailyTaskType.COMMON) }
@@ -126,8 +124,10 @@ fun DailyTasksList(
             startTime = startTime,
             endTime = endTime,
             viewModel = viewModel,
-            addTask = {task -> viewModel.addDailyTask(task); serverAddTask(task);
-                reminderModel.scheduleReminder(task, 10)}
+            addTask = {task -> viewModel.addDailyTask(task);
+                serverAddTask(task);
+                reminderModel.scheduleReminder(task)
+            }
         )
         }
     )
@@ -235,11 +235,15 @@ fun DailyTaskListPreview() {
         listViewModel = listViewModel
     )
     val navController = rememberNavController()
+    val reminderModel: ReminderViewModel = viewModel(factory = ReminderViewModelFactory(
+        LocalContext.current.applicationContext as Application
+    ))
     NavHost(navController, startDestination = Screens.CALENDAR.route) {
         composable(Screens.CALENDAR.route) {
             DailyTasksList(
                 listViewModel,
                 taskEditViewModel,
+                reminderModel,
                 {},
                 rememberNavigation(),
                 navController
@@ -256,6 +260,7 @@ fun DailyTaskListPreview() {
         }
     }
     SmartCalendarTheme {
-        DailyTasksList(listViewModel, taskEditViewModel, {}, rememberNavigation(), navController)
+        DailyTasksList(listViewModel, taskEditViewModel,
+            reminderModel, {}, rememberNavigation(), navController)
     }
 }

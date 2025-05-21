@@ -9,6 +9,252 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+
+public val Person: ImageVector
+    get() {
+        if (_Person != null) {
+            return _Person!!
+        }
+        _Person = ImageVector.Builder(
+            name = "Person",
+            defaultWidth = 24.dp,
+            defaultHeight = 24.dp,
+            viewportWidth = 960f,
+            viewportHeight = 960f
+        ).apply {
+            path(
+                fill = SolidColor(Color.Black),
+                fillAlpha = 1.0f,
+                stroke = null,
+                strokeAlpha = 1.0f,
+                strokeLineWidth = 1.0f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+                strokeLineMiter = 1.0f,
+                pathFillType = PathFillType.NonZero
+            ) {
+                moveTo(480f, 480f)
+                quadToRelative(-66f, 0f, -113f, -47f)
+                reflectiveQuadToRelative(-47f, -113f)
+                reflectiveQuadToRelative(47f, -113f)
+                reflectiveQuadToRelative(113f, -47f)
+                reflectiveQuadToRelative(113f, 47f)
+                reflectiveQuadToRelative(47f, 113f)
+                reflectiveQuadToRelative(-47f, 113f)
+                reflectiveQuadToRelative(-113f, 47f)
+                moveTo(160f, 800f)
+                verticalLineToRelative(-112f)
+                quadToRelative(0f, -34f, 17.5f, -62.5f)
+                reflectiveQuadTo(224f, 582f)
+                quadToRelative(62f, -31f, 126f, -46.5f)
+                reflectiveQuadTo(480f, 520f)
+                reflectiveQuadToRelative(130f, 15.5f)
+                reflectiveQuadTo(736f, 582f)
+                quadToRelative(29f, 15f, 46.5f, 43.5f)
+                reflectiveQuadTo(800f, 688f)
+                verticalLineToRelative(112f)
+                close()
+                moveToRelative(80f, -80f)
+                horizontalLineToRelative(480f)
+                verticalLineToRelative(-32f)
+                quadToRelative(0f, -11f, -5.5f, -20f)
+                reflectiveQuadTo(700f, 654f)
+                quadToRelative(-54f, -27f, -109f, -40.5f)
+                reflectiveQuadTo(480f, 600f)
+                reflectiveQuadToRelative(-111f, 13.5f)
+                reflectiveQuadTo(260f, 654f)
+                quadToRelative(-9f, 5f, -14.5f, 14f)
+                reflectiveQuadToRelative(-5.5f, 20f)
+                close()
+                moveToRelative(240f, -320f)
+                quadToRelative(33f, 0f, 56.5f, -23.5f)
+                reflectiveQuadTo(560f, 320f)
+                reflectiveQuadToRelative(-23.5f, -56.5f)
+                reflectiveQuadTo(480f, 240f)
+                reflectiveQuadToRelative(-56.5f, 23.5f)
+                reflectiveQuadTo(400f, 320f)
+                reflectiveQuadToRelative(23.5f, 56.5f)
+                reflectiveQuadTo(480f, 400f)
+                moveToRelative(0f, 320f)
+            }
+        }.build()
+        return _Person!!
+    }
+
+private var _Person: ImageVector? = null
+
+
+public val Password: ImageVector
+    get() {
+        if (_Password != null) {
+            return _Password!!
+        }
+        _Password = ImageVector.Builder(
+            name = "Password_2",
+            defaultWidth = 24.dp,
+            defaultHeight = 24.dp,
+            viewportWidth = 960f,
+            viewportHeight = 960f
+        ).apply {
+            path(
+                fill = SolidColor(Color.Black),
+                fillAlpha = 1.0f,
+                stroke = null,
+                strokeAlpha = 1.0f,
+                strokeLineWidth = 1.0f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+                strokeLineMiter = 1.0f,
+                pathFillType = PathFillType.NonZero
+            ) {
+                moveTo(160f, 520f)
+                quadToRelative(-50f, 0f, -85f, -35f)
+                reflectiveQuadToRelative(-35f, -85f)
+                reflectiveQuadToRelative(35f, -85f)
+                reflectiveQuadToRelative(85f, -35f)
+                reflectiveQuadToRelative(85f, 35f)
+                reflectiveQuadToRelative(35f, 85f)
+                reflectiveQuadToRelative(-35f, 85f)
+                reflectiveQuadToRelative(-85f, 35f)
+                moveTo(80f, 760f)
+                verticalLineToRelative(-80f)
+                horizontalLineToRelative(800f)
+                verticalLineToRelative(80f)
+                close()
+                moveToRelative(400f, -240f)
+                quadToRelative(-50f, 0f, -85f, -35f)
+                reflectiveQuadToRelative(-35f, -85f)
+                reflectiveQuadToRelative(35f, -85f)
+                reflectiveQuadToRelative(85f, -35f)
+                reflectiveQuadToRelative(85f, 35f)
+                reflectiveQuadToRelative(35f, 85f)
+                reflectiveQuadToRelative(-35f, 85f)
+                reflectiveQuadToRelative(-85f, 35f)
+                moveToRelative(320f, 0f)
+                quadToRelative(-50f, 0f, -85f, -35f)
+                reflectiveQuadToRelative(-35f, -85f)
+                reflectiveQuadToRelative(35f, -85f)
+                reflectiveQuadToRelative(85f, -35f)
+                reflectiveQuadToRelative(85f, 35f)
+                reflectiveQuadToRelative(35f, 85f)
+                reflectiveQuadToRelative(-35f, 85f)
+                reflectiveQuadToRelative(-85f, 35f)
+            }
+        }.build()
+        return _Password!!
+    }
+
+private var _Password: ImageVector? = null
+
+
+public val Fire: ImageVector
+    get() {
+        if (_Fire != null) {
+            return _Fire!!
+        }
+        _Fire = ImageVector.Builder(
+            name = "Fire",
+            defaultWidth = 16.dp,
+            defaultHeight = 16.dp,
+            viewportWidth = 16f,
+            viewportHeight = 16f
+        ).apply {
+            path(
+                fill = SolidColor(Color(0xFF000000)),
+                fillAlpha = 1.0f,
+                stroke = null,
+                strokeAlpha = 1.0f,
+                strokeLineWidth = 1.0f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+                strokeLineMiter = 1.0f,
+                pathFillType = PathFillType.NonZero
+            ) {
+                moveTo(8f, 16f)
+                curveToRelative(3.314f, 0f, 6f, -2f, 6f, -5.5f)
+                curveToRelative(0f, -1.5f, -0.5f, -4f, -2.5f, -6f)
+                curveToRelative(0.25f, 1.5f, -1.25f, 2f, -1.25f, 2f)
+                curveTo(11f, 4f, 9f, 0.5f, 6f, 0f)
+                curveToRelative(0.357f, 2f, 0.5f, 4f, -2f, 6f)
+                curveToRelative(-1.25f, 1f, -2f, 2.729f, -2f, 4.5f)
+                curveTo(2f, 14f, 4.686f, 16f, 8f, 16f)
+                moveToRelative(0f, -1f)
+                curveToRelative(-1.657f, 0f, -3f, -1f, -3f, -2.75f)
+                curveToRelative(0f, -0.75f, 0.25f, -2f, 1.25f, -3f)
+                curveTo(6.125f, 10f, 7f, 10.5f, 7f, 10.5f)
+                curveToRelative(-0.375f, -1.25f, 0.5f, -3.25f, 2f, -3.5f)
+                curveToRelative(-0.179f, 1f, -0.25f, 2f, 1f, 3f)
+                curveToRelative(0.625f, 0.5f, 1f, 1.364f, 1f, 2.25f)
+                curveTo(11f, 14f, 9.657f, 15f, 8f, 15f)
+            }
+        }.build()
+        return _Fire!!
+    }
+
+private var _Fire: ImageVector? = null
+
+public val Reminder: ImageVector
+    get() {
+        if (_Reminder != null) {
+            return _Reminder!!
+        }
+        _Reminder = ImageVector.Builder(
+            name = "Notifications",
+            defaultWidth = 24.dp,
+            defaultHeight = 24.dp,
+            viewportWidth = 960f,
+            viewportHeight = 960f
+        ).apply {
+            path(
+                fill = SolidColor(Color.Black),
+                fillAlpha = 1.0f,
+                stroke = null,
+                strokeAlpha = 1.0f,
+                strokeLineWidth = 1.0f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+                strokeLineMiter = 1.0f,
+                pathFillType = PathFillType.NonZero
+            ) {
+                moveTo(160f, 760f)
+                verticalLineToRelative(-80f)
+                horizontalLineToRelative(80f)
+                verticalLineToRelative(-280f)
+                quadToRelative(0f, -83f, 50f, -147.5f)
+                reflectiveQuadTo(420f, 168f)
+                verticalLineToRelative(-28f)
+                quadToRelative(0f, -25f, 17.5f, -42.5f)
+                reflectiveQuadTo(480f, 80f)
+                reflectiveQuadToRelative(42.5f, 17.5f)
+                reflectiveQuadTo(540f, 140f)
+                verticalLineToRelative(28f)
+                quadToRelative(80f, 20f, 130f, 84.5f)
+                reflectiveQuadTo(720f, 400f)
+                verticalLineToRelative(280f)
+                horizontalLineToRelative(80f)
+                verticalLineToRelative(80f)
+                close()
+                moveTo(480f, 880f)
+                quadToRelative(-33f, 0f, -56.5f, -23.5f)
+                reflectiveQuadTo(400f, 800f)
+                horizontalLineToRelative(160f)
+                quadToRelative(0f, 33f, -23.5f, 56.5f)
+                reflectiveQuadTo(480f, 880f)
+                moveTo(320f, 680f)
+                horizontalLineToRelative(320f)
+                verticalLineToRelative(-280f)
+                quadToRelative(0f, -66f, -47f, -113f)
+                reflectiveQuadToRelative(-113f, -47f)
+                reflectiveQuadToRelative(-113f, 47f)
+                reflectiveQuadToRelative(-47f, 113f)
+                close()
+            }
+        }.build()
+        return _Reminder!!
+    }
+
+private var _Reminder: ImageVector? = null
+
 public val Medal: ImageVector
     get() {
         if (_Medal != null) {

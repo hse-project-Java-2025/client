@@ -26,24 +26,27 @@ class StatisticsViewModel:ViewModel() {
         val FitnessPercent: Float = getPercent(fitness, totalMinutes)
         val WorkPercent: Float = getPercent(work, totalMinutes)
     }
+    class WeekTime(val all: Long){
+        val All: TimePeriod = TimePeriod(all)
+    }
     private class TodayTimeVars(val planned: Long, val completed: Long){
         val Planned: DayPeriod = DayPeriod(planned)
         val Completed: DayPeriod = DayPeriod(completed)
     }
-    private class ContiniusSuccessDaysVars(val record: Int, val now: Int){
+    private class ContinuesSuccessDaysVars(val record: Int, val now: Int){
         val Record: DaysAmount = DaysAmount(record)
         val Now: DaysAmount = DaysAmount(now)
     }
     private class AverageDayTimeVars(val totalWorkMinutes: Long, val totalDays: Long){
         val All: DayPeriod = DayPeriod(totalWorkMinutes/totalDays)
     }
-    private var ContiniusSuccessDays: ContiniusSuccessDaysVars
+    private var ContiniusSuccessDays: ContinuesSuccessDaysVars
     private var TotalTime: TotalTimeTaskTypes = TotalTimeTaskTypes(10000, 1000, 4000, 4000)
+    private val weekTime = WeekTime(60*60)
     private val AverageDayTime: AverageDayTimeVars
     private var TodayTime: TodayTimeVars = TodayTimeVars(228, 60)
-    //TODO Fitness/Common/Study CircularProgressBar
     init{
-        ContiniusSuccessDays = ContiniusSuccessDaysVars(6, 5)
+        ContiniusSuccessDays = ContinuesSuccessDaysVars(6, 5)
         AverageDayTime = AverageDayTimeVars(10000, 365)
     }
     fun update(){
@@ -75,5 +78,10 @@ class StatisticsViewModel:ViewModel() {
     fun getTotalTimeActivityTypes():TotalTimeTaskTypes{
         return TotalTimeTaskTypes(TotalTime.common, TotalTime.work, TotalTime.study, TotalTime.fitness)
     }
-
+    fun getWeekWorkTime(): TimePeriod{
+        return weekTime.All
+    }
+    fun getTypesInDay(): Long{
+        return 2
+    }
 }

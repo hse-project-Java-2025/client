@@ -25,6 +25,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
         }
     }
     compileOptions {
@@ -41,9 +42,13 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.work.runtime.ktx)
-
+    //kapt(libs.hilt.compiler)
+    //hilt for ViewModel providing without pass in function
+//    implementation(libs.hilt.android)
+//    implementation(libs.hilt.compiler)
+//    implementation(libs.androidx.hilt.navigation.compose)
     //reminder
+    implementation(libs.androidx.work.runtime.ktx)
     implementation("com.google.accompanist:accompanist-permissions:0.31.1-alpha")
     implementation("androidx.compose.runtime:runtime-livedata:1.7.8")
     //retrofit

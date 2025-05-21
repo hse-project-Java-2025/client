@@ -1,13 +1,10 @@
 package org.hse.smartcalendar.activity
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.os.Build
+import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.annotation.RequiresApi
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -17,13 +14,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import kotlinx.coroutines.launch
 import org.hse.smartcalendar.AuthViewModel
+import org.hse.smartcalendar.notification.ReminderViewModel
+import org.hse.smartcalendar.notification.ReminderViewModelFactory
+import org.hse.smartcalendar.ui.elements.AchievementsScreen
 import org.hse.smartcalendar.ui.elements.ChangeLogin
 import org.hse.smartcalendar.ui.elements.ChangePassword
 import org.hse.smartcalendar.ui.elements.DailyTasksList
@@ -35,6 +35,7 @@ import org.hse.smartcalendar.utility.AppDrawer
 import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.utility.rememberNavigation
 import org.hse.smartcalendar.view.model.ListViewModel
+import org.hse.smartcalendar.view.model.SettingsViewModel
 import org.hse.smartcalendar.view.model.StatisticsViewModel
 import org.hse.smartcalendar.view.model.TaskEditViewModel
 
@@ -73,7 +74,11 @@ fun App(
         val currentRoute = navigation.navController.currentDestination?.route
         coroutineScope.launch { DrawerState.open() }
     }
-
+    var settingsViewModel=SettingsViewModel()
+    val reminderModel: ReminderViewModel = viewModel(factory = ReminderViewModelFactory(
+        LocalContext.current.applicationContext as Application
+    ))
+    //val reminderModel: ReminderViewModel = viewModel(factory =  ReminderViewModel.Factory)
     //Main Navigation element  - Drawer open from left side
     //to Navigate pass navigation to function and call navigation.navigateTo()
     //If need more Screen/add to Screen, append to AppDrawer Button with Icons
@@ -97,7 +102,7 @@ fun App(
         ) {
             composable(route = Screens.SETTINGS.route) {
                 SettingsScreen(viewModel = authModel,
-                    navigation, openDrawer
+                    navigation, openDrawer, reminderModel
                 )
             }
             composable(Screens.CALENDAR.route) {
@@ -105,7 +110,8 @@ fun App(
                     listModel, openDrawer = openDrawer,
                     taskEditViewModel = editModel,
                     navigation = navigation,
-                    navController = navigation.navController
+                    navController = navigation.navController,
+                    reminderModel = reminderModel
                 )
             }
             composable(route = Screens.CHANGE_LOGIN.route) {
@@ -116,6 +122,9 @@ fun App(
             }
             composable(route = Screens.STATISTICS.route) {
                 Statistics(navigation, openDrawer, statisticsModel)
+            }
+            composable(route = Screens.ACHIEVEMENTS.route) {
+                AchievementsScreen(navigation, openDrawer, statisticsModel)
             }
             composable(Screens.EDIT_TASK.route) {
                 TaskEditWindow(
