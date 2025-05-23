@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -20,9 +21,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import org.hse.smartcalendar.AuthViewModel
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
@@ -52,8 +55,8 @@ fun ChangePassword(viewModel: AuthViewModel, navigation: Navigation, isChangeLog
     var password by remember { mutableStateOf("") }
     var newPassword1 by remember { mutableStateOf("") }
     var newPassword2 by remember { mutableStateOf("") }
-    val credentionalsState by viewModel.changeCredentialsResult.observeAsState()
-    val credintialsName = if (isChangeLogin) "login" else "password"
+    val credentialsState by viewModel.changeCredentialsResult.observeAsState()
+    val credentialsName = if (isChangeLogin) "login" else "password"
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -79,14 +82,14 @@ fun ChangePassword(viewModel: AuthViewModel, navigation: Navigation, isChangeLog
         TextField(
             value = newPassword1,
             onValueChange = { newPassword1 = it },
-            label = { Text("New $credintialsName") },
+            label = { Text("New $credentialsName") },
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation()
         )
         TextField(
             value = newPassword2,
             onValueChange = { newPassword2 = it },
-            label = {Text("Repeat new $credintialsName")},
+            label = {Text("Repeat new $credentialsName")},
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation()
         )
@@ -97,23 +100,28 @@ fun ChangePassword(viewModel: AuthViewModel, navigation: Navigation, isChangeLog
                     viewModel.changePassword(username, password, newPassword1, newPassword2)},
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Change $credintialsName")
+            Text("Change $credentialsName")
         }
         Spacer(modifier = Modifier.height(16.dp))
-        when (val state = credentionalsState) {
+        when (val state = credentialsState) {
             is NetworkResponse.Loading -> {
                 CircularProgressIndicator()
             }
             is NetworkResponse.Success -> {
-                Text("Change $credintialsName successful")
-                Thread.sleep(1000)
-                navigation.upPress()
-                viewModel.changeCredentialsResult.value = null
+                Text("Change $credentialsName successful")
+                LaunchedEffect(state) {
+                    delay(1000)
+                    navigation.upPress()
+                    viewModel.changeCredentialsResult.value = null
+                }
             }
             is NetworkResponse.Error -> {
                 Text("Error: ${state.message}", color = MaterialTheme.colorScheme.error)
             }
-            else -> {}
+            is NetworkResponse.NetworkError -> {
+                Text("Check internet connection: ${state.exceptionMessage}", color = MaterialTheme.colorScheme.error)
+            }
+            null -> {}
         }
     }
 }

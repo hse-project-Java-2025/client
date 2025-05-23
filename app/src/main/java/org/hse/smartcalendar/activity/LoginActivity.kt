@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -31,6 +32,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.hse.smartcalendar.activity.NavigationActivity
 import org.hse.smartcalendar.network.NetworkResponse
@@ -74,13 +76,6 @@ fun AuthScreen(viewModel: AuthViewModel, authType:AuthType) {
     val loginState by viewModel.loginResult.observeAsState()
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    Button(
-        onClick = {val intent = Intent(context, NavigationActivity::class.java)
-            context.startActivity(intent) },
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text("Calendar")
-    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -88,6 +83,13 @@ fun AuthScreen(viewModel: AuthViewModel, authType:AuthType) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Button(
+            onClick = {val intent = Intent(context, NavigationActivity::class.java)
+                context.startActivity(intent) },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Calendar")
+        }
         TextField(
             value = username,
             onValueChange = { username = it },
@@ -132,15 +134,21 @@ fun AuthScreen(viewModel: AuthViewModel, authType:AuthType) {
             }
             is NetworkResponse.Success -> {
                 Text("Login successful! Token: ${state.data.token}")
-                Thread.sleep(1000)
-                val intent = Intent(LocalContext.current, NavigationActivity::class.java)
-                intent.putExtra("token", state.data.token)
-                context.startActivity(intent)
+                val context = LocalContext.current
+                LaunchedEffect(state) {
+                    delay(1000)
+                    val intent = Intent(context, NavigationActivity::class.java)
+                    intent.putExtra("token", state.data.token)
+                    context.startActivity(intent)
+                }
             }
             is NetworkResponse.Error -> {
                 Text("Error: ${state.message}", color = MaterialTheme.colorScheme.error)
             }
-            else -> {}
+            is NetworkResponse.NetworkError -> {
+                Text("Check internet connection: ${state.exceptionMessage}", color = MaterialTheme.colorScheme.error)
+            }
+            null -> {}
         }
     }
 }
