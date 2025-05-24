@@ -1,4 +1,4 @@
-package org.hse.smartcalendar.ui.elements
+package org.hse.smartcalendar.ui.task
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background

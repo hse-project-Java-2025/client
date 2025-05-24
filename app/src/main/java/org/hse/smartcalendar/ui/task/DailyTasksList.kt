@@ -1,4 +1,4 @@
-package org.hse.smartcalendar.ui.elements
+package org.hse.smartcalendar.ui.task
 
 import android.app.Application
 import androidx.compose.foundation.layout.Arrangement
@@ -45,18 +45,16 @@ import kotlinx.datetime.LocalTime
 import kotlinx.datetime.format
 import kotlinx.datetime.format.MonthNames
 import kotlinx.datetime.format.char
-import org.hse.smartcalendar.AuthViewModel
-import org.hse.smartcalendar.activity.App
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.notification.ReminderViewModel
 import org.hse.smartcalendar.notification.ReminderViewModelFactory
+import org.hse.smartcalendar.ui.navigation.TopButton
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.utility.rememberNavigation
 import org.hse.smartcalendar.view.model.ListViewModel
-import org.hse.smartcalendar.view.model.SettingsViewModel
 import java.io.File
 import org.hse.smartcalendar.view.model.TaskEditViewModel
 
@@ -85,7 +83,11 @@ fun DailyTasksList(
     val isBottomSheetVisible = rememberSaveable { mutableStateOf(false) }
     Scaffold (
         topBar = {
-            TopButton(openMenu = openDrawer, navigation = navigation, text = formatLocalDate(viewModel.getScheduleDate()))
+            TopButton(
+                openMenu = openDrawer,
+                navigation = navigation,
+                text = formatLocalDate(viewModel.getScheduleDate())
+            )
         },
         bottomBar = { ListBottomBar(viewModel, scope, isBottomSheetVisible, sheetState) },
         content = { paddingValues ->

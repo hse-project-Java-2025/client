@@ -1,4 +1,4 @@
-package org.hse.smartcalendar.ui.elements
+package org.hse.smartcalendar.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +18,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.hse.smartcalendar.data.DailyTaskType
+import org.hse.smartcalendar.ui.elements.ChartCirclePie
+import org.hse.smartcalendar.ui.elements.ChartModel
+import org.hse.smartcalendar.ui.elements.CircleColored
+import org.hse.smartcalendar.ui.navigation.TopButton
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.rememberNavigation
@@ -25,7 +29,7 @@ import org.hse.smartcalendar.view.model.StatisticsViewModel
 import org.hse.smartcalendar.view.model.StatisticsViewModel.Companion.toPercent
 
 @Composable
-fun Statistics(navigation: Navigation, openMenu: () -> Unit, statisticsModel: StatisticsViewModel) {
+fun StatisticsScreen(navigation: Navigation, openMenu: () -> Unit, statisticsModel: StatisticsViewModel) {
     fun safeDelete(dividend: Long, divisor: Long): Float {
         if (divisor == (0).toLong()) {
             return (0).toFloat()
@@ -155,6 +159,6 @@ fun ProgressCircleWithText(progress: ()->Float, text: String, color: Color){
 @Composable
 fun StatisticsPreview(){
     SmartCalendarTheme {
-        Statistics(rememberNavigation(), {}, StatisticsViewModel())
+        StatisticsScreen(rememberNavigation(), {}, StatisticsViewModel())
     }
 }

@@ -1,7 +1,6 @@
 package org.hse.smartcalendar.activity
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -16,19 +15,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import org.hse.smartcalendar.LoginActivity
-import org.hse.smartcalendar.RegisterActivity
+import org.hse.smartcalendar.ui.navigation.App
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.Screens
@@ -62,13 +58,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             SmartCalendarTheme {
                 getNotificationsPermissions()
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    GreetingScreen(
-                        rememberNavigation(),
-                        name = "User",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                App()
             }
         }
     }

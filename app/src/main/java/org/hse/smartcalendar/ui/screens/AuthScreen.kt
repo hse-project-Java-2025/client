@@ -1,4 +1,4 @@
-package org.hse.smartcalendar.ui.elements
+package org.hse.smartcalendar
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,45 +18,36 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
-import org.hse.smartcalendar.AuthViewModel
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.Navigation
+import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.utility.rememberNavigation
+import org.hse.smartcalendar.view.model.ListViewModel
 
-@Preview
-@Composable
-fun ChangePassword() {
-    SmartCalendarTheme { ChangePassword(viewModel = AuthViewModel(), rememberNavigation()) }
+enum class AuthType(val title: String){
+    Login("Login"),
+    Register("Register")
 }
 
-@Preview
-@Composable
-fun ChangeLogin() {
-    SmartCalendarTheme { ChangeLogin(viewModel = AuthViewModel(), rememberNavigation()) }
-}
 
 @Composable
-fun ChangeLogin(viewModel: AuthViewModel, navigation: Navigation) {
-    ChangePassword(viewModel, navigation, true)
-}
-
-@Composable
-fun ChangePassword(viewModel: AuthViewModel, navigation: Navigation, isChangeLogin: Boolean = false) {
+fun AuthScreen(navigation: Navigation, viewModel: AuthViewModel, authType:AuthType) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var newPassword1 by remember { mutableStateOf("") }
-    var newPassword2 by remember { mutableStateOf("") }
-    val credentialsState by viewModel.changeCredentialsResult.observeAsState()
-    val credentialsName = if (isChangeLogin) "login" else "password"
+    var email by remember { mutableStateOf("") }
+    val loginState by viewModel.loginResult.observeAsState()
+    val coroutineScope = rememberCoroutineScope()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -64,12 +55,29 @@ fun ChangePassword(viewModel: AuthViewModel, navigation: Navigation, isChangeLog
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Button(
+            onClick = {
+                navigation.navigateToMainApp(Screens.CALENDAR.route)
+                      },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Calendar")
+        }
         TextField(
             value = username,
             onValueChange = { username = it },
             label = { Text("Username") },
             modifier = Modifier.fillMaxWidth()
         )
+        if (authType == AuthType.Register){
+            Spacer(modifier = Modifier.height(8.dp))
+            TextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email") },
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
         Spacer(modifier = Modifier.height(8.dp))
         TextField(
             value = password,
@@ -78,41 +86,33 @@ fun ChangePassword(viewModel: AuthViewModel, navigation: Navigation, isChangeLog
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation()
         )
-        Spacer(modifier = Modifier.height(8.dp))
-        TextField(
-            value = newPassword1,
-            onValueChange = { newPassword1 = it },
-            label = { Text("New $credentialsName") },
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation()
-        )
-        TextField(
-            value = newPassword2,
-            onValueChange = { newPassword2 = it },
-            label = {Text("Repeat new $credentialsName")},
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation()
-        )
         Spacer(modifier = Modifier.height(16.dp))
         Button(
-            onClick = {
-                if (isChangeLogin) viewModel.changeLogin(username, password, newPassword1, newPassword2) else
-                    viewModel.changePassword(username, password, newPassword1, newPassword2)},
-            modifier = Modifier.fillMaxWidth()
+            onClick = { if (authType==AuthType.Register)
+                viewModel.signup(username, email, password)
+            else
+                viewModel.login(username, password)},
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag(if (authType==AuthType.Register)
+                    "signupButtonTest"
+                else
+                    "loginButtonTest")
         ) {
-            Text("Change $credentialsName")
+            Text(authType.title)
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        when (val state = credentialsState) {
+        when (val state = loginState) {
             is NetworkResponse.Loading -> {
                 CircularProgressIndicator()
             }
             is NetworkResponse.Success -> {
-                Text("Change $credentialsName successful")
+                Text("Login successful! Token: ${state.data.token}")
+                val context = LocalContext.current
+                viewModel.initUser()
+                ListViewModel().initUserTasks()
                 LaunchedEffect(state) {
                     delay(1000)
-                    navigation.upPress()
-                    viewModel.changeCredentialsResult.value = null
+                    navigation.navigateToMainApp(Screens.CALENDAR.route)
                 }
             }
             is NetworkResponse.Error -> {
@@ -124,4 +124,17 @@ fun ChangePassword(viewModel: AuthViewModel, navigation: Navigation, isChangeLog
             null -> {}
         }
     }
+}
+
+
+@Preview
+@Composable
+fun AuthScreenPreview() {
+    SmartCalendarTheme { AuthScreen(rememberNavigation(), viewModel = AuthViewModel(), AuthType.Login) }
+}
+
+@Preview
+@Composable
+fun RegisterScreenPreview() {
+    SmartCalendarTheme { AuthScreen(rememberNavigation(), viewModel = AuthViewModel(), AuthType.Register) }
 }

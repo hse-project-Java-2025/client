@@ -1,4 +1,4 @@
-package org.hse.smartcalendar.ui.elements
+package org.hse.smartcalendar.ui.navigation
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
@@ -11,6 +11,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.navigation.NavController
 import org.hse.smartcalendar.data.SettingsButton
+import org.hse.smartcalendar.ui.elements.BrainCircuit
+import org.hse.smartcalendar.ui.elements.Calendar_add_on
+import org.hse.smartcalendar.ui.elements.Finance
+import org.hse.smartcalendar.ui.elements.Follow_the_signs
+import org.hse.smartcalendar.ui.elements.Medal
+
 enum class Screen {
     Login,
     Calendar,
