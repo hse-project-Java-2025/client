@@ -45,6 +45,7 @@ class NavigationActivity : ComponentActivity() {
         enableEdgeToEdge()
         val listModel = ListViewModel(intent.getLongExtra("id", -1))
         val editModel = TaskEditViewModel(listModel)
+        val token = intent.getStringExtra("token")
         setContent {
             SmartCalendarTheme {
                 App(AuthViewModel(), listModel, editModel)
@@ -115,10 +116,10 @@ fun App(
                 )
             }
             composable(route = Screens.CHANGE_LOGIN.route) {
-                ChangeLogin(authModel)
+                ChangeLogin(authModel, navigation)
             }
             composable(route = Screens.CHANGE_PASSWORD.route) {
-                ChangePassword(authModel)
+                ChangePassword(authModel, navigation)
             }
             composable(route = Screens.STATISTICS.route) {
                 Statistics(navigation, openDrawer, statisticsModel)

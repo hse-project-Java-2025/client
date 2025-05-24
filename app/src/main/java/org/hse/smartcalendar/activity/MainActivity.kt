@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import org.hse.smartcalendar.LoginActivity
+import org.hse.smartcalendar.RegisterActivity
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 
 
@@ -98,6 +99,16 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
                 .fillMaxWidth()
                 .testTag("authorizationButtonTest")) {
             Text("Authorization")
+        }
+        Button(
+            onClick = {
+                val intent = Intent(context, RegisterActivity::class.java)
+                context.startActivity(intent)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("registerButtonTest")) {
+            Text("Signup")
         }
     }
 }
