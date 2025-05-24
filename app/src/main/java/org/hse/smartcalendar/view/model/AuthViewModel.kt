@@ -5,22 +5,26 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import org.hse.smartcalendar.data.User
 import org.hse.smartcalendar.network.ApiClient
 import org.hse.smartcalendar.network.CredentialsResponse
 import org.hse.smartcalendar.network.LoginRequest
 import org.hse.smartcalendar.network.LoginResponse
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.network.RegisterRequest
+import org.hse.smartcalendar.network.UserInfoResponse
 import org.hse.smartcalendar.repository.AuthRepository
 
 class AuthViewModel : ViewModel() {
-    private val api = ApiClient.authApiService
-    private val authRepository: AuthRepository = AuthRepository(api)
+    private val authRepository: AuthRepository = AuthRepository(ApiClient.authApiService)
     private val _loginResult = MutableLiveData<NetworkResponse<LoginResponse>>()
     val loginResult: LiveData<NetworkResponse<LoginResponse>> = _loginResult
 
     val _changeCredentialsResult = MutableLiveData<NetworkResponse<CredentialsResponse>>()
     val changeCredentialsResult = _changeCredentialsResult
+
+    val _userInfoResult = MutableLiveData<NetworkResponse<UserInfoResponse>>()
+    val userInfoResult = _userInfoResult
     fun signup(username: String, email: String, password: String) {
         viewModelScope.launch {
             _loginResult.value = NetworkResponse.Loading
@@ -47,6 +51,13 @@ class AuthViewModel : ViewModel() {
             _changeCredentialsResult.value = NetworkResponse.Loading
             _changeCredentialsResult.value =
                 authRepository.changeLogin(username, password, newUsername1, newUsername2)
+        }
+    }
+    fun initUser(){
+        viewModelScope.launch {
+            userInfoResult.value = NetworkResponse.Loading
+            userInfoResult.value =
+                authRepository.userInfo()
         }
     }
 }

@@ -8,17 +8,17 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import java.util.UUID
 
-class DailyTask (
+data class DailyTask (
     private val id: UUID = UUID.randomUUID(),
     private var title : String,
     private var isComplete: Boolean = false,
-    private var type: DailyTaskType = DailyTaskType.COMMON,
-    private val creationTime : LocalDateTime =
+    private var type: DailyTaskType = DailyTaskType.COMMON,//Int
+    private val creationTime : LocalDateTime =//пока не нужен
         Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
     private var description : String,
-    private var start : LocalTime,
-    private var end: LocalTime,
-    private var date: LocalDate,
+    private var start : LocalTime,//hour, minute
+    private var end: LocalTime,//hour, minute
+    private var date: LocalDate,//year, month, day
     ) {
     companion object DefaultDate{//затычка, можешь убрать
         val date = LocalDate.fromEpochDays((Clock.System.now().toEpochMilliseconds()/1000/60/60/24).toInt())

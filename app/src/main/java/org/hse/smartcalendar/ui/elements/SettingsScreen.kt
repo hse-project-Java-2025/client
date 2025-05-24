@@ -47,7 +47,7 @@ import org.hse.smartcalendar.view.model.TaskEditViewModel
 @Composable
 fun SettingsScreenPreview() {
     SmartCalendarTheme {
-        val listModel = ListViewModel(-1)
+        val listModel = ListViewModel()
         App(
             listModel = listModel,
             authModel = AuthViewModel(),

@@ -10,5 +10,12 @@ sealed class NetworkResponse<out T> {
             return Error("Server response " + response.message() + "code " + response.code()
                 .toString())
         }
+        fun errorId(): Error{
+            return Error("id is null")
+        }
+        fun errorNullResponse(): Error{
+            return Error("token is null")
+        }
+
     }
 }

@@ -125,7 +125,6 @@ fun DailyTasksList(
             endTime = endTime,
             viewModel = viewModel,
             addTask = {task -> viewModel.addDailyTask(task);
-                serverAddTask(task);
                 reminderModel.scheduleReminder(task)
             }
         )
@@ -221,7 +220,7 @@ fun formatLocalDate(date: LocalDate): String {
 @Composable
 @Preview(showBackground = true)
 fun DailyTaskListPreview() {
-    val listViewModel = ListViewModel(1488)
+    val listViewModel = ListViewModel()
     listViewModel.addDailyTask(
         DailyTask(
             title = "sss",

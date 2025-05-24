@@ -439,7 +439,7 @@ fun BottomSheetPreview() {
             endTime = endTime,
             addTask = {},
             taskType = taskType,
-            viewModel = ListViewModel(1),
+            viewModel = ListViewModel(),
             onRecordStop = TODO(),
             audioFile = audioFile,
         )

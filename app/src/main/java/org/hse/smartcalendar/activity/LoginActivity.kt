@@ -37,6 +37,7 @@ import kotlinx.coroutines.launch
 import org.hse.smartcalendar.activity.NavigationActivity
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
+import org.hse.smartcalendar.view.model.ListViewModel
 
 enum class AuthType(val title: String){
     Login("Login"),
@@ -135,6 +136,8 @@ fun AuthScreen(viewModel: AuthViewModel, authType:AuthType) {
             is NetworkResponse.Success -> {
                 Text("Login successful! Token: ${state.data.token}")
                 val context = LocalContext.current
+                viewModel.initUser()
+                ListViewModel().initUserTasks()
                 LaunchedEffect(state) {
                     delay(1000)
                     val intent = Intent(context, NavigationActivity::class.java)

@@ -43,12 +43,15 @@ class NavigationActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val listModel = ListViewModel(intent.getLongExtra("id", -1))
+        val authModel = AuthViewModel()
+        authModel.initUser()
+        val listModel = ListViewModel()
+        listModel.initUserTasks()
         val editModel = TaskEditViewModel(listModel)
         val token = intent.getStringExtra("token")
         setContent {
             SmartCalendarTheme {
-                App(AuthViewModel(), listModel, editModel)
+                App(authModel, listModel, editModel)
             }
         }
     }
@@ -71,7 +74,7 @@ fun App(
         navBackStackEntry?.destination?.route ?: Screens.CALENDAR.route
     val isExpandedScreen =false
     val DrawerState = rememberDrawerState(isExpandedScreen)
-    val openDrawer: ()-> Unit = { 
+    val openDrawer: ()-> Unit = {
         val currentRoute = navigation.navController.currentDestination?.route
         coroutineScope.launch { DrawerState.open() }
     }

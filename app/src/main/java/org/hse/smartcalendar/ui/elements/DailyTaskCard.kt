@@ -121,7 +121,7 @@ fun DailyTaskCard(
 @Composable
 @Preview(showBackground = true)
 fun DailyTaskCardPreview() {
-    val taskEditViewModel = TaskEditViewModel(listViewModel = ListViewModel(1488))
+    val taskEditViewModel = TaskEditViewModel(listViewModel = ListViewModel())
     val previewCommonTask = DailyTask(
         title = "Common title example",
         type = DailyTaskType.COMMON,

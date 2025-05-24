@@ -171,7 +171,7 @@ fun TaskEditWindowPreview() {
         onCancel = { },
         onDelete = { },
         taskEditViewModel = TaskEditViewModel(
-            listViewModel = ListViewModel(1488)
+            listViewModel = ListViewModel()
         ),
         navController = NavController(
             LocalContext.current

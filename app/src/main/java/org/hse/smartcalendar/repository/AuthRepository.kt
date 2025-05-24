@@ -1,18 +1,21 @@
 package org.hse.smartcalendar.repository
 
+import org.hse.smartcalendar.data.User
 import org.hse.smartcalendar.network.ApiClient
-import org.hse.smartcalendar.network.ApiInterface
+import org.hse.smartcalendar.network.AuthApiInterface
 import org.hse.smartcalendar.network.ChangeCredentialsRequest
 import org.hse.smartcalendar.network.CredentialsResponse
 import org.hse.smartcalendar.network.LoginRequest
 import org.hse.smartcalendar.network.LoginResponse
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.network.RegisterRequest
+import org.hse.smartcalendar.network.UserInfoResponse
+import retrofit2.Response
 
 //Repository - логика работы с задачами, получает данные,
 // формирует и отправляет запрос, возвращает данные/exception
 @Suppress("LiftReturnOrAssignment")
-class AuthRepository(private val api: ApiInterface) {
+class AuthRepository(private val api: AuthApiInterface) {
     suspend fun loginUser(loginRequest: LoginRequest): NetworkResponse<LoginResponse> {
         try {
             val responseLogin = api.loginUser(loginRequest)
@@ -72,5 +75,23 @@ class AuthRepository(private val api: ApiInterface) {
         }
         val request = ChangeCredentialsRequest(username, password, newUsername1, password)
         return changeCredentials(request)
+    }
+    suspend fun userInfo(): NetworkResponse<UserInfoResponse> {
+        try {
+            val responseUserInfo = api.getUserInfo()
+            if (responseUserInfo.isSuccessful){
+                val responseBody = responseUserInfo.body()
+                if (responseBody!=null) {
+                    User.set(responseBody.id, responseBody.username, responseBody.email)
+                    return NetworkResponse.Success(responseBody)
+                } else {
+                    return NetworkResponse.Error("response is null")
+                }
+            } else {
+                return NetworkResponse.fromResponse(responseUserInfo)
+            }
+        } catch (e: Exception) {
+            return NetworkResponse.NetworkError(e.message.toString())
+        }
     }
 }

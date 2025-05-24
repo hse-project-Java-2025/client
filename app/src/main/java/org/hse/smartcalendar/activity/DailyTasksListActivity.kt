@@ -26,7 +26,7 @@ class DailyTasksListActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val listViewModel = ListViewModel(intent.getLongExtra("id", -1))
+        val listViewModel = ListViewModel()
         val taskEditViewModel = TaskEditViewModel(listViewModel = listViewModel)
         setContent {
             val navController = rememberNavController()

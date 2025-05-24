@@ -189,7 +189,7 @@ data class AchievementData(
 @Composable
 fun AchievementsScreenPreview() {
     SmartCalendarTheme {
-        val listModel = ListViewModel(-1)
+        val listModel = ListViewModel()
         App(
             listModel = listModel,
             authModel = AuthViewModel(),

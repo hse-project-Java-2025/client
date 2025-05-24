@@ -3,7 +3,10 @@ package org.hse.smartcalendar.view.model
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
@@ -15,9 +18,16 @@ import kotlinx.datetime.toLocalDateTime
 import org.hse.smartcalendar.data.DailySchedule
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.User
+import org.hse.smartcalendar.network.ApiClient
+import org.hse.smartcalendar.network.NetworkResponse
+import org.hse.smartcalendar.repository.TaskRepository
 import java.io.File
 
-class ListViewModel(id: Long) : ViewModel() {
+class ListViewModel() : ViewModel() {
+    private val taskRepository: TaskRepository = TaskRepository(ApiClient.taskApiService)
+    var _actionResult = MutableLiveData<NetworkResponse<Any>>()
+    val actionResult = _actionResult
+
     fun getScreenDate(): LocalDate{
         return dailyTaskSchedule.date
     }
@@ -27,7 +37,7 @@ class ListViewModel(id: Long) : ViewModel() {
             .toLocalDateTime(TimeZone.currentSystemDefault()).date
     )
     var dailyTaskList: SnapshotStateList<DailyTask>
-    private val user: User = User(id)
+    private val user: User = User
     init {
         val date: LocalDate =
             Clock.System.now()
@@ -36,6 +46,12 @@ class ListViewModel(id: Long) : ViewModel() {
         dailyTaskList = SnapshotStateList(dailyTaskSchedule.getDailyTaskList())
     }
 
+    fun initUserTasks(){
+        viewModelScope.launch {
+            _actionResult.value = NetworkResponse.Loading
+            _actionResult.value = taskRepository.initUserTasks()
+        }
+    }
     fun addDailyTask(newTask : DailyTask) {
         try {
             dailyTaskSchedule.addDailyTask(newTask)
@@ -45,6 +61,10 @@ class ListViewModel(id: Long) : ViewModel() {
         dailyTaskList.add(newTask)
         dailyTaskList.sortBy { task ->
             task.getDailyTaskStartTime()
+        }
+        viewModelScope.launch {
+            _actionResult.value = NetworkResponse.Loading
+            _actionResult.value = taskRepository.addTask(newTask)
         }
     }
 
