@@ -189,11 +189,7 @@ data class AchievementData(
 @Composable
 fun AchievementsScreenPreview() {
     SmartCalendarTheme {
-        val listModel = ListViewModel()
         App(
-            listModel = listModel,
-            authModel = AuthViewModel(),
-            editModel = TaskEditViewModel(listModel),
             startDestination = Screens.ACHIEVEMENTS.route
         )
     }

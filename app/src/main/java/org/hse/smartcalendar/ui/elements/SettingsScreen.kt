@@ -49,9 +49,6 @@ fun SettingsScreenPreview() {
     SmartCalendarTheme {
         val listModel = ListViewModel()
         App(
-            listModel = listModel,
-            authModel = AuthViewModel(),
-            editModel = TaskEditViewModel(listModel),
             startDestination = Screens.SETTINGS.route
         )
     }

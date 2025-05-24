@@ -1,8 +1,6 @@
 package org.hse.smartcalendar.activity
 
 import android.Manifest
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -32,6 +30,9 @@ import androidx.core.content.ContextCompat
 import org.hse.smartcalendar.LoginActivity
 import org.hse.smartcalendar.RegisterActivity
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
+import org.hse.smartcalendar.utility.Navigation
+import org.hse.smartcalendar.utility.Screens
+import org.hse.smartcalendar.utility.rememberNavigation
 
 
 class MainActivity : ComponentActivity() {
@@ -62,7 +63,8 @@ class MainActivity : ComponentActivity() {
             SmartCalendarTheme {
                 getNotificationsPermissions()
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
+                    GreetingScreen(
+                        rememberNavigation(),
                         name = "User",
                         modifier = Modifier.padding(innerPadding)
                     )
@@ -73,8 +75,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    val context = LocalContext.current
+fun GreetingScreen(navigation: Navigation, modifier: Modifier = Modifier, name: String = "User") {
     Column (modifier = Modifier
         .fillMaxSize()
         .padding(16.dp),
@@ -92,8 +93,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 
         Button(
             onClick = {
-                val intent = Intent(context, LoginActivity::class.java)
-                context.startActivity(intent)
+                navigation.navigateTo(Screens.LOGIN.route)
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -102,8 +102,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
         }
         Button(
             onClick = {
-                val intent = Intent(context, RegisterActivity::class.java)
-                context.startActivity(intent)
+                navigation.navigateTo(Screens.REGISTER.route)
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -117,6 +116,6 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun GreetingPreview() {
     SmartCalendarTheme {
-        Greeting("User")
+        GreetingScreen(rememberNavigation(), name ="User")
     }
 }

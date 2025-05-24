@@ -19,7 +19,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.navigation
 import kotlinx.coroutines.launch
+import org.hse.smartcalendar.AuthScreen
+import org.hse.smartcalendar.AuthType
 import org.hse.smartcalendar.AuthViewModel
 import org.hse.smartcalendar.notification.ReminderViewModel
 import org.hse.smartcalendar.notification.ReminderViewModelFactory
@@ -32,6 +35,8 @@ import org.hse.smartcalendar.ui.elements.Statistics
 import org.hse.smartcalendar.ui.elements.TaskEditWindow
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.AppDrawer
+import org.hse.smartcalendar.utility.Navigation
+import org.hse.smartcalendar.utility.ScreenNavigation
 import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.utility.rememberNavigation
 import org.hse.smartcalendar.view.model.ListViewModel
@@ -43,15 +48,9 @@ class NavigationActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val authModel = AuthViewModel()
-        authModel.initUser()
-        val listModel = ListViewModel()
-        listModel.initUserTasks()
-        val editModel = TaskEditViewModel(listModel)
-        val token = intent.getStringExtra("token")
         setContent {
             SmartCalendarTheme {
-                App(authModel, listModel, editModel)
+                App()
             }
         }
     }
@@ -61,13 +60,133 @@ class NavigationActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App(
-    authModel: AuthViewModel,
-    listModel: ListViewModel,
-    editModel: TaskEditViewModel,
-    startDestination: String = Screens.CALENDAR.route
+    startDestination: String = Screens.GREETING.route
 ) {
-    val statisticsModel = StatisticsViewModel()
+    val authModel = AuthViewModel()
     val navigation = rememberNavigation()
+    val coroutineScope = rememberCoroutineScope()
+    val currentRoute = navigation.navController.currentDestination?.route ?: startDestination
+
+    //Всё что касается drawer
+    val navBackStackEntry by navigation.navController.currentBackStackEntryAsState()
+    val initialRoute =
+        navBackStackEntry?.destination?.route ?: Screens.CALENDAR.route
+    val drawerEnabled = currentRoute !in listOf(Screens.LOGIN.route, Screens.GREETING.route, Screens.REGISTER.route)
+    val isExpandedScreen =false
+    val DrawerState = org.hse.smartcalendar.activity.rememberDrawerState(isExpandedScreen)
+    val openDrawer: ()-> Unit = {
+        coroutineScope.launch { DrawerState.open() }
+    }
+    if (drawerEnabled) {
+        ModalNavigationDrawer(
+            drawerContent = {
+                AppDrawer(
+                    currentRoute = initialRoute,
+                    navigation,
+                    closeDrawer = { coroutineScope.launch { DrawerState.close() } }
+                )
+            },
+            drawerState = DrawerState,
+            gesturesEnabled = !isExpandedScreen
+        ){NestedNavigator(navigation, authModel,openDrawer )
+        }
+    } else {
+        NestedNavigator(navigation, authModel,openDrawer )
+    }
+}
+@Composable
+fun NestedNavigator(navigation: Navigation, authModel: AuthViewModel,openDrawer: ()-> Unit){
+    val listModel =  ListViewModel()
+    val editModel =  TaskEditViewModel(listModel)
+    val statisticsModel = StatisticsViewModel()
+    var settingsViewModel=SettingsViewModel()
+    val reminderModel: ReminderViewModel = viewModel(factory = ReminderViewModelFactory(
+        LocalContext.current.applicationContext as Application
+    ))
+    NavHost(
+        navController = navigation.navController,
+        startDestination = ScreenNavigation.AUTH.route
+    ) {
+        // Auth Graph
+        navigation(
+            startDestination = Screens.GREETING.route,
+            route = ScreenNavigation.AUTH.route
+        ) {
+            composable(Screens.REGISTER.route) {
+                AuthScreen(navigation, authModel, AuthType.Register)
+            }
+            composable(Screens.LOGIN.route) {
+                AuthScreen(navigation, authModel, AuthType.Login)
+            }
+            composable(Screens.GREETING.route) {
+                GreetingScreen(navigation)
+            }
+        }
+
+        // Main Graph with Drawer
+        navigation(
+            startDestination = Screens.CALENDAR.route,
+            route = ScreenNavigation.MAIN.route
+        ) {
+            composable(route = Screens.SETTINGS.route) {
+                SettingsScreen(viewModel = authModel,
+                    navigation, openDrawer, reminderModel
+                )
+            }
+            composable(Screens.CALENDAR.route) {
+                DailyTasksList(
+                    listModel, openDrawer = openDrawer,
+                    taskEditViewModel = editModel,
+                    navigation = navigation,
+                    navController = navigation.navController,
+                    reminderModel = reminderModel
+                )
+            }
+            composable(route = Screens.CHANGE_LOGIN.route) {
+                ChangeLogin(authModel, navigation)
+            }
+            composable(route = Screens.CHANGE_PASSWORD.route) {
+                ChangePassword(authModel, navigation)
+            }
+            composable(route = Screens.STATISTICS.route) {
+                Statistics(navigation, openDrawer, statisticsModel)
+            }
+            composable(route = Screens.ACHIEVEMENTS.route) {
+                AchievementsScreen(navigation, openDrawer, statisticsModel)
+            }
+            composable(Screens.EDIT_TASK.route) {
+                TaskEditWindow(
+                    onSave = {},
+                    onDelete = { task ->
+                        listModel.removeDailyTask(task)
+
+                    }, onCancel = {},
+                    taskEditViewModel = editModel, navController = navigation.navController
+                )
+            }
+        }
+    }
+}
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun Authentication(navigation: Navigation, authModel: AuthViewModel, startDestination: String) {
+    NavHost(navigation.navController, startDestination = startDestination) {
+        composable(Screens.REGISTER.route) {
+            AuthScreen(navigation, authModel, AuthType.Register)
+        }
+        composable(Screens.LOGIN.route) {
+            AuthScreen(navigation, authModel, AuthType.Login)
+        }
+        composable(Screens.GREETING.route) {
+            GreetingScreen(navigation)
+        }
+    }
+}
+@Composable
+fun MainApp(navigation: Navigation, authModel: AuthViewModel,startDestination: String){
+    val listModel =  ListViewModel()
+    val editModel =  TaskEditViewModel(listModel)
+    val statisticsModel = StatisticsViewModel()
     val coroutineScope = rememberCoroutineScope()
     val navBackStackEntry by navigation.navController.currentBackStackEntryAsState()
     val initialRoute =
@@ -75,14 +194,12 @@ fun App(
     val isExpandedScreen =false
     val DrawerState = rememberDrawerState(isExpandedScreen)
     val openDrawer: ()-> Unit = {
-        val currentRoute = navigation.navController.currentDestination?.route
         coroutineScope.launch { DrawerState.open() }
     }
     var settingsViewModel=SettingsViewModel()
     val reminderModel: ReminderViewModel = viewModel(factory = ReminderViewModelFactory(
         LocalContext.current.applicationContext as Application
     ))
-    //val reminderModel: ReminderViewModel = viewModel(factory =  ReminderViewModel.Factory)
     //Main Navigation element  - Drawer open from left side
     //to Navigate pass navigation to function and call navigation.navigateTo()
     //If need more Screen/add to Screen, append to AppDrawer Button with Icons
@@ -145,22 +262,13 @@ fun App(
 
 }
 
-
-/**
- * Determine the drawer state to pass to the modal drawer.
- */
 @Composable
 private fun rememberDrawerState(isExpandedScreen: Boolean): DrawerState {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
 
     return if (!isExpandedScreen) {
-        // If we want to allow showing the drawer, we use a real, remembered drawer
-        // state defined above
         drawerState
     } else {
-        // If we don't want to allow the drawer to be shown, we provide a drawer state
-        // that is locked closed. This is intentionally not remembered, because we
-        // don't want to keep track of any changes and always keep it closed
         DrawerState(DrawerValue.Closed)
     }
 }

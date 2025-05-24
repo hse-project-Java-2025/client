@@ -37,6 +37,9 @@ import kotlinx.coroutines.launch
 import org.hse.smartcalendar.activity.NavigationActivity
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
+import org.hse.smartcalendar.utility.Navigation
+import org.hse.smartcalendar.utility.Screens
+import org.hse.smartcalendar.utility.rememberNavigation
 import org.hse.smartcalendar.view.model.ListViewModel
 
 enum class AuthType(val title: String){
@@ -51,7 +54,7 @@ class RegisterActivity : ComponentActivity() {
         val authViewModel = ViewModelProvider(this)[AuthViewModel::class.java]
         setContent {
             SmartCalendarTheme {
-                AuthScreen(authViewModel, AuthType.Register)
+                AuthScreen(rememberNavigation(), authViewModel, AuthType.Register)
             }
         }
     }
@@ -62,20 +65,18 @@ class LoginActivity: ComponentActivity() {
         val authViewModel = ViewModelProvider(this)[AuthViewModel::class.java]
         setContent {
             SmartCalendarTheme {
-                AuthScreen(authViewModel, AuthType.Login)
+                AuthScreen(rememberNavigation(), authViewModel, AuthType.Login)
             }
         }
     }
 }
 
 @Composable
-fun AuthScreen(viewModel: AuthViewModel, authType:AuthType) {
+fun AuthScreen(navigation: Navigation, viewModel: AuthViewModel, authType:AuthType) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
-    //val authState by viewModel.registerResult.observeAsState()
     val loginState by viewModel.loginResult.observeAsState()
-    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     Column(
         modifier = Modifier
@@ -85,8 +86,9 @@ fun AuthScreen(viewModel: AuthViewModel, authType:AuthType) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(
-            onClick = {val intent = Intent(context, NavigationActivity::class.java)
-                context.startActivity(intent) },
+            onClick = {
+                navigation.navigateToMainApp(Screens.CALENDAR.route)
+                      },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Calendar")
@@ -160,11 +162,11 @@ fun AuthScreen(viewModel: AuthViewModel, authType:AuthType) {
 @Preview
 @Composable
 fun AuthScreenPreview() {
-    SmartCalendarTheme { AuthScreen(viewModel = AuthViewModel(), AuthType.Login) }
+    SmartCalendarTheme { AuthScreen(rememberNavigation(), viewModel = AuthViewModel(), AuthType.Login) }
 }
 
 @Preview
 @Composable
 fun RegisterScreenPreview() {
-    SmartCalendarTheme { AuthScreen(viewModel = AuthViewModel(), AuthType.Register) }
+    SmartCalendarTheme { AuthScreen(rememberNavigation(), viewModel = AuthViewModel(), AuthType.Register) }
 }
