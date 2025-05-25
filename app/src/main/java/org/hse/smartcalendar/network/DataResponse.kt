@@ -1,8 +1,8 @@
 package org.hse.smartcalendar.network
 
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
-import kotlinx.datetime.LocalDate
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
 import java.util.UUID
@@ -33,27 +33,26 @@ data class UserInfoResponse(
     val id: Long
 )
 data class TaskResponse(
-    val id: UUID,
+    val id: String,
     val title: String,
     val description: String,
-    val start: LocalTime,
-    val end: LocalTime,
-    val date: LocalDate,
-    val type: DailyTaskType,
-    val creationTime: LocalDateTime,
+    val start: String,
+    val end: String,
+    val date: String,
+    val type: String,
+    val creationTime: String,
     val complete: Boolean
-){
-        fun toTask(): DailyTask{
+)
+        fun toTask(response: TaskResponse): DailyTask{
             return DailyTask(
-                id = this.id,
-                title =this.title,
-                description = this.description,
-                start = this.start,
-                end = this.end,
-                date = this.date,
-                type = this.type,
-                creationTime = this.creationTime,
-                isComplete = this.complete
+                id = UUID.fromString(response.id),
+                title =response.title,
+                description = response.description,
+                start = LocalTime.parse(response.start),
+                end = LocalTime.parse(response.end),
+                date = LocalDate.parse(response.date),
+                type = DailyTaskType.fromString(response.type),
+                creationTime = LocalDateTime.parse(response.creationTime),
+                isComplete = response.complete
             )
         }
-}

@@ -30,7 +30,7 @@ class InitViewModel:ViewModel() {
                 }
                 return@launch
             }
-            _initResult.value = taskRepository.initUserTasks()
+            initResult.value = taskRepository.initUserTasks()
             if (initResult.value !is NetworkResponse.Success){
                 return@launch
             }

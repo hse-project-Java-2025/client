@@ -16,6 +16,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.delay
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.utility.Navigation
@@ -24,9 +25,11 @@ import org.hse.smartcalendar.view.model.InitViewModel
 
 @Composable
 fun LoadingScreen(navigation: Navigation){
-    val viewModel = InitViewModel()
+    val viewModel: InitViewModel = viewModel()//гарантирует 1 модель на Composable
     val initState by viewModel.initResult.observeAsState()
-    viewModel.initUser()
+    LaunchedEffect(Unit) {
+        viewModel.initUser()
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()

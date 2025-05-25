@@ -9,6 +9,7 @@ import kotlinx.datetime.LocalTime
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
+import okhttp3.logging.HttpLoggingInterceptor
 import org.hse.smartcalendar.data.DailyTaskType
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -18,17 +19,18 @@ object ApiClient {
     var authToken: String? = null
     private val client = OkHttpClient.Builder()
         .addInterceptor(AuthInterceptor { authToken })
+        .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
         .build()
     val gson = GsonBuilder()
-        .registerTypeAdapter(kotlinx.datetime.LocalDate::class.java, LocalDateAdapter())
-        .registerTypeAdapter(LocalTime::class.java, LocalTimeAdapter())
-        .registerTypeAdapter(kotlinx.datetime.LocalDateTime::class.java, LocalDateTimeAdapter())
-        .registerTypeAdapter(DailyTaskType::class.java, DailyTaskTypeAdapter())
+//        .registerTypeAdapter(kotlinx.datetime.LocalDate::class.java, LocalDateAdapter())
+//        .registerTypeAdapter(LocalTime::class.java, LocalTimeAdapter())
+//        .registerTypeAdapter(kotlinx.datetime.LocalDateTime::class.java, LocalDateTimeAdapter())
+//        .registerTypeAdapter(DailyTaskType::class.java, DailyTaskTypeAdapter())
         .create()
     private val retrofit = Retrofit.Builder()
             .baseUrl(SERVER_BASE_URL)
             .client(client)
-            .addConverterFactory(GsonConverterFactory.create(gson))
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
     val authApiService: AuthApiInterface by lazy {
         retrofit.create(AuthApiInterface::class.java)

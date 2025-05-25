@@ -8,6 +8,7 @@ import org.hse.smartcalendar.network.AddTaskRequest
 import org.hse.smartcalendar.network.LoginResponse
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.network.TaskApiInterface
+import org.hse.smartcalendar.network.toTask
 import retrofit2.Response
 
 @Suppress("LiftReturnOrAssignment")
@@ -21,11 +22,13 @@ class TaskRepository(private val api: TaskApiInterface) {
             val response = supplier.invoke(id)
             if (response.isSuccessful){
                 val responseBody = response.body()
-                if (responseBody == null){
-                    return NetworkResponse.errorNullResponse()
-                } else {
-                    return NetworkResponse.Success(responseBody)
+                if (response.code()==400){
+                    return NetworkResponse.fromResponse(response)
+                    responseBody?.let{
+                        return NetworkResponse.Success(responseBody)
+                    }
                 }
+                return NetworkResponse.fromResponse(response)
             } else {
                 return NetworkResponse.fromResponse(response)
             }
@@ -34,14 +37,14 @@ class TaskRepository(private val api: TaskApiInterface) {
         }
     }
     suspend fun addTask(task: DailyTask): NetworkResponse<ResponseBody> {
-        return withIdRequest() { id ->
+        return withIdRequest { id ->
             api.addTask(id, AddTaskRequest.fromTask(task))
         }
     }
     suspend fun initUserTasks(): NetworkResponse<List<DailyTask>>{
         return when (val response =  withIdRequest { id -> api.getDailyTasks(id)}){
             is NetworkResponse.Success -> {
-                val listTask:List<DailyTask> = response.data.map { it.toTask() }
+                val listTask:List<DailyTask> = response.data.map { toTask(it) }
                 val map = listTask.groupBy { it.getTaskDate() }
                     .mapValues { (date, taskList) ->
                         DailySchedule().apply {
