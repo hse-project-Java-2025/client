@@ -16,6 +16,11 @@ sealed class NetworkResponse<out T> {
         fun errorNullResponse(): Error{
             return Error("token is null")
         }
-
+        fun mapFailtureToAny(): NetworkResponse<Any> = when(this){
+            is Error -> Error(this.message)
+            is NetworkError -> NetworkError(this.exceptionMessage)
+            is Loading->Loading
+            else -> throw Exception("Unexpected return type")
+        }
     }
 }

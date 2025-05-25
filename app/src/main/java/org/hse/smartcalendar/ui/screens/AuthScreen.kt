@@ -13,7 +13,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -22,18 +21,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.utility.rememberNavigation
-import org.hse.smartcalendar.view.model.ListViewModel
 
 enum class AuthType(val title: String){
     Login("Login"),
@@ -107,13 +103,7 @@ fun AuthScreen(navigation: Navigation, viewModel: AuthViewModel, authType:AuthTy
             }
             is NetworkResponse.Success -> {
                 Text("Login successful! Token: ${state.data.token}")
-                val context = LocalContext.current
-                viewModel.initUser()
-                ListViewModel().initUserTasks()
-                LaunchedEffect(state) {
-                    delay(1000)
-                    navigation.navigateToMainApp(Screens.CALENDAR.route)
-                }
+                navigation.navigateTo(Screens.LOADING.route)
             }
             is NetworkResponse.Error -> {
                 Text("Error: ${state.message}", color = MaterialTheme.colorScheme.error)
@@ -125,8 +115,6 @@ fun AuthScreen(navigation: Navigation, viewModel: AuthViewModel, authType:AuthTy
         }
     }
 }
-
-
 @Preview
 @Composable
 fun AuthScreenPreview() {

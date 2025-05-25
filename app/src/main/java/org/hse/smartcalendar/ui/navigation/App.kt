@@ -25,13 +25,13 @@ import org.hse.smartcalendar.notification.ReminderViewModelFactory
 import org.hse.smartcalendar.ui.screens.AchievementsScreen
 import org.hse.smartcalendar.ui.screens.ChangeLogin
 import org.hse.smartcalendar.ui.screens.ChangePassword
+import org.hse.smartcalendar.ui.screens.LoadingScreen
 import org.hse.smartcalendar.ui.task.DailyTasksList
 import org.hse.smartcalendar.ui.screens.SettingsScreen
 import org.hse.smartcalendar.ui.screens.StatisticsScreen
 import org.hse.smartcalendar.ui.task.TaskEditWindow
 import org.hse.smartcalendar.utility.AppDrawer
 import org.hse.smartcalendar.utility.Navigation
-import org.hse.smartcalendar.utility.ScreenNavigation
 import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.utility.rememberNavigation
 import org.hse.smartcalendar.view.model.ListViewModel
@@ -87,28 +87,31 @@ fun NestedNavigator(navigation: Navigation, authModel: AuthViewModel,openDrawer:
     ))
     NavHost(
         navController = navigation.navController,
-        startDestination = ScreenNavigation.AUTH.route
+        startDestination = Screens.Subgraph.AUTH.route
     ) {
         // Auth Graph
         navigation(
             startDestination = Screens.GREETING.route,
-            route = ScreenNavigation.AUTH.route
+            route = Screens.Subgraph.AUTH.route
         ) {
+            composable(Screens.GREETING.route) {
+                GreetingScreen(navigation)
+            }
             composable(Screens.REGISTER.route) {
                 AuthScreen(navigation, authModel, AuthType.Register)
             }
             composable(Screens.LOGIN.route) {
                 AuthScreen(navigation, authModel, AuthType.Login)
             }
-            composable(Screens.GREETING.route) {
-                GreetingScreen(navigation)
+            composable(Screens.LOADING.route) {
+                LoadingScreen(navigation)
             }
         }
 
         // Main Graph with Drawer
         navigation(
             startDestination = Screens.CALENDAR.route,
-            route = ScreenNavigation.MAIN.route
+            route = Screens.Subgraph.MAIN.route
         ) {
             composable(route = Screens.SETTINGS.route) {
                 SettingsScreen(

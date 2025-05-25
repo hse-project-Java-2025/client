@@ -22,9 +22,6 @@ class AuthViewModel : ViewModel() {
 
     val _changeCredentialsResult = MutableLiveData<NetworkResponse<CredentialsResponse>>()
     val changeCredentialsResult = _changeCredentialsResult
-
-    val _userInfoResult = MutableLiveData<NetworkResponse<UserInfoResponse>>()
-    val userInfoResult = _userInfoResult
     fun signup(username: String, email: String, password: String) {
         viewModelScope.launch {
             _loginResult.value = NetworkResponse.Loading
@@ -51,13 +48,6 @@ class AuthViewModel : ViewModel() {
             _changeCredentialsResult.value = NetworkResponse.Loading
             _changeCredentialsResult.value =
                 authRepository.changeLogin(username, password, newUsername1, newUsername2)
-        }
-    }
-    fun initUser(){
-        viewModelScope.launch {
-            userInfoResult.value = NetworkResponse.Loading
-            userInfoResult.value =
-                authRepository.userInfo()
         }
     }
 }

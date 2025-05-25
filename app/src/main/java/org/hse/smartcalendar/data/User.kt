@@ -3,9 +3,6 @@
 //С помощью запроса к AuthRepository.
 package org.hse.smartcalendar.data
 
-import org.hse.smartcalendar.AuthViewModel
-//request в конструкторе предлагаешь делать - а если networkResponse не придёт мы тут повиснем что ли?
-//т.к. серверу нужна для API id оbject, request обязан быть успешным, он использует
 object User {
     private var _id: Long? = null
     private var _name: String = "User"

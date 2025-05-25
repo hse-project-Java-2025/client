@@ -6,11 +6,11 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-enum class ScreenNavigation(val route: String){
-    AUTH("auth"),
-    MAIN("main")
-}
 enum class Screens(val route: String) {
+    LOGIN("login"),
+    GREETING("greeting"),
+    REGISTER("register"),
+    LOADING("loading"),
     CHANGE_PASSWORD("changePassword"),
     CHANGE_LOGIN("changeLogin"),
     CALENDAR("calendar"),
@@ -20,10 +20,11 @@ enum class Screens(val route: String) {
     EDIT_TASK("editTask"),
     MY_CALENDARS("myCalendars"),
     RATING("rating"),
-    LOGIN("login"),
-    GREETING("greeting"),
-    REGISTER("register"),
-    AI_ASSISTANT("aiAssistant")
+    AI_ASSISTANT("aiAssistant");
+    enum class Subgraph(val route: String) {
+        AUTH("auth"),
+        MAIN("main")
+    }
 }
 
 @Composable
@@ -50,7 +51,7 @@ class Navigation(val navController: NavHostController) {
         }
     }
     fun navigateToMainApp (route: String,
-                           oldRouteToPopUp: String = ScreenNavigation.AUTH.route
+                           oldRouteToPopUp: String = Screens.Subgraph.AUTH.route
     ) {
         if (route != navController.currentDestination?.route) {
             navController.navigate(route) {

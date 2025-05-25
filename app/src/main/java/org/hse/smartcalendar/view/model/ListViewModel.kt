@@ -46,12 +46,6 @@ class ListViewModel() : ViewModel() {
         dailyTaskList = SnapshotStateList(dailyTaskSchedule.getDailyTaskList())
     }
 
-    fun initUserTasks(){
-        viewModelScope.launch {
-            _actionResult.value = NetworkResponse.Loading
-            _actionResult.value = taskRepository.initUserTasks()
-        }
-    }
     fun addDailyTask(newTask : DailyTask) {
         try {
             dailyTaskSchedule.addDailyTask(newTask)
