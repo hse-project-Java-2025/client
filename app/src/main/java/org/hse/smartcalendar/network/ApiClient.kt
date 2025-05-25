@@ -5,8 +5,15 @@ import LocalDateAdapter
 import LocalDateTimeAdapter
 import LocalTimeAdapter
 import com.google.gson.GsonBuilder
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
 import okhttp3.Interceptor
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import org.hse.smartcalendar.data.DailyTaskType
@@ -25,11 +32,22 @@ object ApiClient {
         .registerTypeAdapter(kotlinx.datetime.LocalDateTime::class.java, LocalDateTimeAdapter())
         .registerTypeAdapter(DailyTaskType::class.java, DailyTaskTypeAdapter())
         .create()
+    val json = Json {
+        ignoreUnknownKeys = true
+        encodeDefaults = true
+        prettyPrint = true
+        serializersModule = SerializersModule {
+            contextual(LocalDate::class, LocalDateSerializer)
+            contextual(LocalTime::class, LocalTimeSerializer)
+            contextual(LocalDateTime::class, LocalDateTimeSerializer)
+        }
+    }
+    @OptIn(ExperimentalSerializationApi::class)
     private val retrofit = Retrofit.Builder()
             .baseUrl(SERVER_BASE_URL)
             .client(client)
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .build()
+        .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+        .build()
     val authApiService: AuthApiInterface by lazy {
         retrofit.create(AuthApiInterface::class.java)
     }
