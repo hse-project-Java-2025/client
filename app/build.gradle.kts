@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.23"
 }
 
 android {
@@ -48,10 +47,6 @@ dependencies {
 //    implementation(libs.hilt.android)
 //    implementation(libs.hilt.compiler)
 //    implementation(libs.androidx.hilt.navigation.compose)
-    //json adapter
-    implementation(libs.retrofit2.kotlinx.serialization.converter)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.kotlinx.datetime)
     //reminder
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.accompanist.permissions.v0311alpha)

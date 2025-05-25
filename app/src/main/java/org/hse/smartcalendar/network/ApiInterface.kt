@@ -10,32 +10,31 @@ import retrofit2.http.POST
 
 interface AuthApiInterface {
     @POST("api/auth/signup")
-    suspend fun register(@Body request: RegisterRequest): RegisterResponse
+    suspend fun register(@Body request: RegisterRequest): Response<RegisterResponse>
 
     @POST("api/auth/login")
-    suspend fun loginUser(@Body request: LoginRequest): LoginResponse
-
+    suspend fun loginUser(
+        @Body request: LoginRequest,
+    ) : Response<ResponseBody>
     @POST("api/auth/change-credentials")
-    suspend fun changeCredentials(@Body request: ChangeCredentialsRequest): String
-
+    suspend fun changeCredentials(
+        @Body request: ChangeCredentialsRequest,
+    ) : Response<ResponseBody>
     @GET("api/users/me")
-    suspend fun getUserInfo(): UserInfoResponse
+    suspend fun getUserInfo(): Response<UserInfoResponse>
 }
 interface TaskApiInterface {
-
     @GET("api/users/{userId}/events/dailytasks")
     suspend fun getDailyTasks(
         @Path("userId") userId: Long
-    ): List<TaskResponse>
-
+    ): Response<List<TaskResponse>>
     @POST("api/users/{userId}/tasks")
     suspend fun addTask(
         @Path("userId") userId: Long,
         @Body request: AddTaskRequest
-    ): AddTaskResponse
+    ): Response<ResponseBody>
 
     @DELETE("api/users/tasks/{taskId}")
-    suspend fun deleteTask(
-        @Path("taskId") taskId: Int
-    ): String
+    suspend fun deleteTask(@Path("taskId") taskId: Int): Response<ResponseBody>
+
 }
