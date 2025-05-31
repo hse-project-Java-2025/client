@@ -14,7 +14,8 @@ enum class DailyTaskType(private val printName: String, val color: Color) {
     }
     companion object {
         fun fromString(type: String): DailyTaskType {
-            return entries.first { it.printName == type }
+            return entries.firstOrNull { it.printName.equals(type, ignoreCase = true) }
+                ?: COMMON
         }
     }
 }

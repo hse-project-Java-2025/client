@@ -1,4 +1,4 @@
-package org.hse.smartcalendar.ui.elements
+package org.hse.smartcalendar.ui.task
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -26,7 +26,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
@@ -121,7 +120,7 @@ fun DailyTaskCard(
 @Composable
 @Preview(showBackground = true)
 fun DailyTaskCardPreview() {
-    val taskEditViewModel = TaskEditViewModel(listViewModel = ListViewModel(1488))
+    val taskEditViewModel = TaskEditViewModel(listViewModel = ListViewModel())
     val previewCommonTask = DailyTask(
         title = "Common title example",
         type = DailyTaskType.COMMON,

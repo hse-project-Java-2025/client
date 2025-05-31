@@ -1,26 +1,25 @@
+//Есть сущность User, содержащаяся в ListViewModel
+//Нужно обеспечить инициализацию её id в начале основной части приложения
+//С помощью запроса к AuthRepository.
 package org.hse.smartcalendar.data
 
-class User
-    (private val id: Long) {
-    private val name : String
-    private val schedule: MainSchedule
+object User {
+    private var _id: Long? = null
+    private var _name: String = "User"
+    private var _email: String = "User"
 
-    init {
-        // TODO server request
-        name = "User"
-        // TODO server request
-        schedule = MainSchedule()
-    }
+    val id: Long? get() = _id
+    val name: String get() = _name
+    val email: String get() = _email
 
-    fun getName() : String {
-        return name
-    }
-
-    fun getId() : Long {
-        return id
-    }
-
-    fun getSchedule(): MainSchedule {
+    private val schedule = MainSchedule()
+    fun getSchedule(): MainSchedule{
         return schedule
+    }
+
+    internal fun set(id: Long, name: String, email: String) {
+        _id = id
+        _name = name
+        _email = email
     }
 }

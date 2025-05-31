@@ -3,8 +3,11 @@ package org.hse.smartcalendar.data
 import kotlinx.datetime.LocalDate
 
 class MainSchedule {
-    private val dailyScheduleMap = mutableMapOf<LocalDate, DailySchedule>()
-
+    private var dailyScheduleMap = mutableMapOf<LocalDate, DailySchedule>()
+    fun initMap(m: MutableMap<LocalDate, DailySchedule> ){
+        dailyScheduleMap = m
+    }
+    //инициализировать нужно
     fun containsDailySchedule(date: LocalDate): Boolean {
         return dailyScheduleMap.contains(date)
     }

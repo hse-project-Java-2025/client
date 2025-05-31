@@ -4,7 +4,6 @@ import androidx.compose.material.icons.filled.Settings
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.NavigationDrawerItem
@@ -14,13 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
-import org.hse.smartcalendar.ui.elements.BrainCircuit
 import org.hse.smartcalendar.ui.elements.Calendar_add_on
 import org.hse.smartcalendar.ui.elements.Calendar_today
 import org.hse.smartcalendar.ui.elements.Finance
 import org.hse.smartcalendar.ui.elements.Follow_the_signs
 import org.hse.smartcalendar.ui.elements.Medal
-import org.hse.smartcalendar.ui.elements.Screen
 
 
 @Composable

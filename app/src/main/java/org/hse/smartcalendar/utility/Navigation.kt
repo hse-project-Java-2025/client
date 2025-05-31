@@ -6,8 +6,11 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-
 enum class Screens(val route: String) {
+    LOGIN("login"),
+    GREETING("greeting"),
+    REGISTER("register"),
+    LOADING("loading"),
     CHANGE_PASSWORD("changePassword"),
     CHANGE_LOGIN("changeLogin"),
     CALENDAR("calendar"),
@@ -17,9 +20,11 @@ enum class Screens(val route: String) {
     EDIT_TASK("editTask"),
     MY_CALENDARS("myCalendars"),
     RATING("rating"),
-    LOGIN("LOGIN"),
-    GREETING("GREETING"),
-    AI_ASSISTANT("aiAssistant")
+    AI_ASSISTANT("aiAssistant");
+    enum class Subgraph(val route: String) {
+        AUTH("auth"),
+        MAIN("main")
+    }
 }
 
 @Composable
@@ -40,6 +45,20 @@ class Navigation(val navController: NavHostController) {
                 popUpTo(navController.graph.findStartDestination().id) {
                     saveState = true
                 }
+                launchSingleTop = true
+                restoreState = true
+            }
+        }
+    }
+    fun navigateToMainApp (route: String,
+                           oldRouteToPopUp: String = Screens.Subgraph.AUTH.route
+    ) {
+        if (route != navController.currentDestination?.route) {
+            navController.navigate(route) {
+                popUpTo(navController.graph.findStartDestination().id) {
+                    saveState = true
+                }
+                popUpTo(oldRouteToPopUp) { this.inclusive = inclusive }
                 launchSingleTop = true
                 restoreState = true
             }
