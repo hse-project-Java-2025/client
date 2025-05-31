@@ -28,7 +28,7 @@ interface TaskApiInterface {
     suspend fun getDailyTasks(
         @Path("userId") userId: Long
     ): Response<List<TaskResponse>>
-    @POST("api/users/{userId}/tasks")
+    @POST("api/users/{userId}/events")
     suspend fun addTask(
         @Path("userId") userId: Long,
         @Body request: AddTaskRequest

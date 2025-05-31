@@ -6,6 +6,7 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.hse.smartcalendar.utility.TimeUtils
 import java.util.UUID
 
 data class DailyTask (
@@ -106,6 +107,16 @@ data class DailyTask (
         description = task.description
         start = task.start
         end = task.end
+    }
+    fun belongsCurrentDay(): Boolean{
+        return date== TimeUtils.getCurrentDateTime().date
+    }
+    fun belongsCurrentWeek(): Boolean{
+        val diff =TimeUtils.getCurrentDateTime().date.toEpochDays() - date.toEpochDays();
+        return diff < 7 && diff>=0
+    }
+    fun getMinutesLength(): Int{
+        return (end.toSecondOfDay()-start.toSecondOfDay())/60
     }
 
     class TimeConflictException(start: LocalTime, end: LocalTime) : IllegalArgumentException(

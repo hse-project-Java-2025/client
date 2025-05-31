@@ -3,6 +3,7 @@ package org.hse.smartcalendar.view.model
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -26,7 +27,7 @@ import java.io.File
 class ListViewModel() : ViewModel() {
     private val taskRepository: TaskRepository = TaskRepository(ApiClient.taskApiService)
     var _actionResult = MutableLiveData<NetworkResponse<Any>>()
-    val actionResult = _actionResult
+    val actionResult:LiveData<NetworkResponse<Any>> = _actionResult
 
     fun getScreenDate(): LocalDate{
         return dailyTaskSchedule.date

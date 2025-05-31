@@ -1,7 +1,10 @@
 package org.hse.smartcalendar.ui.task
 
 import android.app.Application
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -21,7 +25,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -57,6 +63,12 @@ import org.hse.smartcalendar.utility.rememberNavigation
 import org.hse.smartcalendar.view.model.ListViewModel
 import java.io.File
 import org.hse.smartcalendar.view.model.TaskEditViewModel
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.zIndex
+import kotlinx.coroutines.delay
+import org.hse.smartcalendar.network.NetworkResponse
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,16 +84,26 @@ fun DailyTasksList(
     val taskTitle = rememberSaveable { mutableStateOf("") }
     val taskType = rememberSaveable { mutableStateOf(DailyTaskType.COMMON) }
     val taskDescription = rememberSaveable { mutableStateOf("") }
-    val startTime = rememberSaveable { mutableIntStateOf( 0) }
-    val endTime = rememberSaveable { mutableIntStateOf( 0) }
+    val startTime = rememberSaveable { mutableIntStateOf(0) }
+    val endTime = rememberSaveable { mutableIntStateOf(0) }
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
-    fun serverAddTask(dailyTask: DailyTask){
-    }
+    val actionResult by viewModel.actionResult.observeAsState()
     val scope = rememberCoroutineScope()
     val isBottomSheetVisible = rememberSaveable { mutableStateOf(false) }
-    Scaffold (
+    var showLoading by remember { mutableStateOf(false) }
+    LaunchedEffect(actionResult) {
+        if (actionResult is NetworkResponse.Loading) {
+            delay(500)
+            if (actionResult is NetworkResponse.Loading) {
+                showLoading = true
+            }
+        } else {
+            showLoading = false
+        }
+    }
+    Scaffold(
         topBar = {
             TopButton(
                 openMenu = openDrawer,
@@ -91,47 +113,66 @@ fun DailyTasksList(
         },
         bottomBar = { ListBottomBar(viewModel, scope, isBottomSheetVisible, sheetState) },
         content = { paddingValues ->
-        LazyColumn (modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)) {
-            items(viewModel.dailyTaskList) {
-                DailyTaskCard(it,
-                    onCompletionChange = {
-                        viewModel.changeTaskCompletion(it, !it.isComplete())
-                    },
-                    taskEditViewModel = taskEditViewModel,
-                    onLongPressAction = {
-                        navController.navigate(Screens.EDIT_TASK.route)
-                    }
-                )
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                items(viewModel.dailyTaskList) {
+                    DailyTaskCard(
+                        it,
+                        onCompletionChange = {
+                            viewModel.changeTaskCompletion(it, !it.isComplete())
+                        },
+                        taskEditViewModel = taskEditViewModel,
+                        onLongPressAction = {
+                            navController.navigate(Screens.EDIT_TASK.route)
+                        }
+                    )
+                }
             }
-        }
-        BottomSheet(
-            isBottomSheetVisible = isBottomSheetVisible,
-            sheetState = sheetState,
-            onDismiss = {
-                scope.launch { sheetState.hide() }
-                    .invokeOnCompletion { isBottomSheetVisible.value = false }
-            },
-            onRecordStop = {
-                viewModel.sendAudio(
-                    audioFile = audioFile,
-                    description = ListViewModel.AudioDescription.CONVERT_AUDIO,
-                )
-            },
-            audioFile = audioFile,
-            taskTitle = taskTitle,
-            taskType = taskType,
-            taskDescription = taskDescription,
-            startTime = startTime,
-            endTime = endTime,
-            viewModel = viewModel,
-            addTask = {task -> viewModel.addDailyTask(task);
-                reminderModel.scheduleReminder(task)
-            }
-        )
+            BottomSheet(
+                isBottomSheetVisible = isBottomSheetVisible,
+                sheetState = sheetState,
+                onDismiss = {
+                    scope.launch { sheetState.hide() }
+                        .invokeOnCompletion { isBottomSheetVisible.value = false }
+                },
+                onRecordStop = {
+                    viewModel.sendAudio(
+                        audioFile = audioFile,
+                        description = ListViewModel.AudioDescription.CONVERT_AUDIO,
+                    )
+                },
+                audioFile = audioFile,
+                taskTitle = taskTitle,
+                taskType = taskType,
+                taskDescription = taskDescription,
+                startTime = startTime,
+                endTime = endTime,
+                viewModel = viewModel,
+                addTask = { task ->
+                    viewModel.addDailyTask(task);
+                    reminderModel.scheduleReminder(task)
+                }
+            )
         }
     )
+
+    if (showLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.3f))
+                .zIndex(1f),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                CircularProgressIndicator()
+                Text("Loading task on server", modifier = Modifier.padding(top = 8.dp))
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

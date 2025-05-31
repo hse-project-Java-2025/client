@@ -1,6 +1,8 @@
 package org.hse.smartcalendar.view.model
 
 import androidx.lifecycle.ViewModel
+import org.hse.smartcalendar.data.DailyTask
+import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.utility.DayPeriod
 import org.hse.smartcalendar.utility.DaysAmount
 import org.hse.smartcalendar.utility.TimePeriod
@@ -14,44 +16,79 @@ class StatisticsViewModel:ViewModel() {
             return Math.round(part*1000).toFloat()/10
         }
     }
-    class TotalTimeTaskTypes(val common: Long, val work: Long, val study: Long, val fitness: Long){
+    class TotalTimeTaskTypes(common: Long, work: Long, study: Long, fitness: Long){
         val All: TimePeriod = TimePeriod(work+study+common+fitness)
         val Study: TimePeriod = TimePeriod(study)
         val Common: TimePeriod = TimePeriod(common)
         val Fitness: TimePeriod = TimePeriod(fitness)
         val Work: TimePeriod = TimePeriod(work)
-        private val totalMinutes = common+study+work+fitness
-        val StudyPercent: Float = getPercent(study, totalMinutes)
-        val CommonPercent: Float = getPercent(common, totalMinutes)
-        val FitnessPercent: Float = getPercent(fitness, totalMinutes)
-        val WorkPercent: Float = getPercent(work, totalMinutes)
+        private var totalMinutes = common+study+work+fitness
+        var StudyPercent: Float = getPercent(study, totalMinutes)
+            private  set
+        var CommonPercent: Float = getPercent(common, totalMinutes)
+            private  set
+        var FitnessPercent: Float = getPercent(fitness, totalMinutes)
+            private  set
+        var WorkPercent: Float = getPercent(work, totalMinutes)
+            private  set
+        fun completeTask(task: DailyTask){
+            val taskMinutesLength = task.getMinutesLength()
+            totalMinutes+=taskMinutesLength
+            when(task.getDailyTaskType()){
+                DailyTaskType.COMMON -> {Common.plusMinutes(taskMinutesLength.toLong())
+                CommonPercent=getPercent(Common.toMinutes(), totalMinutes)}
+                DailyTaskType.FITNESS -> {
+                    Fitness.plusMinutes(taskMinutesLength.toLong())
+                    FitnessPercent=getPercent(Fitness.toMinutes(), totalMinutes)
+                }
+                DailyTaskType.WORK -> {
+                    Work.plusMinutes(taskMinutesLength.toLong())
+                    WorkPercent=getPercent(Work.toMinutes(), totalMinutes)
+                }
+                DailyTaskType.STUDIES -> {
+                    Study.plusMinutes(taskMinutesLength.toLong())
+                    StudyPercent=getPercent(Study.toMinutes(), totalMinutes)
+                }
+            }
+        }
     }
-    class WeekTime(val all: Long){
+    class WeekTime(all: Long){
         val All: TimePeriod = TimePeriod(all)
     }
-    private class TodayTimeVars(val planned: Long, val completed: Long){
+    private class TodayTimeVars(planned: Long, completed: Long){
         val Planned: DayPeriod = DayPeriod(planned)
-        val Completed: DayPeriod = DayPeriod(completed)
+        var Completed: DayPeriod = DayPeriod(completed)
     }
-    private class ContinuesSuccessDaysVars(val record: Int, val now: Int){
+    private class ContinuesSuccessDaysVars(record: Int, now: Int){
         val Record: DaysAmount = DaysAmount(record)
         val Now: DaysAmount = DaysAmount(now)
     }
-    private class AverageDayTimeVars(val totalWorkMinutes: Long, val totalDays: Long){
+    private class AverageDayTimeVars(totalWorkMinutes: Long, totalDays: Long){
         val All: DayPeriod = DayPeriod(totalWorkMinutes/totalDays)
     }
     private var ContiniusSuccessDays: ContinuesSuccessDaysVars
     private var TotalTime: TotalTimeTaskTypes = TotalTimeTaskTypes(10000, 1000, 4000, 4000)
-    private val weekTime = WeekTime(60*60)
+    private var weekTime = WeekTime(60*60)
     private val AverageDayTime: AverageDayTimeVars
     private var TodayTime: TodayTimeVars = TodayTimeVars(228, 60)
     init{
         ContiniusSuccessDays = ContinuesSuccessDaysVars(6, 5)
         AverageDayTime = AverageDayTimeVars(10000, 365)
     }
-    fun update(){
-        TotalTime = TotalTimeTaskTypes(60, 20, 60, 229)
-        //TODO: connect to server
+    fun createTask(task: DailyTask){
+        if (task.belongsCurrentDay()){
+            TodayTime.Planned.plusMinutes(task.getMinutesLength())
+        }
+    }
+    fun completeTask(task: DailyTask){//когда таска запатчена
+        val taskMinutesLength = task.getMinutesLength()
+        if (task.belongsCurrentDay()) {
+            TodayTime.Completed.plusMinutes(taskMinutesLength)
+        }
+        if (task.belongsCurrentWeek()){
+            weekTime.All.plusMinutes(taskMinutesLength.toLong())
+        }
+        TotalTime.completeTask(task)
     }
 
     fun getTotalWorkTime():TimePeriod{

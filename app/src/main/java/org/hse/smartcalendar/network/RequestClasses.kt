@@ -5,6 +5,7 @@ import org.hse.smartcalendar.network.NetworkResponse.Error
 import retrofit2.Response
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
+import java.util.UUID
 
 data class LoginRequest(
     val username: String,
@@ -23,6 +24,8 @@ data class ChangeCredentialsRequest(
 )
 
 data class AddTaskRequest(
+    val id: UUID,
+    val creationTime: LocalDateTime,
     val title: String,
     val description: String,
     val start: LocalDateTime,
@@ -38,7 +41,9 @@ data class AddTaskRequest(
                 start = LocalDateTime(task.getTaskDate(), task.getDailyTaskStartTime()),
                 end = LocalDateTime(task.getTaskDate(), task.getDailyTaskEndTime()),
                 location = "",
-                type = task.getDailyTaskType()
+                type = task.getDailyTaskType(),
+                id = task.getId(),
+                creationTime = task.getDailyTaskCreationTime()
             )
         }
     }

@@ -1,19 +1,29 @@
 package org.hse.smartcalendar.utility
 
-import kotlinx.datetime.DateTimePeriod
-import kotlinx.datetime.Instant
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toDateTimePeriod
+import kotlinx.datetime.toLocalDateTime
+import org.hse.smartcalendar.utility.TimeUtils.Companion.numberToWord
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
-fun numberToWord(amount: Int, item: String): String {
-    if (amount!=0) {
-        return if (amount > 1) "$amount $item"+"s " else "$amount $item "
+class TimeUtils {
+
+    companion object{
+        fun getCurrentDateTime(): LocalDateTime {
+            return Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault());
+        }
+        fun numberToWord(amount: Int, item: String): String {
+        if (amount != 0) {
+            return if (amount > 1) "$amount $item" + "s " else "$amount $item "
+        }
+        return ""
     }
-    return ""
+}
 }
 //every class in Kotlin is final by default, so inheritance from LocalTime not ok
 class TimePeriod(minute: Long){
@@ -28,7 +38,9 @@ class TimePeriod(minute: Long){
     fun toMinutes(): Long{
         return time.inWholeMinutes
     }
-
+    fun plusMinutes(minutes: Long){
+        time+=minutes.toDuration(DurationUnit.MINUTES)
+    }
     fun toPrettyString(): String{
         val stringBuilder = StringBuilder()
         val dataTime = time.toDateTimePeriod()
@@ -58,6 +70,9 @@ class DayPeriod(minute: Long){
     }
     fun fromMinutes(minute: Long){
         time = (minute).toDuration(DurationUnit.MINUTES)
+    }
+    fun plusMinutes(minute: Int){
+        time+=minute.toDuration(DurationUnit.MINUTES);
     }
     fun toFullString(): String{
         var stringBuilder:StringBuilder = StringBuilder()

@@ -1,5 +1,6 @@
 package org.hse.smartcalendar.view.model
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,20 +18,20 @@ class InitViewModel:ViewModel() {
     var _userInfoResult = MutableLiveData<NetworkResponse<UserInfoResponse>>()
     val userInfoResult = _userInfoResult
     var _initResult = MutableLiveData<NetworkResponse<Any>>()
-    val initResult = _initResult
+    val initResult:LiveData<NetworkResponse<Any>> = _initResult
     fun initUser(){
         viewModelScope.launch {
-            initResult.value = NetworkResponse.Loading
+            _initResult.value = NetworkResponse.Loading
             userInfoResult.value = NetworkResponse.Loading
             userInfoResult.value =
                 authRepository.userInfo()
             if (userInfoResult.value !is NetworkResponse.Success){
-                initResult.value =userInfoResult.value?.let{
+                _initResult.value =userInfoResult.value?.let{
                     mapFailtureToAny()
                 }
                 return@launch
             }
-            initResult.value = taskRepository.initUserTasks()
+            _initResult.value = taskRepository.initUserTasks()
             if (initResult.value !is NetworkResponse.Success){
                 return@launch
             }
