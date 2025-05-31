@@ -63,9 +63,4 @@ fun LoadingScreen(navigation: Navigation){
             null -> {}
         }
     }
-    //При успехе
-//    LaunchedEffect(state) {
-//        delay(1000)
-//        navigation.navigateToMainApp(Screens.CALENDAR.route)
-//    }
 }

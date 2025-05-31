@@ -22,8 +22,7 @@ class TaskRepository(private val api: TaskApiInterface) {
             val response = supplier.invoke(id)
             if (response.isSuccessful){
                 val responseBody = response.body()
-                if (response.code()==400){
-                    return NetworkResponse.fromResponse(response)
+                if (response.code()==200){
                     responseBody?.let{
                         return NetworkResponse.Success(responseBody)
                     }
@@ -41,12 +40,16 @@ class TaskRepository(private val api: TaskApiInterface) {
             api.addTask(id, AddTaskRequest.fromTask(task))
         }
     }
+
+    /**
+     * В случае наложения тасок с сервера вылетит с NestedTaskException
+     */
     suspend fun initUserTasks(): NetworkResponse<List<DailyTask>>{
         return when (val response =  withIdRequest { id -> api.getDailyTasks(id)}){
             is NetworkResponse.Success -> {
                 val listTask:List<DailyTask> = response.data.map { toTask(it) }
                 val map = listTask.groupBy { it.getTaskDate() }
-                    .mapValues { (date, taskList) ->
+                    .mapValues { (_, taskList) ->
                         DailySchedule().apply {
                             taskList.forEach { addDailyTask(it) }
                         }

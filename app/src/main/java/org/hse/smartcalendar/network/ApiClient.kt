@@ -15,7 +15,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiClient {
-    private const val SERVER_BASE_URL = "http://10.0.2.2:8080"
+    private const val SERVER_BASE_URL = "http://10.0.2.2:8080/"
     var authToken: String? = null
     private val client = OkHttpClient.Builder()
         .addInterceptor(AuthInterceptor { authToken })
