@@ -1,4 +1,4 @@
-package org.hse.smartcalendar.ui.elements
+package org.hse.smartcalendar.ui.task
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -171,7 +171,7 @@ fun TaskEditWindowPreview() {
         onCancel = { },
         onDelete = { },
         taskEditViewModel = TaskEditViewModel(
-            listViewModel = ListViewModel(1488)
+            listViewModel = ListViewModel()
         ),
         navController = NavController(
             LocalContext.current

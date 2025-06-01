@@ -1,4 +1,4 @@
-package org.hse.smartcalendar.ui.elements
+package org.hse.smartcalendar.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,8 +13,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -23,33 +24,38 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import org.hse.smartcalendar.AuthViewModel
+import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
+import org.hse.smartcalendar.utility.Navigation
+import org.hse.smartcalendar.utility.rememberNavigation
 
 @Preview
 @Composable
 fun ChangePassword() {
-    SmartCalendarTheme { ChangePassword(viewModel = AuthViewModel()) }
+    SmartCalendarTheme { ChangePassword(viewModel = AuthViewModel(), rememberNavigation()) }
 }
 
 @Preview
 @Composable
 fun ChangeLogin() {
-    SmartCalendarTheme { ChangeLogin(viewModel = AuthViewModel()) }
+    SmartCalendarTheme { ChangeLogin(viewModel = AuthViewModel(), rememberNavigation()) }
 }
 
 @Composable
-fun ChangeLogin(viewModel: AuthViewModel) {
-    ChangePassword(viewModel,false)
+fun ChangeLogin(viewModel: AuthViewModel, navigation: Navigation) {
+    ChangePassword(viewModel, navigation, true)
 }
 
 @Composable
-fun ChangePassword(viewModel: AuthViewModel, isChangeLogin: Boolean = false) {
+fun ChangePassword(viewModel: AuthViewModel, navigation: Navigation, isChangeLogin: Boolean = false) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var newPassword1 by remember { mutableStateOf("") }
     var newPassword2 by remember { mutableStateOf("") }
-    val authState by viewModel.authState.collectAsState()
+    val credentialsState by viewModel.changeCredentialsResult.observeAsState()
+    val credentialsName = if (isChangeLogin) "login" else "password"
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -75,14 +81,14 @@ fun ChangePassword(viewModel: AuthViewModel, isChangeLogin: Boolean = false) {
         TextField(
             value = newPassword1,
             onValueChange = { newPassword1 = it },
-            label = { if (isChangeLogin) Text("New login") else {Text("New password")} },
+            label = { Text("New $credentialsName") },
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation()
         )
         TextField(
             value = newPassword2,
             onValueChange = { newPassword2 = it },
-            label = { if (isChangeLogin) Text("Repeat new login") else {Text("Repeat new password")} },
+            label = {Text("Repeat new $credentialsName")},
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation()
         )
@@ -93,20 +99,28 @@ fun ChangePassword(viewModel: AuthViewModel, isChangeLogin: Boolean = false) {
                     viewModel.changePassword(username, password, newPassword1, newPassword2)},
             modifier = Modifier.fillMaxWidth()
         ) {
-            if (isChangeLogin) Text("Change login") else Text("Change password")
+            Text("Change $credentialsName")
         }
         Spacer(modifier = Modifier.height(16.dp))
-        when (val state = authState) {
-            is AuthViewModel.AuthState.Loading -> {
+        when (val state = credentialsState) {
+            is NetworkResponse.Loading -> {
                 CircularProgressIndicator()
             }
-            is AuthViewModel.AuthState.Success -> {
-                Text("Change password successful")
+            is NetworkResponse.Success -> {
+                Text("Change $credentialsName successful")
+                LaunchedEffect(state) {
+                    delay(1000)
+                    navigation.upPress()
+                    viewModel.changeCredentialsResult.value = null
+                }
             }
-            is AuthViewModel.AuthState.Error -> {
+            is NetworkResponse.Error -> {
                 Text("Error: ${state.message}", color = MaterialTheme.colorScheme.error)
             }
-            else -> {}
+            is NetworkResponse.NetworkError -> {
+                Text("Check internet connection: ${state.exceptionMessage}", color = MaterialTheme.colorScheme.error)
+            }
+            null -> {}
         }
     }
 }

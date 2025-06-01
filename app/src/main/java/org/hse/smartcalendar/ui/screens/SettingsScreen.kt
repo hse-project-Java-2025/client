@@ -1,4 +1,4 @@
-package org.hse.smartcalendar.ui.elements
+package org.hse.smartcalendar.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,24 +34,24 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.hse.smartcalendar.AuthViewModel
-import org.hse.smartcalendar.activity.App
 import org.hse.smartcalendar.notification.ReminderViewModel
+import org.hse.smartcalendar.ui.elements.Password
+import org.hse.smartcalendar.ui.elements.Person
+import org.hse.smartcalendar.ui.elements.Reminder
+import org.hse.smartcalendar.ui.navigation.App
+import org.hse.smartcalendar.ui.navigation.TopButton
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.view.model.ListViewModel
-import org.hse.smartcalendar.view.model.TaskEditViewModel
 
 //здесь работает навигация
 @Preview
 @Composable
 fun SettingsScreenPreview() {
     SmartCalendarTheme {
-        val listModel = ListViewModel(-1)
+        val listModel = ListViewModel()
         App(
-            listModel = listModel,
-            authModel = AuthViewModel(),
-            editModel = TaskEditViewModel(listModel),
             startDestination = Screens.SETTINGS.route
         )
     }

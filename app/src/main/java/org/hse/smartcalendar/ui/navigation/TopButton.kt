@@ -1,4 +1,4 @@
-package org.hse.smartcalendar.ui.elements
+package org.hse.smartcalendar.ui.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu

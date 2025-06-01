@@ -1,9 +1,6 @@
 package org.hse.smartcalendar.activity
 
 import android.Manifest
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -18,19 +15,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import org.hse.smartcalendar.LoginActivity
+import org.hse.smartcalendar.ui.navigation.App
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
+import org.hse.smartcalendar.utility.Navigation
+import org.hse.smartcalendar.utility.Screens
+import org.hse.smartcalendar.utility.rememberNavigation
 
 
 class MainActivity : ComponentActivity() {
@@ -60,20 +58,14 @@ class MainActivity : ComponentActivity() {
         setContent {
             SmartCalendarTheme {
                 getNotificationsPermissions()
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "User",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                App()
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    val context = LocalContext.current
+fun GreetingScreen(navigation: Navigation, modifier: Modifier = Modifier, name: String = "User") {
     Column (modifier = Modifier
         .fillMaxSize()
         .padding(16.dp),
@@ -91,13 +83,21 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 
         Button(
             onClick = {
-                val intent = Intent(context, LoginActivity::class.java)
-                context.startActivity(intent)
+                navigation.navigateTo(Screens.LOGIN.route)
             },
             modifier = Modifier
                 .fillMaxWidth()
                 .testTag("authorizationButtonTest")) {
             Text("Authorization")
+        }
+        Button(
+            onClick = {
+                navigation.navigateTo(Screens.REGISTER.route)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("registerButtonTest")) {
+            Text("Signup")
         }
     }
 }
@@ -106,6 +106,6 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun GreetingPreview() {
     SmartCalendarTheme {
-        Greeting("User")
+        GreetingScreen(rememberNavigation(), name ="User")
     }
 }

@@ -49,17 +49,15 @@ dependencies {
 //    implementation(libs.androidx.hilt.navigation.compose)
     //reminder
     implementation(libs.androidx.work.runtime.ktx)
-    implementation("com.google.accompanist:accompanist-permissions:0.31.1-alpha")
-    implementation("androidx.compose.runtime:runtime-livedata:1.7.8")
+    implementation(libs.accompanist.permissions.v0311alpha)
+    implementation(libs.androidx.runtime.livedata)
     //retrofit
-    val retrofitVersion = "2.11.0"
-    implementation("com.squareup.retrofit2:converter-gson:$retrofitVersion")
-    implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    implementation(libs.converter.gson.v2110)
+    implementation(libs.retrofit.v2110)
+    implementation(libs.logging.interceptor)
     implementation(libs.androidx.core.ktx)
-    implementation("com.squareup.okhttp3:okhttp:4.7.2")
+    implementation(libs.okhttp)
     //implementation(libs.okhttp3)
-    implementation(libs.converter.gson)
     implementation(libs.picasso)
     implementation(libs.androidx.navigation.compose.v240beta02)
     implementation(libs.androidx.navigation.compose)

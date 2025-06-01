@@ -14,8 +14,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import org.hse.smartcalendar.notification.ReminderViewModel
 import org.hse.smartcalendar.notification.ReminderViewModelFactory
-import org.hse.smartcalendar.ui.elements.DailyTasksList
-import org.hse.smartcalendar.ui.elements.TaskEditWindow
+import org.hse.smartcalendar.ui.task.DailyTasksList
+import org.hse.smartcalendar.ui.task.TaskEditWindow
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.utility.rememberNavigation
@@ -26,7 +26,7 @@ class DailyTasksListActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val listViewModel = ListViewModel(intent.getLongExtra("id", -1))
+        val listViewModel = ListViewModel()
         val taskEditViewModel = TaskEditViewModel(listViewModel = listViewModel)
         setContent {
             val navController = rememberNavController()
