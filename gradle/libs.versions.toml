@@ -3,16 +3,23 @@ accompanistPermissions = "<version>"
 accompanistPermissionsVersion = "0.31.1-alpha"
 accompanistVersion = "0.34.0"
 agp = "8.8.1"
+androidJunit5 = "1.8.2.1"
 converterGson = "2.9.0"
 hiltAndroid = "2.52"
 hiltAndroidVersion = "2.48.1"
 hiltCompiler = "2.48.1"
 hiltNavigationCompose = "1.2.0"
+junitJupiter = "5.11.4"
+junitJupiterParams = "5.10.0"
+junitVintageEngine = "5.9.1"
 kotlin = "2.0.0"
 coreKtx = "1.15.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
+kotlinTest = "1.9.23"
+kotlinTestJunit5 = "1.9.23"
+kotlinxCoroutinesTest = "1.7.3"
 kotlinxDatetime = "0.6.2"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.0"
@@ -36,6 +43,7 @@ workRuntimeKtx = "2.10.1"
 
 [libraries]
 accompanist-permissions-v0311alpha = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissionsVersion" }
+android-junit5 = { module = "de.mannodermaus.gradle.plugins:android-junit5", version.ref = "androidJunit5" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 accompanist-permissions-v0340 = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistVersion" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
@@ -62,6 +70,12 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-lifecycle-runtime-compose-android = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose-android", version.ref = "lifecycleRuntimeComposeAndroid" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junitJupiter" }
+junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junitJupiterParams" }
+junit-vintage-engine = { module = "org.junit.vintage:junit-vintage-engine", version.ref = "junitVintageEngine" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlinTest" }
+kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlinTestJunit5" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 androidx-compose-material3 = { group = "androidx.wear.compose", name = "compose-material3", version.ref = "composeMaterial3" }
 androidx-datastore-core-android = { group = "androidx.datastore", name = "datastore-core-android", version.ref = "datastoreCoreAndroid" }

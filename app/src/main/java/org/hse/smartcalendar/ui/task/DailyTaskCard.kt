@@ -30,6 +30,8 @@ import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.view.model.ListViewModel
+import org.hse.smartcalendar.view.model.StatisticsManager
+import org.hse.smartcalendar.view.model.StatisticsViewModel
 import org.hse.smartcalendar.view.model.TaskEditViewModel
 
 
@@ -120,14 +122,15 @@ fun DailyTaskCard(
 @Composable
 @Preview(showBackground = true)
 fun DailyTaskCardPreview() {
-    val taskEditViewModel = TaskEditViewModel(listViewModel = ListViewModel())
+    val statisticsManager = StatisticsManager(StatisticsViewModel())
+    val taskEditViewModel = TaskEditViewModel(listViewModel = ListViewModel(statisticsManager))
     val previewCommonTask = DailyTask(
         title = "Common title example",
         type = DailyTaskType.COMMON,
         description = "Common description Example",
         start = LocalTime(4, 0),
         end = LocalTime(5, 0),
-        date = DailyTask.date
+        date = DailyTask.defaultDate
     )
 
 
@@ -137,7 +140,7 @@ fun DailyTaskCardPreview() {
         description = "Fitness description Example",
         start = LocalTime(4, 0),
         end = LocalTime(5, 0),
-        date = DailyTask.date
+        date = DailyTask.defaultDate
     )
 
     val previewWorkTask = DailyTask(
@@ -146,7 +149,7 @@ fun DailyTaskCardPreview() {
         description = "Work description Example",
         start = LocalTime(4, 0),
         end = LocalTime(5, 0),
-        date = DailyTask.date
+        date = DailyTask.defaultDate
     )
 
     val previewStudiesTask = DailyTask(
@@ -156,7 +159,7 @@ fun DailyTaskCardPreview() {
         description = "Studies description Example",
         start = LocalTime(4, 0),
         end = LocalTime(5, 0),
-        date = DailyTask.date
+        date = DailyTask.defaultDate
     )
 
     Column {

@@ -21,8 +21,21 @@ data class DailyTask (
     private var end: LocalTime,//hour, minute
     private var date: LocalDate,//year, month, day
     ) {
-    companion object DefaultDate{//затычка, можешь убрать
-        val date = LocalDate.fromEpochDays((Clock.System.now().toEpochMilliseconds()/1000/60/60/24).toInt())
+    companion object {//затычка, можешь убрать
+        val defaultDate = TimeUtils.getCurrentDateTime().date
+        fun fromTime(start: LocalTime, end: LocalTime, date: LocalDate): DailyTask{
+            return fromTimeAndType(start,end,date, DailyTaskType.COMMON)
+        }
+        fun fromTimeAndType(start: LocalTime, end: LocalTime, date: LocalDate, type: DailyTaskType): DailyTask{
+            return DailyTask(
+                title = "Task",
+                description = "Description",
+                end = end,
+                start = start,
+                date = date,
+                type = type
+            )
+        }
     }
     init {
         if (title.isEmpty()) {

@@ -29,7 +29,7 @@ class DailySchedule (val date : LocalDate = Clock.System.now()
 
     fun setCompletionById(id: UUID, status: Boolean): Boolean {
         dailyTasksList.forEach { task ->
-            if (task.getId() == id) {
+            if (task.getId() == id && task.isComplete()!=status) {
                 task.setCompletion(status)
                 return true
             }

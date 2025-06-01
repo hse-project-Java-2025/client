@@ -14,7 +14,7 @@ class TaskEditViewModel(
         description = "Preview description",
         start = LocalTime(0, 0),
         end = LocalTime(23, 59),
-        date = DailyTask.DefaultDate.date
+        date = DailyTask.defaultDate
     )
     val changes = task
 
@@ -38,7 +38,10 @@ class TaskEditViewModel(
             viewModel = listViewModel,
             isEmptyTitle = isEmptyTitle,
             isConflictInTimeField = isConflictInTimeField,
-            isNestedTask = isNestedTask
+            isNestedTask = isNestedTask,
+            statsUpdateOldToNewTask = { oldTask, newTask
+                ->listViewModel.statisticsManager.updateDailyTask(oldTask=oldTask, newTask = newTask)
+            }
         )
     }
 }

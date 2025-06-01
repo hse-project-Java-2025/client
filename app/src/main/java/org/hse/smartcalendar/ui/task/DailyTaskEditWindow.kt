@@ -37,6 +37,8 @@ import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.utility.fromMinutesOfDay
 import org.hse.smartcalendar.utility.toMinutesOfDay
 import org.hse.smartcalendar.view.model.ListViewModel
+import org.hse.smartcalendar.view.model.StatisticsManager
+import org.hse.smartcalendar.view.model.StatisticsViewModel
 import org.hse.smartcalendar.view.model.TaskEditViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -171,7 +173,7 @@ fun TaskEditWindowPreview() {
         onCancel = { },
         onDelete = { },
         taskEditViewModel = TaskEditViewModel(
-            listViewModel = ListViewModel()
+            listViewModel = ListViewModel(StatisticsManager(StatisticsViewModel()))
         ),
         navController = NavController(
             LocalContext.current

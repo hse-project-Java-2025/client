@@ -69,6 +69,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.zIndex
 import kotlinx.coroutines.delay
 import org.hse.smartcalendar.network.NetworkResponse
+import org.hse.smartcalendar.view.model.StatisticsManager
+import org.hse.smartcalendar.view.model.StatisticsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -263,7 +265,8 @@ fun formatLocalDate(date: LocalDate): String {
 @Composable
 @Preview(showBackground = true)
 fun DailyTaskListPreview() {
-    val listViewModel = ListViewModel()
+    val statisticsManager = StatisticsManager(StatisticsViewModel())
+    val listViewModel = ListViewModel(statisticsManager)
     listViewModel.addDailyTask(
         DailyTask(
             title = "sss",

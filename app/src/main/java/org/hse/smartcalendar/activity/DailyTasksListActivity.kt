@@ -20,13 +20,16 @@ import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.utility.rememberNavigation
 import org.hse.smartcalendar.view.model.ListViewModel
+import org.hse.smartcalendar.view.model.StatisticsManager
+import org.hse.smartcalendar.view.model.StatisticsViewModel
 import org.hse.smartcalendar.view.model.TaskEditViewModel
 
 class DailyTasksListActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val listViewModel = ListViewModel()
+        val statisticsManager = StatisticsManager(StatisticsViewModel())
+        val listViewModel = ListViewModel(statisticsManager)
         val taskEditViewModel = TaskEditViewModel(listViewModel = listViewModel)
         setContent {
             val navController = rememberNavController()

@@ -37,6 +37,7 @@ import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.view.model.StatisticsViewModel
+import kotlin.time.DurationUnit
 
 @Composable
 fun AchievementsScreen(navigation: Navigation,
@@ -46,7 +47,7 @@ fun AchievementsScreen(navigation: Navigation,
         "Eternal Flame",
         R.drawable.fire,
         { i -> "Reach a $i day streak" },
-        statisticsModel.getRecordContiniusSuccessDays().getAmount().toLong(),
+        statisticsModel.getRecordContiniusSuccessDays().amount.toLong(),
         listOf(5, 10, 20, 50, 100)
     )
     val plan = AchievementData(
@@ -60,7 +61,7 @@ fun AchievementsScreen(navigation: Navigation,
         "Types are boring",
         R.drawable.yawning_face,
         { i -> "Spend $i hours with common tasks" },
-        statisticsModel.getTotalTimeActivityTypes().common,
+        statisticsModel.getTotalTimeActivityTypes().Common.time.toLong(DurationUnit.HOURS),
         listOf(10, 20, 50, 100, 1000)
     )
     val taskByTask = AchievementData(

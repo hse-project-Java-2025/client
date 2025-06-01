@@ -44,13 +44,16 @@ import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.view.model.ListViewModel
+import org.hse.smartcalendar.view.model.StatisticsManager
+import org.hse.smartcalendar.view.model.StatisticsViewModel
 
 //здесь работает навигация
 @Preview
 @Composable
 fun SettingsScreenPreview() {
     SmartCalendarTheme {
-        val listModel = ListViewModel()
+        val statisticsManager = StatisticsManager(StatisticsViewModel())
+        val listModel = ListViewModel(statisticsManager = statisticsManager)
         App(
             startDestination = Screens.SETTINGS.route
         )

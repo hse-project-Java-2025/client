@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.hse.smartcalendar.network.ApiClient
 import org.hse.smartcalendar.network.NetworkResponse
-import org.hse.smartcalendar.network.NetworkResponse.Companion.mapFailtureToAny
 import org.hse.smartcalendar.network.UserInfoResponse
 import org.hse.smartcalendar.repository.AuthRepository
 import org.hse.smartcalendar.repository.TaskRepository
@@ -26,9 +25,7 @@ class InitViewModel:ViewModel() {
             userInfoResult.value =
                 authRepository.userInfo()
             if (userInfoResult.value !is NetworkResponse.Success){
-                _initResult.value =userInfoResult.value?.let{
-                    mapFailtureToAny()
-                }
+                _initResult.value = userInfoResult.value?.mapFailureToAny()
                 return@launch
             }
             _initResult.value = taskRepository.initUserTasks()

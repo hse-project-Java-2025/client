@@ -24,7 +24,7 @@ import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.repository.TaskRepository
 import java.io.File
 
-class ListViewModel() : ViewModel() {
+class ListViewModel(val statisticsManager: StatisticsManager) : ViewModel() {
     private val taskRepository: TaskRepository = TaskRepository(ApiClient.taskApiService)
     var _actionResult = MutableLiveData<NetworkResponse<Any>>()
     val actionResult:LiveData<NetworkResponse<Any>> = _actionResult
@@ -54,6 +54,7 @@ class ListViewModel() : ViewModel() {
             throw exception
         }
         dailyTaskList.add(newTask)
+        statisticsManager.addDailyTask(newTask)
         dailyTaskList.sortBy { task ->
             task.getDailyTaskStartTime()
         }
@@ -67,12 +68,14 @@ class ListViewModel() : ViewModel() {
         if (!dailyTaskSchedule.removeDailyTask(task)) {
             // TODO
         } else {
+            statisticsManager.removeDailyTask(task)
             dailyTaskList.remove(task)
         }
     }
 
     fun changeTaskCompletion(task: DailyTask, status: Boolean) {
         if (dailyTaskSchedule.setCompletionById(task.getId(), status)) {
+            statisticsManager.changeTaskCompletion(task, status)
             task.setCompletion(status)
         }
     }
@@ -135,7 +138,7 @@ class ListViewModel() : ViewModel() {
             description = "TODO",
             start = LocalTime(0, 0),
             end = LocalTime(0, 0),
-            date = DailyTask.DefaultDate.date
+            date = DailyTask.defaultDate
         )
         return task
     }

@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("de.mannodermaus.android-junit5")
 }
 
 android {
@@ -41,7 +42,12 @@ android {
     }
 }
 
+
 dependencies {
+    testImplementation(libs.junit.jupiter)
+    testRuntimeOnly(libs.junit.vintage.engine)
+    testImplementation(libs.junit.jupiter.params)
+    testImplementation(libs.kotlinx.coroutines.test)
     //kapt(libs.hilt.compiler)
     //hilt for ViewModel providing without pass in function
 //    implementation(libs.hilt.android)
@@ -81,4 +87,13 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    testImplementation(kotlin("test"))
+}
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
+    maxHeapSize = "1G"
+
+    testLogging {
+        events("passed")
+    }
 }

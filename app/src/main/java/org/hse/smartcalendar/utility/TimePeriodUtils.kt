@@ -1,6 +1,8 @@
 package org.hse.smartcalendar.utility
 
+import androidx.compose.runtime.mutableStateOf
 import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toDateTimePeriod
@@ -13,71 +15,103 @@ import kotlin.time.toDuration
 
 class TimeUtils {
 
-    companion object{
+    companion object {
         fun getCurrentDateTime(): LocalDateTime {
             return Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault());
         }
+
         fun numberToWord(amount: Int, item: String): String {
-        if (amount != 0) {
-            return if (amount > 1) "$amount $item" + "s " else "$amount $item "
+            if (amount != 0) {
+                return if (amount > 1) "$amount $item" + "s " else "$amount $item "
+            }
+            return ""
         }
-        return ""
+        fun addDaysToNowDate(days: Int): LocalDate{
+            return addDaysToDate(getCurrentDateTime().date, days)
+        }
+        fun addDaysToDate(date: LocalDate, days: Int): LocalDate{
+            return LocalDate.fromEpochDays(date.toEpochDays()+days)
+        }
+        fun calcDaysDiff(reduced: LocalDate, deductible: LocalDate): Int{
+            return reduced.toEpochDays()-deductible.toEpochDays()
+        }
     }
 }
-}
+
 //every class in Kotlin is final by default, so inheritance from LocalTime not ok
-class TimePeriod(minute: Long){
-    private var time: Duration = Duration.ZERO
-    init{
+class TimePeriod(minute: Long) {
+    private var _time = mutableStateOf(Duration.ZERO)
+    val time: Duration get() = _time.value
+
+    init {
         fromMinutes(minute)
     }
 
-    fun fromMinutes(minute: Long){
-        time+=minute.minutes
+    fun fromMinutes(minute: Long) {
+        _time.value += minute.minutes
     }
-    fun toMinutes(): Long{
+
+    fun toMinutes(): Long {
         return time.inWholeMinutes
     }
-    fun plusMinutes(minutes: Long){
-        time+=minutes.toDuration(DurationUnit.MINUTES)
+
+    fun addMinutes(minutes: Long, sign: Boolean) {
+        when (sign) {
+            true -> _time.value += minutes.toDuration(DurationUnit.MINUTES)
+            false -> _time.value -= minutes.toDuration(DurationUnit.MINUTES)
+        }
     }
-    fun toPrettyString(): String{
+
+    fun toPrettyString(): String {
         val stringBuilder = StringBuilder()
         val dataTime = time.toDateTimePeriod()
         stringBuilder.append(numberToWord(dataTime.years, "year"))
         stringBuilder.append(numberToWord(dataTime.days, "day"))
         stringBuilder.append(numberToWord(dataTime.hours, "hour"))
         stringBuilder.append(numberToWord(dataTime.minutes, "minute"))
-        return if (stringBuilder.toString()!="") stringBuilder.toString() else "0 minute"
+        return if (stringBuilder.toString() != "") stringBuilder.toString() else "0 minute"
     }
 }
-class DaysAmount(amount: Int){
-    private var amount: Int = amount
-    fun toPrettyString():String{
-        return if (amount !=1) "$amount days" else "1 day"
+
+class DaysAmount(initialAmount: Int) {
+    private var _amount = mutableStateOf(initialAmount)
+    val amount: Int get() = _amount.value
+
+    init {
+        _amount.value = amount
     }
-    fun getAmount(): Int{
-        return amount
+
+    fun toPrettyString(): String {
+        return if (amount != 1) "$amount days" else "1 day"
     }
 }
-class DayPeriod(minute: Long){
-    private var time: Duration = Duration.ZERO
-    fun toMinutes(): Long{
+
+class DayPeriod(minute: Long) {
+    private var _time = mutableStateOf(Duration.ZERO)
+    val time: Duration get() = _time.value
+    fun toMinutes(): Long {
         return time.inWholeMinutes
     }
-    init{
+
+    init {
         fromMinutes(minute)
     }
-    fun fromMinutes(minute: Long){
-        time = (minute).toDuration(DurationUnit.MINUTES)
+
+    fun fromMinutes(minute: Long) {
+        _time.value = minute.toDuration(DurationUnit.MINUTES)
     }
-    fun plusMinutes(minute: Int){
-        time+=minute.toDuration(DurationUnit.MINUTES);
+
+    fun plusMinutes(minute: Int, sign: Boolean) {
+        when (sign) {
+            true -> _time.value += minute.toDuration(DurationUnit.MINUTES);
+            false -> _time.value -= minute.toDuration(DurationUnit.MINUTES);
+        }
     }
-    fun toFullString(): String{
-        var stringBuilder:StringBuilder = StringBuilder()
+
+    fun toFullString(): String {
+        var stringBuilder: StringBuilder = StringBuilder()
         stringBuilder.append(numberToWord(time.toDateTimePeriod().hours, "hour"))
         stringBuilder.append(numberToWord(time.toDateTimePeriod().minutes, "minute"))
-        return if (stringBuilder.toString()!="") stringBuilder.toString() else "0 minute"
+        return if (stringBuilder.toString() != "") stringBuilder.toString() else "0 minute"
     }
 }

@@ -71,8 +71,8 @@ fun StatisticsScreen(navigation: Navigation, openMenu: () -> Unit, statisticsMod
                     )
                 }
                 Box(modifier = Modifier.weight(1.0f / 3)) {
-                    fun progress():Float{return statisticsModel.getTodayContinusSuccessDays().getAmount().toFloat()/
-                            statisticsModel.getRecordContiniusSuccessDays().getAmount()
+                    fun progress():Float{return statisticsModel.getTodayContinusSuccessDays().amount.toFloat()/
+                            statisticsModel.getRecordContiniusSuccessDays().amount
                     }
                     ProgressCircleWithText(
                         progress = { progress() },
