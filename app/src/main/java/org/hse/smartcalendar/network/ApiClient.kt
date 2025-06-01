@@ -38,6 +38,9 @@ object ApiClient {
     val taskApiService: TaskApiInterface by lazy {
         retrofit.create(TaskApiInterface::class.java)
     }
+    val statisticsApiService: StatisticsApiInterface by lazy {
+        retrofit.create(StatisticsApiInterface::class.java)
+    }
 }
 class AuthInterceptor(private val tokenProvider: () -> String?) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {

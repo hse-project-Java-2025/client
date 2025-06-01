@@ -12,36 +12,12 @@ import org.hse.smartcalendar.network.toTask
 import retrofit2.Response
 
 @Suppress("LiftReturnOrAssignment")
-class TaskRepository(private val api: TaskApiInterface) {
-    suspend fun<T> withIdRequest( supplier:suspend (Long)->Response<T>): NetworkResponse<T> {
-        try {
-            val id = User.id
-            if (id==null){
-                return NetworkResponse.errorId()
-            }
-            val response = supplier.invoke(id)
-            if (response.isSuccessful){
-                val responseBody = response.body()
-                if (response.code()==200){
-                    responseBody?.let{
-                        return NetworkResponse.Success(responseBody)
-                    }
-                }
-                return NetworkResponse.fromResponse(response)
-            } else {
-                return NetworkResponse.fromResponse(response)
-            }
-        } catch (e: Exception) {
-            return NetworkResponse<LoginResponse>.NetworkError(e.message.toString())
-        }
-    }
+class TaskRepository(private val api: TaskApiInterface): BaseRepository() {
     suspend fun addTask(task: DailyTask): NetworkResponse<ResponseBody> {
         return withIdRequest { id ->
             api.addTask(id, AddTaskRequest.fromTask(task))
         }
     }
-
-
     /**
      * В случае наложения тасок с сервера вылетит с NestedTaskException
      */

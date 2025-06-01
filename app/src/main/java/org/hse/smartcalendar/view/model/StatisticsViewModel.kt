@@ -1,90 +1,96 @@
 package org.hse.smartcalendar.view.model
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 import org.hse.smartcalendar.data.DailyTask
-import org.hse.smartcalendar.data.DailyTaskType
+import org.hse.smartcalendar.data.TotalTimeTaskTypes
+import org.hse.smartcalendar.network.ApiClient
+import org.hse.smartcalendar.network.AverageDayTime
+import org.hse.smartcalendar.network.ContinuesSuccessDays
+import org.hse.smartcalendar.network.NetworkResponse
+import org.hse.smartcalendar.network.StatisticsResponse
+import org.hse.smartcalendar.network.TodayTime
+import org.hse.smartcalendar.repository.StatisticsRepository
 import org.hse.smartcalendar.utility.DayPeriod
 import org.hse.smartcalendar.utility.DaysAmount
 import org.hse.smartcalendar.utility.TimePeriod
+import kotlin.math.max
+import kotlin.math.roundToInt
 
-class StatisticsViewModel:ViewModel() {
+class StatisticsViewModel():ViewModel() {
+    private val statisticsRepo: StatisticsRepository = StatisticsRepository(ApiClient.statisticsApiService)
+    var _initResult = MutableLiveData<NetworkResponse<StatisticsResponse>>()
+    val initResult:LiveData<NetworkResponse<StatisticsResponse>> = _initResult
     companion object {
-        private fun getPercent(part: Long, all: Long): Float {
-            return Math.round(part.toFloat() / all * 1000).toFloat() / 10
+        fun getPercent(part: Long, all: Long): Float {
+            if (all == 0L) return 25.0f
+            return toPercent(part.toFloat() / all)
         }
-        fun toPercent(part: Float):Float{
-            return Math.round(part*1000).toFloat()/10
+        fun toPercent(part: Float): Float {
+            if (part.isNaN() || part.isInfinite()) {
+                return 0.0f
+            }
+            return (part * 1000).roundToInt().toFloat() / 10
         }
     }
-    class TotalTimeTaskTypes(common: Long, work: Long, study: Long, fitness: Long){
-        val All: TimePeriod = TimePeriod(work+study+common+fitness)
-        val Study: TimePeriod = TimePeriod(study)
-        val Common: TimePeriod = TimePeriod(common)
-        val Fitness: TimePeriod = TimePeriod(fitness)
-        val Work: TimePeriod = TimePeriod(work)
-        var totalMinutes = common+study+work+fitness
-            private set
-        var StudyPercent: Float = getPercent(study, totalMinutes)
-            private  set
-        var CommonPercent: Float = getPercent(common, totalMinutes)
-            private  set
-        var FitnessPercent: Float = getPercent(fitness, totalMinutes)
-            private  set
-        var WorkPercent: Float = getPercent(work, totalMinutes)
-            private  set
-        fun completeTask(task: DailyTask, isComplete: Boolean){
-            val taskMinutesLength = task.getMinutesLength().toLong()
-            when(isComplete){
-                true -> {
-                    totalMinutes+=taskMinutesLength
-                }
-                false -> totalMinutes-=taskMinutesLength
-            }
-            All.addMinutes(taskMinutesLength, isComplete)
-            when(task.getDailyTaskType()){
-                DailyTaskType.COMMON -> {Common.addMinutes(taskMinutesLength, isComplete)
-                CommonPercent=getPercent(Common.toMinutes(), totalMinutes)}
-                DailyTaskType.FITNESS -> {
-                    Fitness.addMinutes(taskMinutesLength, isComplete)
-                    FitnessPercent=getPercent(Fitness.toMinutes(), totalMinutes)
-                }
-                DailyTaskType.WORK -> {
-                    Work.addMinutes(taskMinutesLength, isComplete)
-                    WorkPercent=getPercent(Work.toMinutes(), totalMinutes)
-                }
-                DailyTaskType.STUDIES -> {
-                    Study.addMinutes(taskMinutesLength, isComplete)
-                    StudyPercent=getPercent(Study.toMinutes(), totalMinutes)
-                }
-            }
-        }
-    }
-    class WeekTime(all: Long){
+    private class WeekTime(all: Long){
         val All: TimePeriod = TimePeriod(all)
     }
     private class TodayTimeVars(planned: Long, completed: Long){
         val Planned: DayPeriod = DayPeriod(planned)
         var Completed: DayPeriod = DayPeriod(completed)
+        companion object{
+            fun fromTodayTimeDTO(todayTimeDTO: TodayTime): TodayTimeVars{
+                return TodayTimeVars(planned = todayTimeDTO.planned,
+                    completed = todayTimeDTO.completed)
+            }
+        }
     }
     private class ContinuesSuccessDaysVars(record: Int, now: Int){
         val Record: DaysAmount = DaysAmount(record)
         val Now: DaysAmount = DaysAmount(now)
+        companion object{
+            fun fromContinuesSuccessDTO(continuesSuccessDTO: ContinuesSuccessDays): ContinuesSuccessDaysVars{
+                return ContinuesSuccessDaysVars(record = continuesSuccessDTO.record.toInt(),
+                    now = continuesSuccessDTO.now.toInt())
+            }
+        }
     }
     private class AverageDayTimeVars(totalWorkMinutes: Long, val totalDays: Long){
         var All: DayPeriod = DayPeriod(totalWorkMinutes/totalDays)
-            private set
         fun update(totalTimeMinutes: Long){
             All = DayPeriod(totalTimeMinutes/totalDays)
         }
+        companion object{
+            fun fromAverageDayDTO(averageDayTimeDTO: AverageDayTime): AverageDayTimeVars{
+                return AverageDayTimeVars(totalWorkMinutes = averageDayTimeDTO.totalWorkMinutes,
+                    totalDays = max(averageDayTimeDTO.totalDays, 1)
+                )
+            }
+        }
     }
-    private val ContiniusSuccessDays: ContinuesSuccessDaysVars
-    private val TotalTime: TotalTimeTaskTypes = TotalTimeTaskTypes(0, 0, 0, 0)
-    private val weekTime = WeekTime(0)
-    private val AverageDayTime: AverageDayTimeVars
-    private val TodayTime: TodayTimeVars = TodayTimeVars(0, 0)
-    init{
-        ContiniusSuccessDays = ContinuesSuccessDaysVars(0, 0)
-        AverageDayTime = AverageDayTimeVars(0, 1)
+    private var ContiniusSuccessDays: ContinuesSuccessDaysVars = ContinuesSuccessDaysVars(0, 0)
+    private var TotalTime: TotalTimeTaskTypes = TotalTimeTaskTypes(0, 0, 0, 0)
+    private var weekTime = WeekTime(0)
+    private var AverageDayTime: AverageDayTimeVars = AverageDayTimeVars(totalDays = 1, totalWorkMinutes =  0)
+    private var TodayTime: TodayTimeVars = TodayTimeVars(0, 0)
+    fun init(){
+        viewModelScope.launch {
+            _initResult.value = NetworkResponse.Loading
+            val response = statisticsRepo.getStatistics()
+            if (response is NetworkResponse.Success){
+                val data = response.data
+                TotalTime = data.totalTime.toVMTotalTime()
+                AverageDayTime = AverageDayTimeVars.fromAverageDayDTO(data.averageDayTime)
+                weekTime = WeekTime(data.weekTime)
+                ContiniusSuccessDays = ContinuesSuccessDaysVars.fromContinuesSuccessDTO(data.continuesSuccessDays)
+                TodayTime = TodayTimeVars.fromTodayTimeDTO(data.todayTime)
+            }
+            _initResult.value = response
+        }
     }
     fun createOrDeleteTask(task: DailyTask, isCreate: Boolean){
         if (task.isComplete() && isCreate==false){

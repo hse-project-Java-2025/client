@@ -38,3 +38,20 @@ interface TaskApiInterface {
     suspend fun deleteTask(@Path("taskId") taskId: Int): Response<ResponseBody>
 
 }
+
+interface StatisticsApiInterface {
+
+    @GET("api/users/{userId}/statistics")
+    suspend fun getUserStatistics(
+        @Path("userId") userId: Long
+    ): Response<StatisticsResponse>
+
+    @POST("api/users/{userId}/statistics")
+    suspend fun updateUserStatistics(
+        @Path("userId") userId: Long,
+        @Body request: StatisticsResponse
+    ): Response<ResponseBody>
+
+    @GET("api/statistics/total-time-task-types")
+    suspend fun getGlobalTaskTypeStatistics(): Response<TotalTime>
+}
