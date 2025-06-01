@@ -1,29 +1,38 @@
 package org.hse.smartcalendar.view.model
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.TotalTimeTaskTypes
 import org.hse.smartcalendar.network.ApiClient
 import org.hse.smartcalendar.network.AverageDayTime
 import org.hse.smartcalendar.network.ContinuesSuccessDays
 import org.hse.smartcalendar.network.NetworkResponse
-import org.hse.smartcalendar.network.StatisticsResponse
+import org.hse.smartcalendar.network.StatisticsDTO
 import org.hse.smartcalendar.network.TodayTime
+import org.hse.smartcalendar.notification.StatisticsUploadWorker
 import org.hse.smartcalendar.repository.StatisticsRepository
 import org.hse.smartcalendar.utility.DayPeriod
 import org.hse.smartcalendar.utility.DaysAmount
 import org.hse.smartcalendar.utility.TimePeriod
+import java.util.concurrent.TimeUnit
 import kotlin.math.max
 import kotlin.math.roundToInt
+import kotlin.time.DurationUnit
 
 class StatisticsViewModel():ViewModel() {
     private val statisticsRepo: StatisticsRepository = StatisticsRepository(ApiClient.statisticsApiService)
-    var _initResult = MutableLiveData<NetworkResponse<StatisticsResponse>>()
-    val initResult:LiveData<NetworkResponse<StatisticsResponse>> = _initResult
+    var _initResult = MutableLiveData<NetworkResponse<StatisticsDTO>>()
+    val initResult:LiveData<NetworkResponse<StatisticsDTO>> = _initResult
     companion object {
         fun getPercent(part: Long, all: Long): Float {
             if (all == 0L) return 25.0f
@@ -92,16 +101,32 @@ class StatisticsViewModel():ViewModel() {
             _initResult.value = response
         }
     }
-    fun createOrDeleteTask(task: DailyTask, isCreate: Boolean){
+    private fun uploadStatistics(){
+        val statsDTO = StatisticsDTO.fromViewModel(this)
+        val json =  Json.encodeToString(StatisticsDTO.serializer(), statsDTO)
+
+        val workRequest = OneTimeWorkRequestBuilder<StatisticsUploadWorker>()
+            .setInputData(workDataOf("statistics_json" to json))
+            .setInitialDelay(10, TimeUnit.SECONDS)//в итоге должно быть минут
+            .build()
+
+        WorkManager.getInstance().enqueueUniqueWork(
+            "upload_stats",
+            ExistingWorkPolicy.REPLACE,
+            workRequest
+        )
+    }
+    fun createOrDeleteTask(task: DailyTask, isCreate: Boolean, isUploadStats: Boolean =true){
         if (task.isComplete() && isCreate==false){
             changeTaskCompletion(task, false)
         }
         if (task.belongsCurrentDay()){
             TodayTime.Planned.plusMinutes(task.getMinutesLength(), isCreate)
         }
+        if (isUploadStats) {uploadStatistics()}
     }
 
-    fun changeTaskCompletion(task: DailyTask, isComplete: Boolean){//когда таска запатчена
+    fun changeTaskCompletion(task: DailyTask, isComplete: Boolean, isUploadStats: Boolean =true){//когда таска запатчена
         val taskMinutesLength = task.getMinutesLength()
         if (task.belongsCurrentDay()) {
             TodayTime.Completed.plusMinutes(taskMinutesLength, isComplete)
@@ -111,16 +136,17 @@ class StatisticsViewModel():ViewModel() {
         }
         TotalTime.completeTask(task, isComplete)
         AverageDayTime.update(TotalTime.totalMinutes)
-
+        if (isUploadStats) {uploadStatistics()}
     }
 
     fun changeTask(task: DailyTask, newTask: DailyTask){
         if (task.isComplete()){
-            changeTaskCompletion(task, false)
-            changeTaskCompletion(newTask, true)
+            changeTaskCompletion(task, false, isUploadStats = false)
+            changeTaskCompletion(newTask, true, isUploadStats = false)
         }
-        createOrDeleteTask(task, false)
-        createOrDeleteTask(newTask, true)
+        createOrDeleteTask(task, false, isUploadStats = false)
+        createOrDeleteTask(newTask, true, isUploadStats = false)
+        uploadStatistics()
     }
 
     fun getTotalWorkTime():TimePeriod{

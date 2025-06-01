@@ -1,9 +1,10 @@
 package org.hse.smartcalendar.network
 
+import kotlinx.serialization.Serializable
 import org.hse.smartcalendar.data.TotalTimeTaskTypes
 import org.hse.smartcalendar.view.model.StatisticsViewModel
-
-data class StatisticsResponse(
+@Serializable
+data class StatisticsDTO(
     val totalTime: TotalTime,
     val weekTime: Long,
     val todayTime: TodayTime,
@@ -11,10 +12,10 @@ data class StatisticsResponse(
     val averageDayTime: AverageDayTime
 ) {
     companion object {
-        fun fromViewModel(viewModel: StatisticsViewModel): StatisticsResponse {
+        fun fromViewModel(viewModel: StatisticsViewModel): StatisticsDTO {
             val totalTime = viewModel.getTotalTimeActivityTypes()
 
-            return StatisticsResponse(
+            return StatisticsDTO(
                 totalTime = TotalTime(
                     common = totalTime.Common.time.inWholeMinutes,
                     work = totalTime.Work.time.inWholeMinutes,
@@ -38,7 +39,7 @@ data class StatisticsResponse(
         }
     }
 }
-
+@Serializable
 data class TotalTime(
     val common: Long,
     val work: Long,
@@ -54,17 +55,17 @@ data class TotalTime(
         )
     }
 }
-
+@Serializable
 data class TodayTime(
     val planned: Long,
     val completed: Long
 )
-
+@Serializable
 data class ContinuesSuccessDays(
     val record: Long,
     val now: Long
 )
-
+@Serializable
 data class AverageDayTime(
     val totalWorkMinutes: Long,
     val totalDays: Long

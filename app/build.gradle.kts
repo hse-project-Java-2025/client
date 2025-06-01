@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("de.mannodermaus.android-junit5")
+    kotlin("plugin.serialization") version "1.9.23"
 }
 
 android {
@@ -44,6 +45,8 @@ android {
 
 
 dependencies {
+    implementation(libs.androidx.lifecycle.process)
+    implementation(libs.kotlinx.serialization.json)
     testImplementation(libs.junit.jupiter)
     testRuntimeOnly(libs.junit.vintage.engine)
     testImplementation(libs.junit.jupiter.params)

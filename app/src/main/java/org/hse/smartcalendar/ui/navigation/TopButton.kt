@@ -14,6 +14,7 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import org.hse.smartcalendar.utility.Navigation
+import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.utility.rememberNavigation
 
 
@@ -34,7 +35,7 @@ fun TopButton(openMenu: (()-> Unit)? = null, navigation: Navigation, text: Strin
         },
         actions = {
 
-            IconButton(onClick = { navigation.navigateTo("Settings")}) {
+            IconButton(onClick = { navigation.navigateTo(Screens.SETTINGS.route)}) {
                 Icon(Icons.Filled.Settings, contentDescription = null)
             }
 

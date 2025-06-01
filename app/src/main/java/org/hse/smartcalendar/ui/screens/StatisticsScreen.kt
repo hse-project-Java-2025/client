@@ -1,11 +1,11 @@
 package org.hse.smartcalendar.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
@@ -104,14 +104,14 @@ fun ActivityTypesDataDisplay(modifier: Modifier=Modifier,
         ChartModel(value = typesModel.CommonPercent, color = DailyTaskType.COMMON.color),
         ChartModel(value = typesModel.WorkPercent, color = DailyTaskType.WORK.color),
     )
-    val TableData = mapOf("Work" to Pair(typesModel.WorkPercent, DailyTaskType.WORK.color),
+    val tableData = mapOf("Work" to Pair(typesModel.WorkPercent, DailyTaskType.WORK.color),
         "Study" to
                 Pair(typesModel.StudyPercent, DailyTaskType.STUDIES.color),
         "Fitness" to Pair(typesModel.FitnessPercent, DailyTaskType.FITNESS.color),
         "Common" to Pair(typesModel.CommonPercent, DailyTaskType.COMMON.color))
     Column(verticalArrangement = Arrangement.Center) {
         ChartCirclePie(modifier.align(Alignment.CenterHorizontally), charts)
-        TableData.forEach {
+        tableData.forEach {
             val (text, data) = it
             val (percent, color) = data
             Row(
@@ -135,9 +135,9 @@ fun SafeProgressBox(
     color: Color,
     modifier: Modifier = Modifier
 ) {
-    Box(modifier = modifier) {
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
         if (dividend == 0L) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Box(modifier = modifier.then(Modifier.size(100.dp)), contentAlignment = Alignment.Center) {
                 Text("No data")
             }
         } else {

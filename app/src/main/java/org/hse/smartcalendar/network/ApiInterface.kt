@@ -44,12 +44,12 @@ interface StatisticsApiInterface {
     @GET("api/users/{userId}/statistics")
     suspend fun getUserStatistics(
         @Path("userId") userId: Long
-    ): Response<StatisticsResponse>
+    ): Response<StatisticsDTO>
 
-    @POST("api/users/{userId}/statistics")
+    @PUT("api/users/{userId}/statistics")
     suspend fun updateUserStatistics(
         @Path("userId") userId: Long,
-        @Body request: StatisticsResponse
+        @Body request: StatisticsDTO
     ): Response<ResponseBody>
 
     @GET("api/statistics/total-time-task-types")

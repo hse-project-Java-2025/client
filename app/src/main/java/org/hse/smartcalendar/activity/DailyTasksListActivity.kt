@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import org.hse.smartcalendar.notification.ReminderViewModel
 import org.hse.smartcalendar.notification.ReminderViewModelFactory
+import org.hse.smartcalendar.ui.screens.StatisticsScreen
 import org.hse.smartcalendar.ui.task.DailyTasksList
 import org.hse.smartcalendar.ui.task.TaskEditWindow
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
@@ -24,17 +25,21 @@ import org.hse.smartcalendar.view.model.StatisticsManager
 import org.hse.smartcalendar.view.model.StatisticsViewModel
 import org.hse.smartcalendar.view.model.TaskEditViewModel
 
+/**
+ * Обеспечивает быстрый доступ к основной части приложения, не является его частью
+ * (можно менять)
+ */
 class DailyTasksListActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val statisticsManager = StatisticsManager(StatisticsViewModel())
+        val statisticsModel = StatisticsViewModel()
+        val statisticsManager = StatisticsManager(statisticsModel)
         val listViewModel = ListViewModel(statisticsManager)
         val taskEditViewModel = TaskEditViewModel(listViewModel = listViewModel)
         setContent {
-            val navController = rememberNavController()
             SmartCalendarTheme {
-                ListNavigation(listViewModel, taskEditViewModel, navController)
+                ListNavigation(listViewModel, taskEditViewModel, statisticsModel)
             }
         }
     }
@@ -44,11 +49,13 @@ class DailyTasksListActivity : ComponentActivity() {
 fun ListNavigation(
     listViewModel: ListViewModel,
     taskEditViewModel: TaskEditViewModel,
-    navController: NavHostController
+    statisticsViewModel: StatisticsViewModel
 ) {
     val reminderModel: ReminderViewModel = viewModel(factory = ReminderViewModelFactory(
         LocalContext.current.applicationContext as Application
     ))
+    val navigation = rememberNavigation()
+    val navController = navigation.navController
     NavHost(navController = navController, startDestination = Screens.CALENDAR.route) {
         composable(Screens.CALENDAR.route) {
             DailyTasksList(
@@ -56,7 +63,7 @@ fun ListNavigation(
                 taskEditViewModel,
                 reminderModel = reminderModel,
                 { },
-                rememberNavigation(),
+                navigation,
                 navController
             )
         }
@@ -69,6 +76,9 @@ fun ListNavigation(
                 }, onCancel = {},
                 taskEditViewModel = taskEditViewModel, navController = navController
             )
+        }
+        composable(route = Screens.SETTINGS.route) {
+            StatisticsScreen(navigation, {}, statisticsViewModel)
         }
     }
 }

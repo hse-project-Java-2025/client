@@ -19,12 +19,12 @@ import kotlinx.coroutines.launch
 import org.hse.smartcalendar.AuthScreen
 import org.hse.smartcalendar.AuthType
 import org.hse.smartcalendar.AuthViewModel
-import org.hse.smartcalendar.activity.GreetingScreen
 import org.hse.smartcalendar.notification.ReminderViewModel
 import org.hse.smartcalendar.notification.ReminderViewModelFactory
 import org.hse.smartcalendar.ui.screens.AchievementsScreen
 import org.hse.smartcalendar.ui.screens.ChangeLogin
 import org.hse.smartcalendar.ui.screens.ChangePassword
+import org.hse.smartcalendar.ui.screens.GreetingScreen
 import org.hse.smartcalendar.ui.screens.LoadingScreen
 import org.hse.smartcalendar.ui.task.DailyTasksList
 import org.hse.smartcalendar.ui.screens.SettingsScreen
