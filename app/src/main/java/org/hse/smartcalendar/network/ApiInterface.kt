@@ -6,7 +6,10 @@ import retrofit2.http.Body
 import retrofit2.http.Path//auto import not work
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.PUT
+import java.util.UUID
 
 interface AuthApiInterface {
     @POST("api/auth/signup")
@@ -28,15 +31,23 @@ interface TaskApiInterface {
     suspend fun getDailyTasks(
         @Path("userId") userId: Long
     ): Response<List<TaskResponse>>
+
     @POST("api/users/{userId}/events")
     suspend fun addTask(
         @Path("userId") userId: Long,
         @Body request: AddTaskRequest
+    ): Response<AddTaskResponse>
+
+    @DELETE("api/users/events/{eventId}")
+    suspend fun deleteTask(
+        @Path("eventId") eventId: UUID
     ): Response<ResponseBody>
 
-    @DELETE("api/users/tasks/{taskId}")
-    suspend fun deleteTask(@Path("taskId") taskId: Int): Response<ResponseBody>
-
+    @PATCH("api/users/events/{eventId}/status")
+    suspend fun updateTaskCompletion(
+        @Path("eventId") eventId: UUID,
+        @Body request: CompleteStatusRequest
+    ): Response<ResponseBody>
 }
 
 interface StatisticsApiInterface {

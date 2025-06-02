@@ -10,7 +10,7 @@ import org.hse.smartcalendar.utility.TimeUtils
 import java.util.UUID
 
 data class DailyTask (
-    private val id: UUID = UUID.randomUUID(),
+    private var id: UUID = UUID.randomUUID(),
     private var title : String,
     private var isComplete: Boolean = false,
     private var type: DailyTaskType = DailyTaskType.COMMON,//Int
@@ -44,6 +44,9 @@ data class DailyTask (
         if (start > end) {
             throw TimeConflictException(start, end)
         }
+    }
+    fun setId(newId: UUID){
+        id = newId
     }
 
     fun getId(): UUID {

@@ -3,6 +3,7 @@ package org.hse.smartcalendar.network
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
+import kotlinx.serialization.Serializable
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
 import java.util.UUID
@@ -25,7 +26,7 @@ data class CredentialsResponse(
     val message: String
 )
 data class AddTaskResponse(
-    val message: String
+    val id: UUID
 )
 data class UserInfoResponse(
     val email: String,

@@ -1,6 +1,7 @@
 package org.hse.smartcalendar.network
 
 import kotlinx.datetime.LocalDateTime
+import kotlinx.serialization.Serializable
 import org.hse.smartcalendar.network.NetworkResponse.Error
 import retrofit2.Response
 import org.hse.smartcalendar.data.DailyTask
@@ -48,3 +49,7 @@ data class AddTaskRequest(
         }
     }
 }
+@Serializable
+data class CompleteStatusRequest(
+    val completed: Boolean
+)
