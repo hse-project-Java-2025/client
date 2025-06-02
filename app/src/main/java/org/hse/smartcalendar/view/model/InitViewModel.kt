@@ -32,7 +32,6 @@ class InitViewModel:ViewModel() {
             if (initResult.value !is NetworkResponse.Success){
                 return@launch
             }
-            //statistics&others
         }
     }
     fun initUserTasks(){

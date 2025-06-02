@@ -40,6 +40,8 @@ picasso = "2.8"
 retrofit = "2.11.0"
 retrofitVersion = "2.11.0"
 runtimeLivedata = "1.8.2"
+uiTestJunit4 = "<latest-version>"
+uiTestManifest = "<latest-version>"
 workRuntimeKtx = "2.10.1"
 
 
@@ -90,6 +92,8 @@ okhttp3 = { module = "com.squareup:okhttp3", version.ref = "okhttp3" }
 picasso = { module = "com.squareup.picasso:picasso", version.ref = "picasso" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "converterGson" }
 retrofit-v2110 = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "uiTestJunit4" }
+ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "uiTestManifest" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

@@ -45,6 +45,8 @@ android {
 
 
 dependencies {
+    androidTestImplementation(libs.ui.test.junit4)
+    debugImplementation(libs.ui.test.manifest)
     implementation(libs.androidx.lifecycle.process)
     implementation(libs.kotlinx.serialization.json)
     testImplementation(libs.junit.jupiter)

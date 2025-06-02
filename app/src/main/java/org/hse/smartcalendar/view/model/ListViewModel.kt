@@ -6,8 +6,10 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
+import androidx.work.WorkManager
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.workDataOf
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
@@ -16,19 +18,24 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.serialization.json.Json
 import org.hse.smartcalendar.data.DailySchedule
 import org.hse.smartcalendar.data.DailyTask
+import org.hse.smartcalendar.data.DailyTaskAction
 import org.hse.smartcalendar.data.User
+import org.hse.smartcalendar.data.WorkManagerHolder
 import org.hse.smartcalendar.network.ApiClient
 import org.hse.smartcalendar.network.NetworkResponse
+import org.hse.smartcalendar.notification.TaskApiWorker
 import org.hse.smartcalendar.repository.TaskRepository
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 class ListViewModel(val statisticsManager: StatisticsManager) : ViewModel() {
     private val taskRepository: TaskRepository = TaskRepository(ApiClient.taskApiService)
     var _actionResult = MutableLiveData<NetworkResponse<Any>>()
     val actionResult:LiveData<NetworkResponse<Any>> = _actionResult
-
+    private val workManager = WorkManagerHolder.getInstance()
     fun getScreenDate(): LocalDate{
         return dailyTaskSchedule.date
     }
@@ -46,7 +53,21 @@ class ListViewModel(val statisticsManager: StatisticsManager) : ViewModel() {
         dailyTaskSchedule = user.getSchedule().getOrCreateDailySchedule(date)
         dailyTaskList = SnapshotStateList(dailyTaskSchedule.getDailyTaskList())
     }
+    fun scheduleTaskRequest(task: DailyTask, action: DailyTaskAction.Type) {
+        val dailyTaskAction = DailyTaskAction(task = task, type = action)
+        val taskJson = Json.encodeToString(DailyTaskAction.serializer(), dailyTaskAction)
 
+        val workRequest = OneTimeWorkRequestBuilder<TaskApiWorker>()
+            .setInputData(workDataOf(DailyTaskAction.jsonName to taskJson))
+            .setInitialDelay(10, TimeUnit.SECONDS)
+            .build()
+
+        workManager.enqueueUniqueWork(
+            "task_${action}_${task.getId()}",
+            ExistingWorkPolicy.REPLACE,
+            workRequest
+        )
+    }
     fun addDailyTask(newTask : DailyTask) {
         try {
             dailyTaskSchedule.addDailyTask(newTask)
@@ -54,22 +75,20 @@ class ListViewModel(val statisticsManager: StatisticsManager) : ViewModel() {
             throw exception
         }
         dailyTaskList.add(newTask)
-        statisticsManager.addDailyTask(newTask)
         dailyTaskList.sortBy { task ->
             task.getDailyTaskStartTime()
         }
-        viewModelScope.launch {
-            _actionResult.value = NetworkResponse.Loading
-            _actionResult.value = taskRepository.addTask(newTask)
-        }
+        statisticsManager.addDailyTask(newTask)
+        scheduleTaskRequest(newTask, DailyTaskAction.Type.ADD)
     }
 
     fun removeDailyTask(task : DailyTask) {
         if (!dailyTaskSchedule.removeDailyTask(task)) {
             // TODO
         } else {
-            statisticsManager.removeDailyTask(task)
             dailyTaskList.remove(task)
+            statisticsManager.removeDailyTask(task)
+            scheduleTaskRequest(task, DailyTaskAction.Type.DELETE)
         }
     }
 
@@ -77,6 +96,7 @@ class ListViewModel(val statisticsManager: StatisticsManager) : ViewModel() {
         if (dailyTaskSchedule.setCompletionById(task.getId(), status)) {
             statisticsManager.changeTaskCompletion(task, status)
             task.setCompletion(status)
+            scheduleTaskRequest(task, DailyTaskAction.Type.CHANGE_COMPLETION)
         }
     }
 

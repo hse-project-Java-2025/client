@@ -10,10 +10,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.work.WorkManager
 import org.hse.smartcalendar.R
 
 //@HiltAndroidApp
 class BaseApplication : Application(), LifecycleObserver {
+    val workManager: WorkManager by lazy { WorkManager.getInstance(this) }
 
     override fun onCreate() {
         super.onCreate()

@@ -1,6 +1,7 @@
 package org.hse.smartcalendar.data
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.toUpperCase
 
 enum class DailyTaskType(private val printName: String, val color: Color) {
     COMMON("Common", Color.LightGray),

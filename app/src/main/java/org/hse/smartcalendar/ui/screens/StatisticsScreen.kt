@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.data.TotalTimeTaskTypes
 import org.hse.smartcalendar.ui.elements.ChartCirclePie
@@ -170,6 +171,7 @@ fun ProgressCircleWithText(progress: ()->Float, text: String, color: Color){
 @Composable
 fun StatisticsPreview(){
     SmartCalendarTheme {
-        StatisticsScreen(rememberNavigation(), {}, StatisticsViewModel())
+        val statisticsModel: StatisticsViewModel = viewModel ()
+        StatisticsScreen(rememberNavigation(), {}, statisticsModel)
     }
 }

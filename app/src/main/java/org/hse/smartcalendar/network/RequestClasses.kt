@@ -23,9 +23,8 @@ data class ChangeCredentialsRequest(
     val newUsername: String,
     val newPassword: String
 )
-
+@Serializable
 data class AddTaskRequest(
-    val id: UUID,
     val creationTime: LocalDateTime,
     val title: String,
     val description: String,
@@ -43,7 +42,6 @@ data class AddTaskRequest(
                 end = LocalDateTime(task.getTaskDate(), task.getDailyTaskEndTime()),
                 location = "",
                 type = task.getDailyTaskType(),
-                id = task.getId(),
                 creationTime = task.getDailyTaskCreationTime()
             )
         }

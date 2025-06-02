@@ -3,6 +3,7 @@ package org.hse.smartcalendar.repository
 import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.hse.smartcalendar.data.DailySchedule
+import org.hse.smartcalendar.data.DailySchedule.NestedTaskException
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.User
 import org.hse.smartcalendar.network.AddTaskRequest
@@ -12,7 +13,22 @@ import org.hse.smartcalendar.network.toTask
 
 class TaskRepository(private val api: TaskApiInterface): BaseRepository() {
     suspend fun deleteTask(task: DailyTask): NetworkResponse<ResponseBody>{
-        val response = withSupplierRequest()
+        val response = withSupplierRequest<ResponseBody>{
+            ->api.deleteTask(task.getId())
+        }
+        return response
+    }
+    suspend fun changeTaskCompletion(task: DailyTask): NetworkResponse<ResponseBody>{
+        val response = withSupplierRequest<ResponseBody>{
+            ->api.deleteTask(task.getId())
+        }
+        return response
+    }
+    suspend fun editTask(task: DailyTask): NetworkResponse<ResponseBody>{
+        val response = withSupplierRequest<ResponseBody>{
+            ->api.editTask(task.getId(), AddTaskRequest.fromTask(task))
+        }
+        return response
     }
     suspend fun addTask(task: DailyTask): NetworkResponse<ResponseBody> {
         val response = withIdRequest { id ->
@@ -31,20 +47,26 @@ class TaskRepository(private val api: TaskApiInterface): BaseRepository() {
      * В случае наложения тасок с сервера вылетит с NestedTaskException
      */
     suspend fun initUserTasks(): NetworkResponse<List<DailyTask>>{
-        return when (val response =  withIdRequest { id -> api.getDailyTasks(id)}){
-            is NetworkResponse.Success -> {
-                val listTask:List<DailyTask> = response.data.map { toTask(it) }
-                val map = listTask.groupBy { it.getTaskDate() }
-                    .mapValues { (_, taskList) ->
-                        DailySchedule().apply {
-                            taskList.forEach { addDailyTask(it) }
-                        }
-                    }.toMutableMap()
-                User.getSchedule().initMap(map)
-                return NetworkResponse.Success(listTask)}
-            is NetworkResponse.NetworkError -> NetworkResponse.NetworkError(response.exceptionMessage)
-            is NetworkResponse.Error -> NetworkResponse.Error(response.message)
-            is NetworkResponse.Loading -> NetworkResponse.Loading
+        try {
+            return when (val response = withIdRequest { id -> api.getDailyTasks(id) }) {
+                is NetworkResponse.Success -> {
+                    val listTask: List<DailyTask> = response.data.map { toTask(it) }
+                    val map = listTask.groupBy { it.getTaskDate() }
+                        .mapValues { (_, taskList) ->
+                            DailySchedule().apply {
+                                taskList.forEach { addDailyTask(it) }
+                            }
+                        }.toMutableMap()
+                    User.getSchedule().initMap(map)
+                    return NetworkResponse.Success(listTask)
+                }
+
+                is NetworkResponse.NetworkError -> NetworkResponse.NetworkError(response.exceptionMessage)
+                is NetworkResponse.Error -> NetworkResponse.Error(response.message)
+                is NetworkResponse.Loading -> NetworkResponse.Loading
+            }
+        } catch (e : NestedTaskException){
+            return NetworkResponse.Error("Server data error\n"+e.message.toString())
         }
     }
 }

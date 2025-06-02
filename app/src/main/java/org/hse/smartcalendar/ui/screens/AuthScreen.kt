@@ -63,7 +63,9 @@ fun AuthScreen(navigation: Navigation, viewModel: AuthViewModel, authType:AuthTy
             value = username,
             onValueChange = { username = it },
             label = { Text("Username") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("loginField")
         )
         if (authType == AuthType.Register){
             Spacer(modifier = Modifier.height(8.dp))
@@ -79,7 +81,9 @@ fun AuthScreen(navigation: Navigation, viewModel: AuthViewModel, authType:AuthTy
             value = password,
             onValueChange = { password = it },
             label = { Text("Password") },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("passwordField"),
             visualTransformation = PasswordVisualTransformation()
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -91,9 +95,9 @@ fun AuthScreen(navigation: Navigation, viewModel: AuthViewModel, authType:AuthTy
             modifier = Modifier
                 .fillMaxWidth()
                 .testTag(if (authType==AuthType.Register)
-                    "signupButtonTest"
+                    "signupSubmitButton"
                 else
-                    "loginButtonTest")
+                    "loginSubmitButton")
         ) {
             Text(authType.title)
         }

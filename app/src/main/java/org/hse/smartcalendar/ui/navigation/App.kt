@@ -46,7 +46,7 @@ import org.hse.smartcalendar.view.model.TaskEditViewModel
 fun App(
     startDestination: String = Screens.GREETING.route
 ) {
-    val authModel = AuthViewModel()
+    val authModel: AuthViewModel = viewModel()
     val navigation = rememberNavigation()
     val coroutineScope = rememberCoroutineScope()
     val currentRoute = navigation.navController.currentDestination?.route ?: startDestination
@@ -79,10 +79,10 @@ fun App(
 }
 @Composable
 fun NestedNavigator(navigation: Navigation, authModel: AuthViewModel,openDrawer: ()-> Unit){
-    val statisticsModel = StatisticsViewModel()
+    val statisticsModel: StatisticsViewModel = viewModel()
     val listModel =  ListViewModel(StatisticsManager(statisticsModel))
     val editModel =  TaskEditViewModel(listModel)
-    var settingsViewModel=SettingsViewModel()
+    var settingsViewModel: SettingsViewModel = viewModel()
     val reminderModel: ReminderViewModel = viewModel(factory = ReminderViewModelFactory(
         LocalContext.current.applicationContext as Application
     ))

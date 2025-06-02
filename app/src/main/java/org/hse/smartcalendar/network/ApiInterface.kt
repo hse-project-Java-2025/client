@@ -43,6 +43,13 @@ interface TaskApiInterface {
         @Path("eventId") eventId: UUID
     ): Response<ResponseBody>
 
+    @POST("api/users/events/{eventId}")
+    suspend fun editTask(
+        @Path("eventId") eventId: UUID,
+        @Body request: AddTaskRequest
+    ): Response<ResponseBody>
+
+
     @PATCH("api/users/events/{eventId}/status")
     suspend fun updateTaskCompletion(
         @Path("eventId") eventId: UUID,

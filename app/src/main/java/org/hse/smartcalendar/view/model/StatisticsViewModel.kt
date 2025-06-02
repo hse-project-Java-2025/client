@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.TotalTimeTaskTypes
+import org.hse.smartcalendar.data.WorkManagerHolder
 import org.hse.smartcalendar.network.ApiClient
 import org.hse.smartcalendar.network.AverageDayTime
 import org.hse.smartcalendar.network.ContinuesSuccessDays
@@ -33,6 +34,7 @@ class StatisticsViewModel():ViewModel() {
     private val statisticsRepo: StatisticsRepository = StatisticsRepository(ApiClient.statisticsApiService)
     var _initResult = MutableLiveData<NetworkResponse<StatisticsDTO>>()
     val initResult:LiveData<NetworkResponse<StatisticsDTO>> = _initResult
+    val workManager =  WorkManagerHolder.getInstance()
     companion object {
         fun getPercent(part: Long, all: Long): Float {
             if (all == 0L) return 25.0f
@@ -107,10 +109,10 @@ class StatisticsViewModel():ViewModel() {
 
         val workRequest = OneTimeWorkRequestBuilder<StatisticsUploadWorker>()
             .setInputData(workDataOf("statistics_json" to json))
-            .setInitialDelay(10, TimeUnit.SECONDS)//в итоге должно быть минут
+            .setInitialDelay(10, TimeUnit.SECONDS)//для уменьшения нагрузки на сервер, в итоге должно на локальную DataBase отправляться
             .build()
 
-        WorkManager.getInstance().enqueueUniqueWork(
+        workManager.enqueueUniqueWork(
             "upload_stats",
             ExistingWorkPolicy.REPLACE,
             workRequest

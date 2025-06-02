@@ -3,6 +3,7 @@ package org.hse.smartcalendar.activity
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import org.hse.smartcalendar.data.WorkManagerHolder
 import org.hse.smartcalendar.ui.navigation.App
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.Navigation
@@ -50,14 +52,16 @@ class MainActivity : ComponentActivity() {
             )
         }
     }
-    //@RequiresApi(Build.VERSION_CODES.O, Build.VERSION_CODES.TIRAMISU)
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WorkManagerHolder.init(this)
+
         enableEdgeToEdge()
         setContent {
             SmartCalendarTheme {
-                getNotificationsPermissions()
+                if (SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+                    getNotificationsPermissions()
+                }
                 App()
             }
         }

@@ -8,16 +8,16 @@ import org.hse.smartcalendar.data.DailyTaskType
 
 class LocalTimeAdapter : TypeAdapter<LocalTime>() {
     override fun write(out: JsonWriter, value: LocalTime) {
-        out.value(value.toString()) // сохранит "08:30:00"
+        out.value(value.toString())
     }
 
     override fun read(reader: JsonReader): LocalTime {
-        return LocalTime.parse(reader.nextString()) // парсит ISO-время
+        return LocalTime.parse(reader.nextString())
     }
 }
 class LocalDateAdapter : TypeAdapter<LocalDate>() {
     override fun write(out: JsonWriter, value: LocalDate) {
-        out.value(value.toString()) // "2025-05-24"
+        out.value(value.toString())
     }
 
     override fun read(reader: JsonReader): LocalDate {
@@ -26,7 +26,7 @@ class LocalDateAdapter : TypeAdapter<LocalDate>() {
 }
 class LocalDateTimeAdapter : TypeAdapter<LocalDateTime>() {
     override fun write(out: JsonWriter, value: LocalDateTime) {
-        out.value(value.toString()) // "2025-05-24T08:30"
+        out.value(value.toString())
     }
 
     override fun read(reader: JsonReader): LocalDateTime {
@@ -36,10 +36,10 @@ class LocalDateTimeAdapter : TypeAdapter<LocalDateTime>() {
 
 class DailyTaskTypeAdapter : TypeAdapter<DailyTaskType>() {
     override fun write(out: JsonWriter, value: DailyTaskType) {
-        out.value(value.toString()) // сериализуем как printName
+        out.value(value.name)
     }
 
     override fun read(reader: JsonReader): DailyTaskType {
-        return DailyTaskType.fromString(reader.nextString()) // десериализация по printName
+        return DailyTaskType.fromString(reader.nextString().uppercase())
     }
 }

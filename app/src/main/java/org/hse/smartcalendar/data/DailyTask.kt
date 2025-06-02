@@ -6,10 +6,14 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.serialization.Serializable
 import org.hse.smartcalendar.utility.TimeUtils
+import org.hse.smartcalendar.utility.UUIDSerializer
 import java.util.UUID
 
+@Serializable
 data class DailyTask (
+    @Serializable(with = UUIDSerializer::class)
     private var id: UUID = UUID.randomUUID(),
     private var title : String,
     private var isComplete: Boolean = false,
