@@ -51,7 +51,7 @@ interface TaskApiInterface {
 
 
     @PATCH("api/users/events/{eventId}/status")
-    suspend fun updateTaskCompletion(
+    suspend fun changeTaskCompletion(
         @Path("eventId") eventId: UUID,
         @Body request: CompleteStatusRequest
     ): Response<ResponseBody>

@@ -8,10 +8,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import org.hse.smartcalendar.data.WorkManagerHolder
 import org.hse.smartcalendar.notification.ReminderViewModel
 import org.hse.smartcalendar.notification.ReminderViewModelFactory
 import org.hse.smartcalendar.ui.screens.StatisticsScreen
@@ -32,6 +31,7 @@ import org.hse.smartcalendar.view.model.TaskEditViewModel
 class DailyTasksListActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WorkManagerHolder.init(this)
         enableEdgeToEdge()
         val statisticsModel = StatisticsViewModel()
         val statisticsManager = StatisticsManager(statisticsModel)

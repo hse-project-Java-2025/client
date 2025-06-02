@@ -14,4 +14,7 @@ object WorkManagerHolder {
         return workManager
             ?: throw IllegalStateException("WorkManagerHolder is not initialized")
     }
+    fun setManagerForTests(workManager: WorkManager){
+        this.workManager = workManager
+    }
 }
