@@ -265,7 +265,8 @@ fun formatLocalDate(date: LocalDate): String {
 @Composable
 @Preview(showBackground = true)
 fun DailyTaskListPreview() {
-    val statisticsManager = StatisticsManager(StatisticsViewModel())
+    val statisticsViewModel: StatisticsViewModel = viewModel()
+    val statisticsManager = StatisticsManager(statisticsViewModel)
     val listViewModel = ListViewModel(statisticsManager)
     listViewModel.addDailyTask(
         DailyTask(

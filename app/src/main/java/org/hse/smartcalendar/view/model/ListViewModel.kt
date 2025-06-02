@@ -31,11 +31,9 @@ import org.hse.smartcalendar.repository.TaskRepository
 import java.io.File
 import java.util.concurrent.TimeUnit
 
-class ListViewModel(val statisticsManager: StatisticsManager) : ViewModel() {
-    private val taskRepository: TaskRepository = TaskRepository(ApiClient.taskApiService)
+open class AbstractListViewModel(val statisticsManager: StatisticsManager) : ViewModel() {
     var _actionResult = MutableLiveData<NetworkResponse<Any>>()
     val actionResult:LiveData<NetworkResponse<Any>> = _actionResult
-    private val workManager = WorkManagerHolder.getInstance()
     fun getScreenDate(): LocalDate{
         return dailyTaskSchedule.date
     }
@@ -53,20 +51,7 @@ class ListViewModel(val statisticsManager: StatisticsManager) : ViewModel() {
         dailyTaskSchedule = user.getSchedule().getOrCreateDailySchedule(date)
         dailyTaskList = SnapshotStateList(dailyTaskSchedule.getDailyTaskList())
     }
-    fun scheduleTaskRequest(task: DailyTask, action: DailyTaskAction.Type) {
-        val dailyTaskAction = DailyTaskAction(task = task, type = action)
-        val taskJson = Json.encodeToString(DailyTaskAction.serializer(), dailyTaskAction)
-
-        val workRequest = OneTimeWorkRequestBuilder<TaskApiWorker>()
-            .setInputData(workDataOf(DailyTaskAction.jsonName to taskJson))
-            .setInitialDelay(10, TimeUnit.SECONDS)
-            .build()
-
-        workManager.enqueueUniqueWork(
-            "task_${action}_${task.getId()}",
-            ExistingWorkPolicy.REPLACE,
-            workRequest
-        )
+    open fun scheduleTaskRequest(task: DailyTask, action: DailyTaskAction.Type) {
     }
     fun addDailyTask(newTask : DailyTask) {
         try {
@@ -147,6 +132,31 @@ class ListViewModel(val statisticsManager: StatisticsManager) : ViewModel() {
         return true
     }
 
+    private fun <T> SnapshotStateList(dailyTaskList: List<T>): SnapshotStateList<T> {
+        val result: SnapshotStateList<T> = SnapshotStateList()
+        dailyTaskList.forEach { task ->
+            result.add(task)
+        }
+        return result
+    }
+}
+class ListViewModel(statisticsManager: StatisticsManager) : AbstractListViewModel(statisticsManager) {
+    private val workManager = WorkManagerHolder.getInstance()
+
+    override fun scheduleTaskRequest(task: DailyTask, action: DailyTaskAction.Type) {
+        val taskJson = Json.encodeToString(DailyTaskAction.serializer(), DailyTaskAction(task = task, type = action))
+
+        val workRequest = OneTimeWorkRequestBuilder<TaskApiWorker>()
+            .setInputData(workDataOf(DailyTaskAction.jsonName to taskJson))
+            .setInitialDelay(10, TimeUnit.SECONDS)
+            .build()
+
+        workManager.enqueueUniqueWork(
+            "task_${action}_${task.getId()}",
+            ExistingWorkPolicy.REPLACE,
+            workRequest
+        )
+    }
     fun sendAudio(
         audioFile: MutableState<File?>,
         description: AudioDescription,
@@ -161,14 +171,6 @@ class ListViewModel(val statisticsManager: StatisticsManager) : ViewModel() {
             date = DailyTask.defaultDate
         )
         return task
-    }
-
-    private fun <T> SnapshotStateList(dailyTaskList: List<T>): SnapshotStateList<T> {
-        val result: SnapshotStateList<T> = SnapshotStateList()
-        dailyTaskList.forEach { task ->
-            result.add(task)
-        }
-        return result
     }
 
     class NestedTask(val nestedTask: DailyTask) :

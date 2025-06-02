@@ -30,11 +30,10 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 import kotlin.time.DurationUnit
 
-class StatisticsViewModel():ViewModel() {
+open class AbstractStatisticsViewModel():ViewModel() {
     private val statisticsRepo: StatisticsRepository = StatisticsRepository(ApiClient.statisticsApiService)
     var _initResult = MutableLiveData<NetworkResponse<StatisticsDTO>>()
     val initResult:LiveData<NetworkResponse<StatisticsDTO>> = _initResult
-    val workManager =  WorkManagerHolder.getInstance()
     companion object {
         fun getPercent(part: Long, all: Long): Float {
             if (all == 0L) return 25.0f
@@ -103,20 +102,7 @@ class StatisticsViewModel():ViewModel() {
             _initResult.value = response
         }
     }
-    private fun uploadStatistics(){
-        val statsDTO = StatisticsDTO.fromViewModel(this)
-        val json =  Json.encodeToString(StatisticsDTO.serializer(), statsDTO)
-
-        val workRequest = OneTimeWorkRequestBuilder<StatisticsUploadWorker>()
-            .setInputData(workDataOf("statistics_json" to json))
-            .setInitialDelay(10, TimeUnit.SECONDS)//для уменьшения нагрузки на сервер, в итоге должно на локальную DataBase отправляться
-            .build()
-
-        workManager.enqueueUniqueWork(
-            "upload_stats",
-            ExistingWorkPolicy.REPLACE,
-            workRequest
-        )
+    open fun uploadStatistics(){
     }
     fun createOrDeleteTask(task: DailyTask, isCreate: Boolean, isUploadStats: Boolean =true){
         if (task.isComplete() && isCreate==false){
@@ -180,5 +166,23 @@ class StatisticsViewModel():ViewModel() {
     }
     fun getTypesInDay(): Long{
         return 2
+    }
+}
+class StatisticsViewModel(): AbstractStatisticsViewModel(){
+    override fun uploadStatistics() {
+        val workManager = WorkManagerHolder.getInstance()
+        val statsDTO = StatisticsDTO.fromViewModel(this)
+        val json = Json.encodeToString(StatisticsDTO.serializer(), statsDTO)
+
+        val workRequest = OneTimeWorkRequestBuilder<StatisticsUploadWorker>()
+            .setInputData(workDataOf("statistics_json" to json))
+            .setInitialDelay(10, TimeUnit.SECONDS)
+            .build()
+
+        workManager.enqueueUniqueWork(
+            "upload_stats",
+            ExistingWorkPolicy.REPLACE,
+            workRequest
+        )
     }
 }

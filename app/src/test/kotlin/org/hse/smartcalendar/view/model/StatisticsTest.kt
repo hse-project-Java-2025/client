@@ -1,5 +1,10 @@
 package org.hse.smartcalendar.view.model
 
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -9,6 +14,7 @@ import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.data.User
+import org.hse.smartcalendar.data.WorkManagerHolder
 import org.hse.smartcalendar.utility.TimeUtils
 import org.hse.smartcalendar.utility.fromMinutesOfDay
 import org.junit.jupiter.api.AfterAll
@@ -24,8 +30,8 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class StatisticsTest {
     private val testDispatcher = StandardTestDispatcher()
-    private lateinit var statisticsViewModel: StatisticsViewModel
-    private lateinit var listViewModel: ListViewModel
+    private lateinit var statisticsViewModel: AbstractStatisticsViewModel
+    private lateinit var listViewModel: AbstractListViewModel
     private lateinit var firstTask: DailyTask
     private lateinit var secondTask: DailyTask
     private lateinit var tomorrowTask: DailyTask
@@ -49,8 +55,8 @@ class StatisticsTest {
     @BeforeAll
     fun setUp(){
         Dispatchers.setMain(testDispatcher)
-        statisticsViewModel = StatisticsViewModel()
-        listViewModel = ListViewModel(StatisticsManager(statisticsViewModel))
+        statisticsViewModel = AbstractStatisticsViewModel()
+        listViewModel = AbstractListViewModel(StatisticsManager(statisticsViewModel))
         firstTask = DailyTask(
             title = "first",
             id = UUID.randomUUID(),
@@ -116,8 +122,8 @@ class StatisticsTest {
             //User - синглтон
             User.clearSchedule()
             //нам нужен чистый listViewModel перед каждым тестом
-            statisticsViewModel = StatisticsViewModel()
-            listViewModel = ListViewModel(StatisticsManager(statisticsViewModel))
+            statisticsViewModel = AbstractStatisticsViewModel()
+            listViewModel = AbstractListViewModel(StatisticsManager(statisticsViewModel))
             listViewModel.addDailyTask(firstTask)
             listViewModel.addDailyTask(secondTask)
             addTaskInDay(tomorrowTask)
@@ -275,3 +281,4 @@ class StatisticsTest {
         }
     }
 }
+

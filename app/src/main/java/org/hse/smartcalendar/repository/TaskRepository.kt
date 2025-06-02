@@ -7,6 +7,7 @@ import org.hse.smartcalendar.data.DailySchedule.NestedTaskException
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.User
 import org.hse.smartcalendar.network.AddTaskRequest
+import org.hse.smartcalendar.network.CompleteStatusRequest
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.network.TaskApiInterface
 import org.hse.smartcalendar.network.toTask
@@ -20,7 +21,7 @@ class TaskRepository(private val api: TaskApiInterface): BaseRepository() {
     }
     suspend fun changeTaskCompletion(task: DailyTask): NetworkResponse<ResponseBody>{
         val response = withSupplierRequest<ResponseBody>{
-            ->api.deleteTask(task.getId())
+            ->api.changeTaskCompletion(task.getId(), CompleteStatusRequest.fromTask(task))
         }
         return response
     }

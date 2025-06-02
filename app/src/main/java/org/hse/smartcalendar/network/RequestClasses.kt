@@ -50,4 +50,10 @@ data class AddTaskRequest(
 @Serializable
 data class CompleteStatusRequest(
     val completed: Boolean
-)
+){
+    companion object {
+        fun fromTask(task: DailyTask): CompleteStatusRequest {
+            return CompleteStatusRequest(task.isComplete())
+        }
+    }
+}
