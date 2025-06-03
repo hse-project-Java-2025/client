@@ -36,7 +36,6 @@ import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.utility.rememberNavigation
 import org.hse.smartcalendar.view.model.ListViewModel
 import org.hse.smartcalendar.view.model.SettingsViewModel
-import org.hse.smartcalendar.view.model.StatisticsManager
 import org.hse.smartcalendar.view.model.StatisticsViewModel
 import org.hse.smartcalendar.view.model.TaskEditViewModel
 
@@ -44,7 +43,10 @@ import org.hse.smartcalendar.view.model.TaskEditViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App(
-    startDestination: String = Screens.GREETING.route
+    startDestination: String = Screens.GREETING.route,
+    statisticsVM: StatisticsViewModel,
+    listVM: ListViewModel,
+    taskEditVM: TaskEditViewModel
 ) {
     val authModel: AuthViewModel = viewModel()
     val navigation = rememberNavigation()
@@ -71,17 +73,15 @@ fun App(
             },
             drawerState = DrawerState,
             gesturesEnabled = !isExpandedScreen
-        ){NestedNavigator(navigation, authModel,openDrawer )
+        ){NestedNavigator(navigation, authModel,openDrawer,statisticsVM, listVM, taskEditVM )
         }
     } else {
-        NestedNavigator(navigation, authModel,openDrawer )
+        NestedNavigator(navigation, authModel,openDrawer, statisticsVM, listVM, taskEditVM )
     }
 }
 @Composable
-fun NestedNavigator(navigation: Navigation, authModel: AuthViewModel,openDrawer: ()-> Unit){
-    val statisticsModel: StatisticsViewModel = viewModel()
-    val listModel =  ListViewModel(StatisticsManager(statisticsModel))
-    val editModel =  TaskEditViewModel(listModel)
+fun NestedNavigator(navigation: Navigation, authModel: AuthViewModel,openDrawer: ()-> Unit,
+                    statisticsModel: StatisticsViewModel, listModel: ListViewModel, editModel: TaskEditViewModel){
     var settingsViewModel: SettingsViewModel = viewModel()
     val reminderModel: ReminderViewModel = viewModel(factory = ReminderViewModelFactory(
         LocalContext.current.applicationContext as Application

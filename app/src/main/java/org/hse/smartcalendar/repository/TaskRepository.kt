@@ -36,6 +36,7 @@ class TaskRepository(private val api: TaskApiInterface): BaseRepository() {
             api.addTask(id, AddTaskRequest.fromTask(task))}
         return when (response) {
             is NetworkResponse.Success -> {
+                //User.getSchedule().? - костыль
                 task.setId(response.data.id)
                 NetworkResponse.Success("Task created".toResponseBody(null))
             }
