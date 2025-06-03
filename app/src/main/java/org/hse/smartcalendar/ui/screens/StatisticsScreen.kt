@@ -29,7 +29,7 @@ import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.rememberNavigation
 import org.hse.smartcalendar.view.model.StatisticsViewModel
-import org.hse.smartcalendar.view.model.StatisticsViewModel.Companion.toPercent
+import org.hse.smartcalendar.view.model.AbstractStatisticsViewModel.Companion.toPercent
 
 @Composable
 fun StatisticsScreen(navigation: Navigation, openMenu: () -> Unit, statisticsModel: StatisticsViewModel) {

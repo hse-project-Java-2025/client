@@ -30,8 +30,8 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class StatisticsTest {
     private val testDispatcher = StandardTestDispatcher()
-    private lateinit var statisticsViewModel: StatisticsViewModel
-    private lateinit var listViewModel: ListViewModel
+    private lateinit var statisticsViewModel: AbstractStatisticsViewModel
+    private lateinit var listViewModel: AbstractListViewModel
     private lateinit var firstTask: DailyTask
     private lateinit var secondTask: DailyTask
     private lateinit var tomorrowTask: DailyTask
@@ -54,14 +54,9 @@ class StatisticsTest {
     }
     @BeforeAll
     fun setUp(){
-        val mockWorkManager = mockk<WorkManager>(relaxed = true)
-        every {
-            mockWorkManager.enqueueUniqueWork(any<String>(), any<ExistingWorkPolicy>(), any<OneTimeWorkRequest>())
-        } returns mockk()
-        WorkManagerHolder.setManagerForTests(mockWorkManager)
         Dispatchers.setMain(testDispatcher)
-        statisticsViewModel = StatisticsViewModel()
-        listViewModel = ListViewModel(StatisticsManager(statisticsViewModel))
+        statisticsViewModel = AbstractStatisticsViewModel()
+        listViewModel = AbstractListViewModel(StatisticsManager(statisticsViewModel))
         firstTask = DailyTask(
             title = "first",
             id = UUID.randomUUID(),
@@ -127,8 +122,8 @@ class StatisticsTest {
             //User - синглтон
             User.clearSchedule()
             //нам нужен чистый listViewModel перед каждым тестом
-            statisticsViewModel = StatisticsViewModel()
-            listViewModel = ListViewModel(StatisticsManager(statisticsViewModel))
+            statisticsViewModel = AbstractStatisticsViewModel()
+            listViewModel = AbstractListViewModel(StatisticsManager(statisticsViewModel))
             listViewModel.addDailyTask(firstTask)
             listViewModel.addDailyTask(secondTask)
             addTaskInDay(tomorrowTask)

@@ -1,10 +1,8 @@
 package org.hse.smartcalendar.repository
 
-import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.User
 import org.hse.smartcalendar.network.NetworkResponse
 import retrofit2.Response
-import java.util.UUID
 
 open class BaseRepository {
     suspend fun<T> withIdRequest( supplier:suspend (Long)->Response<T>): NetworkResponse<T> {
