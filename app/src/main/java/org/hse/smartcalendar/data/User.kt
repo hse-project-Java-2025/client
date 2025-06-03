@@ -1,6 +1,4 @@
-//Есть сущность User, содержащаяся в ListViewModel
-//Нужно обеспечить инициализацию её id в начале основной части приложения
-//С помощью запроса к AuthRepository.
+
 package org.hse.smartcalendar.data
 
 import kotlinx.datetime.LocalDate
