@@ -20,7 +20,7 @@ class TotalTimeTaskTypes(common: Long, work: Long, study: Long, fitness: Long){
     var WorkPercent: Float = getPercent(work, totalMinutes)
         private  set
     fun completeTask(task: DailyTask, isComplete: Boolean){
-        val taskMinutesLength = task.getMinutesLength().toLong()
+        val taskMinutesLength = task.getMinutesLengthSigned().toLong()
         when(isComplete){
             true -> {
                 totalMinutes+=taskMinutesLength

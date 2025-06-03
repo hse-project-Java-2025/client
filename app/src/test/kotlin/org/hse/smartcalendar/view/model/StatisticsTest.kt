@@ -1,10 +1,5 @@
 package org.hse.smartcalendar.view.model
 
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
-import io.mockk.every
-import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -14,7 +9,6 @@ import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.data.User
-import org.hse.smartcalendar.data.WorkManagerHolder
 import org.hse.smartcalendar.utility.TimeUtils
 import org.hse.smartcalendar.utility.fromMinutesOfDay
 import org.junit.jupiter.api.AfterAll
@@ -95,22 +89,22 @@ class StatisticsTest {
         fun addTaskTest(){
             listViewModel.addDailyTask(firstTask)
             assertEquals<Long>(
-                firstTask.getMinutesLength().toLong(),
+                firstTask.getMinutesLengthSigned().toLong(),
                 statisticsViewModel.getTodayPlannedTime().time.inWholeMinutes,
             )
             listViewModel.addDailyTask(secondTask)
             assertEquals<Long>(
-                (firstTask.getMinutesLength() + secondTask.getMinutesLength()).toLong(),
+                (firstTask.getMinutesLengthSigned() + secondTask.getMinutesLengthSigned()).toLong(),
                 statisticsViewModel.getTodayPlannedTime().time.inWholeMinutes,
             )
             addTaskInDay(tomorrowTask)
             assertEquals<Long>(
-                (firstTask.getMinutesLength() + secondTask.getMinutesLength()).toLong(),
+                (firstTask.getMinutesLengthSigned() + secondTask.getMinutesLengthSigned()).toLong(),
                 statisticsViewModel.getTodayPlannedTime().time.inWholeMinutes,
             )
             addTaskInDay(weekFitnessTask)
             assertEquals<Long>(
-                (firstTask.getMinutesLength() + secondTask.getMinutesLength()).toLong(),
+                (firstTask.getMinutesLengthSigned() + secondTask.getMinutesLengthSigned()).toLong(),
                 statisticsViewModel.getTodayPlannedTime().time.inWholeMinutes,
             )
         }
@@ -133,13 +127,13 @@ class StatisticsTest {
         fun deleteTaskTest(){
             listViewModel.removeDailyTask(firstTask)
             assertEquals<Long>(
-                (secondTask.getMinutesLength()).toLong(),
+                (secondTask.getMinutesLengthSigned()).toLong(),
                 statisticsViewModel.getTodayPlannedTime().time.inWholeMinutes
             )
         }
         fun assertTaskTimeEquals(task: DailyTask, parameter: Long){
             assertEquals<Long>(
-                task.getMinutesLength().toLong(),
+                task.getMinutesLengthSigned().toLong(),
                 parameter
             )
         }
@@ -151,7 +145,7 @@ class StatisticsTest {
         fun assertTaskTimeEquals(tasks:List<DailyTask>, parameters: List<Long>){
             var sumTime: Long= 0
             for (task in tasks){
-                sumTime+=task.getMinutesLength()
+                sumTime+=task.getMinutesLengthSigned()
             }
             for (parameter in parameters){
                 assertEquals<Long>(sumTime, parameter)

@@ -36,7 +36,7 @@ class DailyTasksListActivity : ComponentActivity() {
         val statisticsModel = StatisticsViewModel()
         val statisticsManager = StatisticsManager(statisticsModel)
         val listViewModel = ListViewModel(statisticsManager)
-        val taskEditViewModel = TaskEditViewModel(listViewModel = listViewModel)
+        val taskEditViewModel = TaskEditViewModel()
         setContent {
             SmartCalendarTheme {
                 ListNavigation(listViewModel, taskEditViewModel, statisticsModel)

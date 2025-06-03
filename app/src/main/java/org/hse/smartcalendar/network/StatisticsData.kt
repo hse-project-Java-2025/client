@@ -1,6 +1,8 @@
 package org.hse.smartcalendar.network
 
 import kotlinx.serialization.Serializable
+import org.hse.smartcalendar.data.DailyTask
+import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.data.TotalTimeTaskTypes
 import org.hse.smartcalendar.view.model.StatisticsViewModel
 @Serializable
@@ -54,6 +56,18 @@ data class TotalTime(
             fitness = fitness,
         )
     }
+    fun updated(task: DailyTask, isComplete: Boolean): TotalTime{
+        return when(task.getDailyTaskType()){
+            DailyTaskType.COMMON -> TotalTime(common+task.getMinutesLengthSigned(isComplete),
+                work, study, fitness)
+            DailyTaskType.FITNESS -> TotalTime(common,
+                work+task.getMinutesLengthSigned(isComplete), study, fitness)
+            DailyTaskType.WORK -> TotalTime(common,
+                work, study+task.getMinutesLengthSigned(isComplete), fitness)
+            DailyTaskType.STUDIES -> TotalTime(common,
+                work, study, fitness+task.getMinutesLengthSigned(isComplete))
+        }
+    }
 }
 @Serializable
 data class TodayTime(
@@ -69,4 +83,8 @@ data class ContinuesSuccessDays(
 data class AverageDayTime(
     val totalWorkMinutes: Long,
     val totalDays: Long
-)
+){
+    fun updateTime(task: DailyTask, isComplete: Boolean): AverageDayTime{
+        return AverageDayTime(totalWorkMinutes+task.getMinutesLengthSigned(isComplete), totalDays)
+    }
+}

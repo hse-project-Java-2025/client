@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -44,10 +45,10 @@ import org.hse.smartcalendar.view.model.TaskEditViewModel
 @Composable
 fun App(
     startDestination: String = Screens.GREETING.route,
-    statisticsVM: StatisticsViewModel,
-    listVM: ListViewModel,
-    taskEditVM: TaskEditViewModel
 ) {
+    val statisticsVM: StatisticsViewModel = hiltViewModel()
+    val listVM: ListViewModel = hiltViewModel()
+    val taskEditVM: TaskEditViewModel = hiltViewModel()
     val authModel: AuthViewModel = viewModel()
     val navigation = rememberNavigation()
     val coroutineScope = rememberCoroutineScope()

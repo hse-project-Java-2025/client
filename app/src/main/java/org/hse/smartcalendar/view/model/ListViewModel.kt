@@ -1,8 +1,10 @@
 package org.hse.smartcalendar.view.model
 
+import android.app.Application
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,6 +12,8 @@ import androidx.work.WorkManager
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.workDataOf
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
@@ -24,14 +28,15 @@ import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskAction
 import org.hse.smartcalendar.data.User
 import org.hse.smartcalendar.data.WorkManagerHolder
+import org.hse.smartcalendar.database.PendingTaskActionRepository
 import org.hse.smartcalendar.network.ApiClient
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.notification.TaskApiWorker
 import org.hse.smartcalendar.repository.TaskRepository
 import java.io.File
 import java.util.concurrent.TimeUnit
-
-open class AbstractListViewModel(val statisticsManager: StatisticsManager) : ViewModel() {
+open class AbstractListViewModel  constructor(
+    val statisticsManager: StatisticsManager) : ViewModel() {
     var _actionResult = MutableLiveData<NetworkResponse<Any>>()
     val actionResult:LiveData<NetworkResponse<Any>> = _actionResult
     fun getScreenDate(): LocalDate{
@@ -140,7 +145,8 @@ open class AbstractListViewModel(val statisticsManager: StatisticsManager) : Vie
         return result
     }
 }
-class ListViewModel(statisticsManager: StatisticsManager) : AbstractListViewModel(statisticsManager) {
+@HiltViewModel
+class ListViewModel @Inject constructor(statisticsManager: StatisticsManager) : AbstractListViewModel(statisticsManager) {
     private val workManager = WorkManagerHolder.getInstance()
 
     override fun scheduleTaskRequest(task: DailyTask, action: DailyTaskAction.Type) {

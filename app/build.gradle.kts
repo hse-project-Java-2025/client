@@ -4,8 +4,9 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("de.mannodermaus.android-junit5")
     kotlin("plugin.serialization") version "1.9.23"
+    kotlin("kapt")
 }
-
+apply(plugin = "dagger.hilt.android.plugin")
 android {
     namespace = "org.hse.smartcalendar"
     compileSdk = 35
@@ -45,6 +46,12 @@ android {
 
 
 dependencies {
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
+
+    implementation(libs.androidx.room.runtime)
+    kapt(libs.androidx.room.compiler)
     testImplementation(libs.mockk)
     androidTestImplementation(libs.ui.test.junit4)
     debugImplementation(libs.ui.test.manifest)

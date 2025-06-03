@@ -1,6 +1,6 @@
 package org.hse.smartcalendar.activity
 
-//import dagger.hilt.android.HiltAndroidApp
+import dagger.hilt.android.HiltAndroidApp
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -13,7 +13,7 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.work.WorkManager
 import org.hse.smartcalendar.R
 
-//@HiltAndroidApp
+@HiltAndroidApp
 class BaseApplication : Application(), LifecycleObserver {
     val workManager: WorkManager by lazy { WorkManager.getInstance(this) }
 

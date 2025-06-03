@@ -54,15 +54,8 @@ import org.hse.smartcalendar.view.model.TaskEditViewModel
 @Composable
 fun SettingsScreenPreview() {
     SmartCalendarTheme {
-        val statisticsViewModel = viewModel<StatisticsViewModel> ()
-        val statisticsManager = StatisticsManager(statisticsViewModel)
-        val listModel = ListViewModel(statisticsManager = statisticsManager)
-        val taskEditViewModel = TaskEditViewModel(listModel)
         App(
             startDestination = Screens.SETTINGS.route,
-            listVM = listModel,
-            statisticsVM = statisticsViewModel,
-            taskEditVM = taskEditViewModel
         )
     }
 }

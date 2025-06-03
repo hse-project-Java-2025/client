@@ -196,10 +196,7 @@ fun AchievementsScreenPreview() {
     val editViewModel = TaskEditViewModel(listViewModel)
     SmartCalendarTheme {
         App(
-            startDestination = Screens.ACHIEVEMENTS.route,
-            statisticsVM = statisticsViewModel,
-            listVM = listViewModel,
-            taskEditVM = editViewModel
+            startDestination = Screens.ACHIEVEMENTS.route
         )
     }
 }

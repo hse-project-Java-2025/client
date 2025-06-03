@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.wear.compose.material3.Text
 import kotlinx.datetime.LocalTime
@@ -51,6 +52,7 @@ fun TaskEditWindow(
     taskEditViewModel: TaskEditViewModel,
     navController: NavController
 ) {
+    val listViewModel = hiltViewModel<ListViewModel>()
     val taskState = taskEditViewModel.getTask()
     val titleState = remember { mutableStateOf(taskState.getDailyTaskTitle()) }
     val taskType = rememberSaveable { mutableStateOf(taskState.getDailyTaskType()) }
@@ -79,6 +81,7 @@ fun TaskEditWindow(
                     taskEditViewModel.changes.setDailyTaskEndTime(LocalTime.fromMinutesOfDay(endTime.intValue))
                     taskEditViewModel.changes.setDailyTaskType(taskType.value)
                     taskEditViewModel.updateInnerTask(
+                        listViewModel = listViewModel,
                         isEmptyTitle,
                         isConflictInTimeField,
                         isNestedTask
@@ -172,9 +175,7 @@ fun TaskEditWindowPreview() {
         onSave = { },
         onCancel = { },
         onDelete = { },
-        taskEditViewModel = TaskEditViewModel(
-            listViewModel = ListViewModel(StatisticsManager(StatisticsViewModel()))
-        ),
+        taskEditViewModel = hiltViewModel(),
         navController = NavController(
             LocalContext.current
         )

@@ -1,11 +1,14 @@
 package org.hse.smartcalendar.view.model
 
+import javax.inject.Inject
 import org.hse.smartcalendar.data.DailyTask
+import org.hse.smartcalendar.repository.StatisticsRepository
 
 /**
  * Класс, передающий изменения ListVM и TaskEditVM в StatisticsVM
  */
-class StatisticsManager(private val viewModel: AbstractStatisticsViewModel){
+class StatisticsManager  @Inject constructor(
+    private val statisticsRepo: StatisticsRepository){
     fun changeTaskCompletion(task: DailyTask, isCompleted: Boolean){
         viewModel.changeTaskCompletion(task, isCompleted)
     }

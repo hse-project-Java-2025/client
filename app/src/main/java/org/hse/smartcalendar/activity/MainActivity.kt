@@ -9,35 +9,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
+import dagger.hilt.android.AndroidEntryPoint
 import org.hse.smartcalendar.data.WorkManagerHolder
 import org.hse.smartcalendar.ui.navigation.App
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
-import org.hse.smartcalendar.utility.Navigation
-import org.hse.smartcalendar.utility.Screens
-import org.hse.smartcalendar.utility.rememberNavigation
-import org.hse.smartcalendar.view.model.ListViewModel
-import org.hse.smartcalendar.view.model.StatisticsManager
-import org.hse.smartcalendar.view.model.StatisticsViewModel
-import org.hse.smartcalendar.view.model.TaskEditViewModel
 
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun getNotificationsPermissions(){
@@ -60,16 +39,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WorkManagerHolder.init(this)
-        val statisticsModel: StatisticsViewModel = StatisticsViewModel()
-        val listModel =  ListViewModel(StatisticsManager(statisticsModel))
-        val editModel =  TaskEditViewModel(listModel)
         enableEdgeToEdge()
         setContent {
             SmartCalendarTheme {
                 if (SDK_INT >= Build.VERSION_CODES.TIRAMISU){
                     getNotificationsPermissions()
                 }
-                App(statisticsVM = statisticsModel, listVM = listModel, taskEditVM = editModel)
+                App()
             }
         }
     }

@@ -3,14 +3,15 @@ package org.hse.smartcalendar.view.model
 import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import androidx.work.WorkManager
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskAction
 import org.hse.smartcalendar.data.WorkManagerHolder
 import org.hse.smartcalendar.utility.editHandler
-
-class TaskEditViewModel(
-    val listViewModel: ListViewModel
+@HiltViewModel
+class TaskEditViewModel @Inject constructor(
 ) : ViewModel() {
     private val workManager = WorkManagerHolder.getInstance()
     private var task: DailyTask = DailyTask(
@@ -31,6 +32,7 @@ class TaskEditViewModel(
         changes.updateDailyTask(newTask)
     }
     fun updateInnerTask(
+        listViewModel: ListViewModel,
         isEmptyTitle: MutableState<Boolean>,
         isConflictInTimeField: MutableState<Boolean>,
         isNestedTask: MutableState<Boolean>,

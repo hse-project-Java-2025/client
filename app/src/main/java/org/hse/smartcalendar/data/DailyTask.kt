@@ -135,8 +135,9 @@ data class DailyTask (
         val diff =TimeUtils.getCurrentDateTime().date.toEpochDays() - date.toEpochDays();
         return diff < 7 && diff>=0
     }
-    fun getMinutesLength(): Int{
-        return (end.toSecondOfDay()-start.toSecondOfDay())/60
+    fun getMinutesLengthSigned(sign: Boolean = true): Int{
+        return if (sign) (end.toSecondOfDay()-start.toSecondOfDay())/60 else
+            -(end.toSecondOfDay()-start.toSecondOfDay())/60
     }
 
     class TimeConflictException(start: LocalTime, end: LocalTime) : IllegalArgumentException(
