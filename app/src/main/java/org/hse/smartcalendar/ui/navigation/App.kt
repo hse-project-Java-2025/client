@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -80,10 +79,10 @@ fun App(
 }
 @Composable
 fun NestedNavigator(navigation: Navigation, authModel: AuthViewModel,openDrawer: ()-> Unit){
-    val statisticsModel: StatisticsViewModel =  hiltViewModel()
-    val listModel =   hiltViewModel<ListViewModel>(StatisticsManager(statisticsModel))
-    val editModel =  hiltViewModel<TaskEditViewModel>(listModel)
-    val settingsViewModel: SettingsViewModel = viewModel()
+    val statisticsModel: StatisticsViewModel = viewModel()
+    val listModel =  ListViewModel(StatisticsManager(statisticsModel))
+    val editModel =  TaskEditViewModel(listModel)
+    var settingsViewModel: SettingsViewModel = viewModel()
     val reminderModel: ReminderViewModel = viewModel(factory = ReminderViewModelFactory(
         LocalContext.current.applicationContext as Application
     ))

@@ -3,16 +3,13 @@ package org.hse.smartcalendar.view.model
 import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import androidx.work.WorkManager
-import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
 import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskAction
 import org.hse.smartcalendar.data.WorkManagerHolder
 import org.hse.smartcalendar.utility.editHandler
 
-@HiltViewModel
-class TaskEditViewModel @Inject constructor(
+class TaskEditViewModel(
     val listViewModel: ListViewModel
 ) : ViewModel() {
     private val workManager = WorkManagerHolder.getInstance()

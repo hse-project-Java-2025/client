@@ -10,8 +10,6 @@ import androidx.work.WorkManager
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.workDataOf
-import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
@@ -142,8 +140,7 @@ open class AbstractListViewModel(val statisticsManager: StatisticsManager) : Vie
         return result
     }
 }
-@HiltViewModel
-class ListViewModel @Inject constructor(statisticsManager: StatisticsManager) : AbstractListViewModel(statisticsManager) {
+class ListViewModel(statisticsManager: StatisticsManager) : AbstractListViewModel(statisticsManager) {
     private val workManager = WorkManagerHolder.getInstance()
 
     override fun scheduleTaskRequest(task: DailyTask, action: DailyTaskAction.Type) {

@@ -9,8 +9,6 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
-import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.hse.smartcalendar.data.DailyTask
@@ -31,7 +29,8 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.max
 import kotlin.math.roundToInt
 import kotlin.time.DurationUnit
-open class AbstractStatisticsViewModel () :ViewModel() {
+
+open class AbstractStatisticsViewModel():ViewModel() {
     private val statisticsRepo: StatisticsRepository = StatisticsRepository(ApiClient.statisticsApiService)
     var _initResult = MutableLiveData<NetworkResponse<StatisticsDTO>>()
     val initResult:LiveData<NetworkResponse<StatisticsDTO>> = _initResult
@@ -169,8 +168,7 @@ open class AbstractStatisticsViewModel () :ViewModel() {
         return 2
     }
 }
-@HiltViewModel
-class StatisticsViewModel @Inject constructor(): AbstractStatisticsViewModel(){
+class StatisticsViewModel(): AbstractStatisticsViewModel(){
     override fun uploadStatistics() {
         val workManager = WorkManagerHolder.getInstance()
         val statsDTO = StatisticsDTO.fromViewModel(this)
