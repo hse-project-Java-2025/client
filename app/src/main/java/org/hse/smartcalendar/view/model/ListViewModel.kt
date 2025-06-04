@@ -6,7 +6,6 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.work.WorkManager
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.workDataOf
@@ -24,10 +23,8 @@ import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskAction
 import org.hse.smartcalendar.data.User
 import org.hse.smartcalendar.data.WorkManagerHolder
-import org.hse.smartcalendar.network.ApiClient
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.notification.TaskApiWorker
-import org.hse.smartcalendar.repository.TaskRepository
 import java.io.File
 import java.util.concurrent.TimeUnit
 
@@ -150,10 +147,9 @@ class ListViewModel(statisticsManager: StatisticsManager) : AbstractListViewMode
             .setInputData(workDataOf(DailyTaskAction.jsonName to taskJson))
             .setInitialDelay(10, TimeUnit.SECONDS)
             .build()
-
         workManager.enqueueUniqueWork(
-            "task_${action}_${task.getId()}",
-            ExistingWorkPolicy.REPLACE,
+            "task_${task.getId()}",
+            ExistingWorkPolicy.APPEND,
             workRequest
         )
     }

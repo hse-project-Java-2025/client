@@ -2,7 +2,6 @@ package org.hse.smartcalendar.notification
 
 import android.content.Context
 import androidx.work.CoroutineWorker
-import androidx.work.Worker
 import androidx.work.WorkerParameters
 import kotlinx.serialization.json.Json
 import org.hse.smartcalendar.network.ApiClient

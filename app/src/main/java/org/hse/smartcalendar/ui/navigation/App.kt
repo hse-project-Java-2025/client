@@ -26,9 +26,9 @@ import org.hse.smartcalendar.ui.screens.ChangeLogin
 import org.hse.smartcalendar.ui.screens.ChangePassword
 import org.hse.smartcalendar.ui.screens.GreetingScreen
 import org.hse.smartcalendar.ui.screens.LoadingScreen
-import org.hse.smartcalendar.ui.task.DailyTasksList
 import org.hse.smartcalendar.ui.screens.SettingsScreen
 import org.hse.smartcalendar.ui.screens.StatisticsScreen
+import org.hse.smartcalendar.ui.task.DailyTasksList
 import org.hse.smartcalendar.ui.task.TaskEditWindow
 import org.hse.smartcalendar.utility.AppDrawer
 import org.hse.smartcalendar.utility.Navigation

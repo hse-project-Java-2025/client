@@ -3,12 +3,12 @@ package org.hse.smartcalendar.network
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
-import retrofit2.http.Path//auto import not work
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Path
 import java.util.UUID
 
 interface AuthApiInterface {
@@ -35,7 +35,7 @@ interface TaskApiInterface {
     @POST("api/users/{userId}/events")
     suspend fun addTask(
         @Path("userId") userId: Long,
-        @Body request: AddTaskRequest
+        @Body request: TaskRequest
     ): Response<AddTaskResponse>
 
     @DELETE("api/users/events/{eventId}")
@@ -43,10 +43,10 @@ interface TaskApiInterface {
         @Path("eventId") eventId: UUID
     ): Response<ResponseBody>
 
-    @POST("api/users/events/{eventId}")
+    @PATCH("api/users/events/{eventId}")
     suspend fun editTask(
         @Path("eventId") eventId: UUID,
-        @Body request: AddTaskRequest
+        @Body request: EditTaskRequest
     ): Response<ResponseBody>
 
 

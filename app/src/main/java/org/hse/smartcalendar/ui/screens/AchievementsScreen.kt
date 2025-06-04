@@ -33,7 +33,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import org.hse.smartcalendar.R
 import org.hse.smartcalendar.ui.navigation.App
 import org.hse.smartcalendar.ui.navigation.TopButton
-import org.hse.smartcalendar.ui.theme.*
+import org.hse.smartcalendar.ui.theme.DarkBlue
+import org.hse.smartcalendar.ui.theme.DarkRed
+import org.hse.smartcalendar.ui.theme.Graphite
+import org.hse.smartcalendar.ui.theme.Purple
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.Screens
