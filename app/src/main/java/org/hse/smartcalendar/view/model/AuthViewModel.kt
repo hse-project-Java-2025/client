@@ -5,14 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import org.hse.smartcalendar.data.User
 import org.hse.smartcalendar.network.ApiClient
 import org.hse.smartcalendar.network.CredentialsResponse
 import org.hse.smartcalendar.network.LoginRequest
 import org.hse.smartcalendar.network.LoginResponse
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.network.RegisterRequest
-import org.hse.smartcalendar.network.UserInfoResponse
 import org.hse.smartcalendar.repository.AuthRepository
 
 class AuthViewModel : ViewModel() {

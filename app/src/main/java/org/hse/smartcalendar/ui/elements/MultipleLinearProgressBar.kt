@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.hse.smartcalendar.data.DailyTaskType
-import org.hse.smartcalendar.ui.theme.*
+import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 
 @Composable
 fun MultipleLinearProgressIndicator(

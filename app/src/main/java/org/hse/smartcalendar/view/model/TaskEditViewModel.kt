@@ -2,7 +2,6 @@ package org.hse.smartcalendar.view.model
 
 import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
-import androidx.work.WorkManager
 import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskAction
@@ -42,11 +41,9 @@ class TaskEditViewModel(
             isEmptyTitle = isEmptyTitle,
             isConflictInTimeField = isConflictInTimeField,
             isNestedTask = isNestedTask,
-            statsUpdateOldToNewTask = { oldTask, newTask
-                ->{
+            statsUpdateOldToNewTask = { oldTask, newTask->
                     listViewModel.statisticsManager.updateDailyTask(oldTask=oldTask, newTask = newTask)
                 listViewModel.scheduleTaskRequest(newTask, DailyTaskAction.Type.EDIT)
-            }
             }
         )
     }

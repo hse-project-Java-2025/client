@@ -1,13 +1,11 @@
 package org.hse.smartcalendar.view.model
 
-import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
 import androidx.work.workDataOf
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
@@ -28,7 +26,6 @@ import org.hse.smartcalendar.utility.TimePeriod
 import java.util.concurrent.TimeUnit
 import kotlin.math.max
 import kotlin.math.roundToInt
-import kotlin.time.DurationUnit
 
 open class AbstractStatisticsViewModel():ViewModel() {
     private val statisticsRepo: StatisticsRepository = StatisticsRepository(ApiClient.statisticsApiService)
@@ -176,7 +173,6 @@ class StatisticsViewModel(): AbstractStatisticsViewModel(){
 
         val workRequest = OneTimeWorkRequestBuilder<StatisticsUploadWorker>()
             .setInputData(workDataOf("statistics_json" to json))
-            .setInitialDelay(10, TimeUnit.SECONDS)
             .build()
 
         workManager.enqueueUniqueWork(

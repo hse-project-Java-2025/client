@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
@@ -28,8 +27,8 @@ import org.hse.smartcalendar.ui.navigation.TopButton
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.rememberNavigation
-import org.hse.smartcalendar.view.model.StatisticsViewModel
 import org.hse.smartcalendar.view.model.AbstractStatisticsViewModel.Companion.toPercent
+import org.hse.smartcalendar.view.model.StatisticsViewModel
 
 @Composable
 fun StatisticsScreen(navigation: Navigation, openMenu: () -> Unit, statisticsModel: StatisticsViewModel) {

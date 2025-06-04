@@ -1,15 +1,17 @@
 package org.hse.smartcalendar.view.model
 
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.work.WorkManager
+import androidx.lifecycle.viewModelScope
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.workDataOf
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
@@ -24,12 +26,9 @@ import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskAction
 import org.hse.smartcalendar.data.User
 import org.hse.smartcalendar.data.WorkManagerHolder
-import org.hse.smartcalendar.network.ApiClient
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.notification.TaskApiWorker
-import org.hse.smartcalendar.repository.TaskRepository
 import java.io.File
-import java.util.concurrent.TimeUnit
 
 open class AbstractListViewModel(val statisticsManager: StatisticsManager) : ViewModel() {
     var _actionResult = MutableLiveData<NetworkResponse<Any>>()
@@ -37,19 +36,19 @@ open class AbstractListViewModel(val statisticsManager: StatisticsManager) : Vie
     fun getScreenDate(): LocalDate{
         return dailyTaskSchedule.date
     }
-    private var dailyTaskSchedule: DailySchedule
+    private lateinit var dailyTaskSchedule: DailySchedule
     private var dailyScheduleDate = mutableStateOf(
         Clock.System.now()
             .toLocalDateTime(TimeZone.currentSystemDefault()).date
     )
-    var dailyTaskList: SnapshotStateList<DailyTask>
+    val dailyTaskList: SnapshotStateList<DailyTask>  = mutableStateListOf()
     private val user: User = User
     init {
-        val date: LocalDate =
-            Clock.System.now()
-                .toLocalDateTime(TimeZone.currentSystemDefault()).date
-        dailyTaskSchedule = user.getSchedule().getOrCreateDailySchedule(date)
-        dailyTaskList = SnapshotStateList(dailyTaskSchedule.getDailyTaskList())
+        loadDailyTasks()
+    }
+    fun loadDailyTasks(){
+        dailyTaskSchedule = user.getSchedule().getOrCreateDailySchedule(dailyScheduleDate.value)
+        dailyTaskList.addAll(dailyTaskSchedule.getDailyTaskList())
     }
     open fun scheduleTaskRequest(task: DailyTask, action: DailyTaskAction.Type) {
     }
@@ -148,12 +147,10 @@ class ListViewModel(statisticsManager: StatisticsManager) : AbstractListViewMode
 
         val workRequest = OneTimeWorkRequestBuilder<TaskApiWorker>()
             .setInputData(workDataOf(DailyTaskAction.jsonName to taskJson))
-            .setInitialDelay(10, TimeUnit.SECONDS)
             .build()
-
         workManager.enqueueUniqueWork(
-            "task_${action}_${task.getId()}",
-            ExistingWorkPolicy.REPLACE,
+            "task_${task.getId()}",
+            ExistingWorkPolicy.APPEND,
             workRequest
         )
     }

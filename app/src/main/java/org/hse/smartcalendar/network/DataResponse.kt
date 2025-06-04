@@ -33,27 +33,29 @@ data class UserInfoResponse(
     val username: String,
     val id: Long
 )
+@Serializable
 data class TaskResponse(
     val id: String,
     val title: String,
     val description: String,
-    val start: String,
-    val end: String,
+    val start: LocalTime,
+    val end: LocalTime,
     val date: String,
-    val type: String,
-    val creationTime: String,
+    val type: DailyTaskType,
+    val creationTime: LocalDateTime,
     val complete: Boolean
-)
-        fun toTask(response: TaskResponse): DailyTask{
-            return DailyTask(
-                id = UUID.fromString(response.id),
-                title =response.title,
-                description = response.description,
-                start = LocalTime.parse(response.start),
-                end = LocalTime.parse(response.end),
-                date = LocalDate.parse(response.date),
-                type = DailyTaskType.fromString(response.type),
-                creationTime = LocalDateTime.parse(response.creationTime),
-                isComplete = response.complete
-            )
-        }
+){
+    fun toTask(): DailyTask {
+        return DailyTask(
+            id = UUID.fromString(id),
+            title = title,
+            description = description,
+            start = start,
+            end = end,
+            date = LocalDate.parse(date),
+            type = type,
+            creationTime = creationTime,
+            isComplete = complete
+        )
+    }
+}

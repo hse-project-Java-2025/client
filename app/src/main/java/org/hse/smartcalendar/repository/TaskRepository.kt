@@ -6,11 +6,11 @@ import org.hse.smartcalendar.data.DailySchedule
 import org.hse.smartcalendar.data.DailySchedule.NestedTaskException
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.User
-import org.hse.smartcalendar.network.AddTaskRequest
 import org.hse.smartcalendar.network.CompleteStatusRequest
+import org.hse.smartcalendar.network.EditTaskRequest
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.network.TaskApiInterface
-import org.hse.smartcalendar.network.toTask
+import org.hse.smartcalendar.network.TaskRequest
 
 class TaskRepository(private val api: TaskApiInterface): BaseRepository() {
     suspend fun deleteTask(task: DailyTask): NetworkResponse<ResponseBody>{
@@ -27,17 +27,15 @@ class TaskRepository(private val api: TaskApiInterface): BaseRepository() {
     }
     suspend fun editTask(task: DailyTask): NetworkResponse<ResponseBody>{
         val response = withSupplierRequest<ResponseBody>{
-            ->api.editTask(task.getId(), AddTaskRequest.fromTask(task))
+            ->api.editTask(task.getId(), EditTaskRequest.fromTask(task))
         }
         return response
     }
     suspend fun addTask(task: DailyTask): NetworkResponse<ResponseBody> {
         val response = withIdRequest { id ->
-            api.addTask(id, AddTaskRequest.fromTask(task))}
+            api.addTask(id, TaskRequest.fromTask(task))}
         return when (response) {
             is NetworkResponse.Success -> {
-                //User.getSchedule().? - костыль
-                task.setId(response.data.id)
                 NetworkResponse.Success("Task created".toResponseBody(null))
             }
             is NetworkResponse.Error -> response
@@ -52,7 +50,7 @@ class TaskRepository(private val api: TaskApiInterface): BaseRepository() {
         try {
             return when (val response = withIdRequest { id -> api.getDailyTasks(id) }) {
                 is NetworkResponse.Success -> {
-                    val listTask: List<DailyTask> = response.data.map { toTask(it) }
+                    val listTask: List<DailyTask> = response.data.map { it.toTask() }
                     val map = listTask.groupBy { it.getTaskDate() }
                         .mapValues { (_, taskList) ->
                             DailySchedule().apply {
