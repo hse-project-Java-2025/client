@@ -1,8 +1,13 @@
 package org.hse.smartcalendar.ui.screens
 
+import android.content.Context
+import android.util.Log
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.work.Configuration
+import androidx.work.impl.utils.SynchronousExecutor
 import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
@@ -31,7 +36,7 @@ class AchievementsScreenTest {
             title = "first",
             id = UUID.randomUUID(),
             isComplete = false,
-            type = DailyTaskType.WORK,
+            type = DailyTaskType.COMMON,
             creationTime = TimeUtils.Companion.getCurrentDateTime(),
             description = "",
             start = LocalTime.Companion.fromMinutesOfDay(0),
@@ -79,9 +84,25 @@ class AchievementsScreenTest {
         composeTestRule.runOnIdle {
         }
         assertAchievementData(AchievementType.PlanToday, "5/10")
+        assertAchievementData(AchievementType.CommonSpend, "0/10")
+        listViewModel.changeTaskCompletion(firstTask, true)
+        assert(statisticsViewModel.getTotalTimeActivityTypes().Common.toMinutes().toInt() == firstTask.getMinutesLength())
+        composeTestRule.runOnIdle {}
+        assertAchievementData(AchievementType.CommonSpend, "5/10")
         listViewModel.addDailyTask(secondTask)
-        composeTestRule.runOnIdle {
-        }
+        composeTestRule.runOnIdle {}
         assertAchievementData(AchievementType.PlanToday, "24/24")
     }
 }
+//        assertAchievementData(AchievementType.CommonSpend, "0/10")
+//        assertAchievementData(AchievementType.PlanToday, "5/10")
+//        listViewModel.changeTaskCompletion(firstTask, true)
+//        assertAchievementData(AchievementType.CommonSpend, "5/10")
+//        listViewModel.addDailyTask(secondTask)
+//        composeTestRule.runOnIdle {}
+//        assertAchievementData(AchievementType.PlanToday, "24/24")
+//        listViewModel.changeTaskCompletion(secondTask, true)
+//        composeTestRule.runOnIdle {}
+//        assertAchievementData(AchievementType.WorkWeek, (24/7).toInt().toString()+"/${AchievementType.WorkWeek.levels[0]}")
+//    }
+//}

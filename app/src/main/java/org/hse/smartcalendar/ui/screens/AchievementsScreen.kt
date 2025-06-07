@@ -143,6 +143,7 @@ fun AchievementCard(data: AchievementType,
                 modifier = Modifier
                     .padding(8.dp)
                     .align(Alignment.Start)
+                    .testTag("${data.testTag}_progress")
             )
             Text(description(data.levels.get(level)))
         }

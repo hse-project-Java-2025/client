@@ -69,7 +69,7 @@ open class AbstractStatisticsViewModel():ViewModel() {
         }
     }
 
-    private var TotalTime: TotalTimeTaskTypes = TotalTimeTaskTypes(0, 0, 0, 0)
+    var TotalTime: TotalTimeTaskTypes = TotalTimeTaskTypes(0, 0, 0, 0)
     private var weekTime = WeekTime(0)
     private var AverageDayTime: AverageDayTimeVars = AverageDayTimeVars(totalDays = 1, totalWorkMinutes =  0)
     private var TodayTime: TodayTimeVars = TodayTimeVars(0, 0)

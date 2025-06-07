@@ -34,7 +34,6 @@ import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.utility.rememberNavigation
 import org.hse.smartcalendar.view.model.ListViewModel
-import org.hse.smartcalendar.view.model.SettingsViewModel
 import org.hse.smartcalendar.view.model.StatisticsViewModel
 import org.hse.smartcalendar.view.model.TaskEditViewModel
 
@@ -81,7 +80,6 @@ fun App(
 @Composable
 fun NestedNavigator(navigation: Navigation, authModel: AuthViewModel,openDrawer: ()-> Unit,
                     statisticsModel: StatisticsViewModel, listModel: ListViewModel, editModel: TaskEditViewModel){
-    var settingsViewModel: SettingsViewModel = viewModel()
     val reminderModel: ReminderViewModel = viewModel(factory = ReminderViewModelFactory(
         LocalContext.current.applicationContext as Application
     ))

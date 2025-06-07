@@ -34,7 +34,7 @@ enum class AchievementType(
         iconId = R.drawable.yawning_face,
         description = { i -> "Spend $i hours with common tasks" },
         levels = listOf(10, 20, 50, 100, 1000),
-        parameterProvider = { stats -> stats.getTotalTimeActivityTypes().Common.time.toLong(DurationUnit.HOURS) },
+        parameterProvider = { stats -> stats.TotalTime.Common.time.toLong(DurationUnit.HOURS) },
         testTag = "CommonSpend"
     ),
     WorkTotal(

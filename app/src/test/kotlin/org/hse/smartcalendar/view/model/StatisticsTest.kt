@@ -1,10 +1,5 @@
 package org.hse.smartcalendar.view.model
 
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
-import io.mockk.every
-import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -14,7 +9,6 @@ import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.data.User
-import org.hse.smartcalendar.data.WorkManagerHolder
 import org.hse.smartcalendar.utility.TimeUtils
 import org.hse.smartcalendar.utility.fromMinutesOfDay
 import org.junit.jupiter.api.AfterAll
