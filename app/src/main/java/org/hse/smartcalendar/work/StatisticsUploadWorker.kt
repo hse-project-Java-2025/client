@@ -1,4 +1,4 @@
-package org.hse.smartcalendar.notification
+package org.hse.smartcalendar.work
 
 import android.content.Context
 import androidx.work.CoroutineWorker

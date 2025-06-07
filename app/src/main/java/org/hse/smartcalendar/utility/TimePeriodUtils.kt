@@ -38,7 +38,6 @@ class TimeUtils {
     }
 }
 
-//every class in Kotlin is final by default, so inheritance from LocalTime not ok
 class TimePeriod(minute: Long) {
     private var _time = mutableStateOf(Duration.ZERO)
     val time: Duration get() = _time.value
@@ -73,14 +72,7 @@ class TimePeriod(minute: Long) {
     }
 }
 
-class DaysAmount(initialAmount: Int) {
-    private var _amount = mutableStateOf(initialAmount)
-    val amount: Int get() = _amount.value
-
-    init {
-        _amount.value = amount
-    }
-
+data class DaysAmount(val amount: Int) {
     fun toPrettyString(): String {
         return if (amount != 1) "$amount days" else "1 day"
     }

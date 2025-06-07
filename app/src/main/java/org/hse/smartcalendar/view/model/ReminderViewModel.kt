@@ -1,4 +1,4 @@
-package org.hse.smartcalendar.notification
+package org.hse.smartcalendar.view.model
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
@@ -14,6 +14,7 @@ import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.utility.prettyPrint
 import org.hse.smartcalendar.utility.toEpochMilliseconds
+import org.hse.smartcalendar.work.ReminderWorker
 import java.util.concurrent.TimeUnit
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -60,12 +61,12 @@ class ReminderViewModel(application: Application): ViewModel() {
         }
         myWorkRequestBuilder.setInputData(
             workDataOf(
-                ReminderWorker.TYPE_KEY to task.getDailyTaskType().toString().lowercase(),
-                ReminderWorker.BEFORE_KEY to realMinutesBefore,
-                ReminderWorker.TITLE_KEY to task.getDailyTaskTitle(),
-                ReminderWorker.MESSAGE_KEY to task.getDailyTaskDescription(),
-                ReminderWorker.START_KEY to LocalTime.prettyPrint(task.getDailyTaskStartTime()),
-                ReminderWorker.END_KEY to LocalTime.prettyPrint(task.getDailyTaskEndTime()),
+                ReminderWorker.Companion.TYPE_KEY to task.getDailyTaskType().toString().lowercase(),
+                ReminderWorker.Companion.BEFORE_KEY to realMinutesBefore,
+                ReminderWorker.Companion.TITLE_KEY to task.getDailyTaskTitle(),
+                ReminderWorker.Companion.MESSAGE_KEY to task.getDailyTaskDescription(),
+                ReminderWorker.Companion.START_KEY to LocalTime.prettyPrint(task.getDailyTaskStartTime()),
+                ReminderWorker.Companion.END_KEY to LocalTime.prettyPrint(task.getDailyTaskEndTime()),
             )
         )
         workManager.enqueue(myWorkRequestBuilder.build())

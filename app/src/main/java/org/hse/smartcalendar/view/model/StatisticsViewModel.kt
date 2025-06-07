@@ -14,16 +14,15 @@ import org.hse.smartcalendar.data.TotalTimeTaskTypes
 import org.hse.smartcalendar.data.WorkManagerHolder
 import org.hse.smartcalendar.network.ApiClient
 import org.hse.smartcalendar.network.AverageDayTime
-import org.hse.smartcalendar.network.ContinuesSuccessDays
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.network.StatisticsDTO
 import org.hse.smartcalendar.network.TodayTime
-import org.hse.smartcalendar.notification.StatisticsUploadWorker
+import org.hse.smartcalendar.work.StatisticsUploadWorker
 import org.hse.smartcalendar.repository.StatisticsRepository
 import org.hse.smartcalendar.utility.DayPeriod
 import org.hse.smartcalendar.utility.DaysAmount
+import org.hse.smartcalendar.utility.StatisticsCalculator
 import org.hse.smartcalendar.utility.TimePeriod
-import java.util.concurrent.TimeUnit
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -56,16 +55,6 @@ open class AbstractStatisticsViewModel():ViewModel() {
             }
         }
     }
-    private class ContinuesSuccessDaysVars(record: Int, now: Int){
-        val Record: DaysAmount = DaysAmount(record)
-        val Now: DaysAmount = DaysAmount(now)
-        companion object{
-            fun fromContinuesSuccessDTO(continuesSuccessDTO: ContinuesSuccessDays): ContinuesSuccessDaysVars{
-                return ContinuesSuccessDaysVars(record = continuesSuccessDTO.record.toInt(),
-                    now = continuesSuccessDTO.now.toInt())
-            }
-        }
-    }
     private class AverageDayTimeVars(totalWorkMinutes: Long, val totalDays: Long){
         var All: DayPeriod = DayPeriod(totalWorkMinutes/totalDays)
         fun update(totalTimeMinutes: Long){
@@ -79,11 +68,12 @@ open class AbstractStatisticsViewModel():ViewModel() {
             }
         }
     }
-    private var ContiniusSuccessDays: ContinuesSuccessDaysVars = ContinuesSuccessDaysVars(0, 0)
+
     private var TotalTime: TotalTimeTaskTypes = TotalTimeTaskTypes(0, 0, 0, 0)
     private var weekTime = WeekTime(0)
     private var AverageDayTime: AverageDayTimeVars = AverageDayTimeVars(totalDays = 1, totalWorkMinutes =  0)
     private var TodayTime: TodayTimeVars = TodayTimeVars(0, 0)
+    private var statisticsCalculator: StatisticsCalculator = StatisticsCalculator()
     fun init(){
         viewModelScope.launch {
             _initResult.value = NetworkResponse.Loading
@@ -93,22 +83,26 @@ open class AbstractStatisticsViewModel():ViewModel() {
                 TotalTime = data.totalTime.toVMTotalTime()
                 AverageDayTime = AverageDayTimeVars.fromAverageDayDTO(data.averageDayTime)
                 weekTime = WeekTime(data.weekTime)
-                ContiniusSuccessDays = ContinuesSuccessDaysVars.fromContinuesSuccessDTO(data.continuesSuccessDays)
                 TodayTime = TodayTimeVars.fromTodayTimeDTO(data.todayTime)
+                statisticsCalculator.init(data)
             }
             _initResult.value = response
         }
     }
     open fun uploadStatistics(){
     }
-    fun createOrDeleteTask(task: DailyTask, isCreate: Boolean, isUploadStats: Boolean =true){
+    private fun createOrDeleteTask(task: DailyTask, isCreate: Boolean){
         if (task.isComplete() && isCreate==false){
             changeTaskCompletion(task, false)
         }
         if (task.belongsCurrentDay()){
             TodayTime.Planned.plusMinutes(task.getMinutesLength(), isCreate)
         }
-        if (isUploadStats) {uploadStatistics()}
+    }
+    fun createOrDeleteTask(task: DailyTask, isCreate: Boolean, dailyTaskList: List<DailyTask>){
+        createOrDeleteTask(task, isCreate)
+        statisticsCalculator.addOrDeleteTask(dailyTaskList)
+        uploadStatistics()
     }
 
     fun changeTaskCompletion(task: DailyTask, isComplete: Boolean, isUploadStats: Boolean =true){//когда таска запатчена
@@ -121,6 +115,7 @@ open class AbstractStatisticsViewModel():ViewModel() {
         }
         TotalTime.completeTask(task, isComplete)
         AverageDayTime.update(TotalTime.totalMinutes)
+        statisticsCalculator.changeTaskCompletion(task)
         if (isUploadStats) {uploadStatistics()}
     }
 
@@ -129,8 +124,8 @@ open class AbstractStatisticsViewModel():ViewModel() {
             changeTaskCompletion(task, false, isUploadStats = false)
             changeTaskCompletion(newTask, true, isUploadStats = false)
         }
-        createOrDeleteTask(task, false, isUploadStats = false)
-        createOrDeleteTask(newTask, true, isUploadStats = false)
+        createOrDeleteTask(task, false)
+        createOrDeleteTask(newTask, true)
         uploadStatistics()
     }
 
@@ -149,11 +144,11 @@ open class AbstractStatisticsViewModel():ViewModel() {
         return TodayTime.Completed
     }
 
-    fun getRecordContiniusSuccessDays():DaysAmount{
-        return ContiniusSuccessDays.Record
+    fun getRecordContinuesSuccessDays():DaysAmount{
+        return DaysAmount(statisticsCalculator.getRecordContinuesSuccessDays())
     }
-    fun getTodayContinusSuccessDays():DaysAmount{
-        return ContiniusSuccessDays.Now
+    fun getTodayContinuesSuccessDays():DaysAmount{
+        return DaysAmount(statisticsCalculator.getTodayContinuesSuccessDays())
     }
     fun getTotalTimeActivityTypes():TotalTimeTaskTypes{
         return TotalTimeTaskTypes(TotalTime.Common.time.inWholeMinutes, TotalTime.Work.time.inWholeMinutes, TotalTime.Study.time.inWholeMinutes, TotalTime.Fitness.time.inWholeMinutes)
@@ -161,9 +156,11 @@ open class AbstractStatisticsViewModel():ViewModel() {
     fun getWeekWorkTime(): TimePeriod{
         return weekTime.All
     }
-    fun getTypesInDay(): Long{
-        return 2
+    fun getTypesInCurrentDay(): Int{
+        return statisticsCalculator.getCurrentDayTypes()
     }
+
+
 }
 class StatisticsViewModel(): AbstractStatisticsViewModel(){
     override fun uploadStatistics() {

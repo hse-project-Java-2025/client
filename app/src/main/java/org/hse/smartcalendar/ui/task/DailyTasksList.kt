@@ -59,8 +59,8 @@ import kotlinx.datetime.format.char
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.network.NetworkResponse
-import org.hse.smartcalendar.notification.ReminderViewModel
-import org.hse.smartcalendar.notification.ReminderViewModelFactory
+import org.hse.smartcalendar.view.model.ReminderViewModel
+import org.hse.smartcalendar.view.model.ReminderViewModelFactory
 import org.hse.smartcalendar.ui.navigation.TopButton
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.Navigation
@@ -104,9 +104,6 @@ fun DailyTasksList(
         } else {
             showLoading = false
         }
-    }
-    LaunchedEffect(Unit) {
-        viewModel.loadDailyTasks()
     }
     Scaffold(
         topBar = {

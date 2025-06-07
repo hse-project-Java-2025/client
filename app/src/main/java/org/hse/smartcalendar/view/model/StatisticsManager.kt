@@ -9,11 +9,16 @@ class StatisticsManager(private val viewModel: AbstractStatisticsViewModel){
     fun changeTaskCompletion(task: DailyTask, isCompleted: Boolean){
         viewModel.changeTaskCompletion(task, isCompleted)
     }
-    fun removeDailyTask(task: DailyTask){
-        viewModel.createOrDeleteTask(task, false)
+    fun removeDailyTask(task: DailyTask, dailyTaskList: List<DailyTask>){
+        viewModel.createOrDeleteTask(dailyTaskList = dailyTaskList,
+            task = task,
+            isCreate = false)
     }
-    fun addDailyTask(task: DailyTask){
-        viewModel.createOrDeleteTask(task, true)
+    fun addDailyTask(task: DailyTask, dailyTaskList: List<DailyTask>){
+        viewModel.createOrDeleteTask(
+            dailyTaskList= dailyTaskList,
+        task = task,
+        isCreate = false)
     }
 
     /**

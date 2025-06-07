@@ -7,11 +7,9 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.workDataOf
-import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
@@ -27,7 +25,7 @@ import org.hse.smartcalendar.data.DailyTaskAction
 import org.hse.smartcalendar.data.User
 import org.hse.smartcalendar.data.WorkManagerHolder
 import org.hse.smartcalendar.network.NetworkResponse
-import org.hse.smartcalendar.notification.TaskApiWorker
+import org.hse.smartcalendar.work.TaskApiWorker
 import java.io.File
 
 open class AbstractListViewModel(val statisticsManager: StatisticsManager) : ViewModel() {
@@ -62,7 +60,7 @@ open class AbstractListViewModel(val statisticsManager: StatisticsManager) : Vie
         dailyTaskList.sortBy { task ->
             task.getDailyTaskStartTime()
         }
-        statisticsManager.addDailyTask(newTask)
+        statisticsManager.addDailyTask(newTask, dailyTaskList)
         scheduleTaskRequest(newTask, DailyTaskAction.Type.ADD)
     }
 
@@ -71,7 +69,7 @@ open class AbstractListViewModel(val statisticsManager: StatisticsManager) : Vie
             // TODO
         } else {
             dailyTaskList.remove(task)
-            statisticsManager.removeDailyTask(task)
+            statisticsManager.removeDailyTask(task, dailyTaskList)
             scheduleTaskRequest(task, DailyTaskAction.Type.DELETE)
         }
     }

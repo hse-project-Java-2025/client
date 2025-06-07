@@ -61,8 +61,8 @@ fun StatisticsScreen(navigation: Navigation, openMenu: () -> Unit, statisticsMod
                     modifier = Modifier.weight(1f / 3f)
                 )
                 SafeProgressBox(
-                    dividend = statisticsModel.getTodayContinusSuccessDays().amount.toLong(),
-                    divisor = statisticsModel.getRecordContiniusSuccessDays().amount.toLong(),
+                    dividend = statisticsModel.getTodayContinuesSuccessDays().amount.toLong(),
+                    divisor = statisticsModel.getRecordContinuesSuccessDays().amount.toLong(),
                     label = "Days in a row, when completed all the tasks",
                     color = Color.Red,
                     modifier = Modifier.weight(1f / 3f)
@@ -83,7 +83,7 @@ fun StatisticsScreen(navigation: Navigation, openMenu: () -> Unit, statisticsMod
                             Text(statisticsModel.getAverageDailyTime().toFullString())
                             Text(statisticsModel.getTodayPlannedTime().toFullString())
                             Text(statisticsModel.getTotalWorkTime().toPrettyString())
-                            Text(statisticsModel.getRecordContiniusSuccessDays().toPrettyString())
+                            Text(statisticsModel.getRecordContinuesSuccessDays().toPrettyString())
                         }
                     }
                 }

@@ -28,8 +28,8 @@ data class StatisticsDTO(
                     completed = viewModel.getTodayCompletedTime().time.inWholeMinutes
                 ),
                 continuesSuccessDays = ContinuesSuccessDays(
-                    record = viewModel.getRecordContiniusSuccessDays().amount.toLong(),
-                    now = viewModel.getTodayContinusSuccessDays().amount.toLong()
+                    record = viewModel.getRecordContinuesSuccessDays().amount.toLong(),
+                    now = viewModel.getTodayContinuesSuccessDays().amount.toLong()
                 ),
                 averageDayTime = AverageDayTime(
                     totalWorkMinutes = viewModel.getTotalWorkTime().time.inWholeMinutes,

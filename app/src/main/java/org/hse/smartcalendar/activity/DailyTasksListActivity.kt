@@ -11,8 +11,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import org.hse.smartcalendar.data.WorkManagerHolder
-import org.hse.smartcalendar.notification.ReminderViewModel
-import org.hse.smartcalendar.notification.ReminderViewModelFactory
+import org.hse.smartcalendar.view.model.ReminderViewModel
+import org.hse.smartcalendar.view.model.ReminderViewModelFactory
 import org.hse.smartcalendar.ui.screens.StatisticsScreen
 import org.hse.smartcalendar.ui.task.DailyTasksList
 import org.hse.smartcalendar.ui.task.TaskEditWindow
