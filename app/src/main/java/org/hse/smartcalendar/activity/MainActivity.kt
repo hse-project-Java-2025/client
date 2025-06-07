@@ -3,32 +3,21 @@ package org.hse.smartcalendar.activity
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import org.hse.smartcalendar.data.WorkManagerHolder
 import org.hse.smartcalendar.ui.navigation.App
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
-import org.hse.smartcalendar.utility.Navigation
-import org.hse.smartcalendar.utility.Screens
-import org.hse.smartcalendar.utility.rememberNavigation
+import org.hse.smartcalendar.view.model.ListViewModel
+import org.hse.smartcalendar.view.model.StatisticsManager
+import org.hse.smartcalendar.view.model.StatisticsViewModel
+import org.hse.smartcalendar.view.model.TaskEditViewModel
 
 
 class MainActivity : ComponentActivity() {
@@ -50,62 +39,20 @@ class MainActivity : ComponentActivity() {
             )
         }
     }
-    //@RequiresApi(Build.VERSION_CODES.O, Build.VERSION_CODES.TIRAMISU)
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WorkManagerHolder.init(this)
+        val statisticsModel: StatisticsViewModel = StatisticsViewModel()
+        val listModel =  ListViewModel(StatisticsManager(statisticsModel))
+        val editModel =  TaskEditViewModel(listModel)
         enableEdgeToEdge()
         setContent {
             SmartCalendarTheme {
-                getNotificationsPermissions()
-                App()
+                if (SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+                    getNotificationsPermissions()
+                }
+                App(statisticsVM = statisticsModel, listVM = listModel, taskEditVM = editModel)
             }
         }
-    }
-}
-
-@Composable
-fun GreetingScreen(navigation: Navigation, modifier: Modifier = Modifier, name: String = "User") {
-    Column (modifier = Modifier
-        .fillMaxSize()
-        .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    )
-    {
-        Text(
-            text = "Hello $name!",
-            modifier = modifier
-        )
-
-        Spacer(modifier = Modifier.
-            padding(8.dp))
-
-        Button(
-            onClick = {
-                navigation.navigateTo(Screens.LOGIN.route)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .testTag("authorizationButtonTest")) {
-            Text("Authorization")
-        }
-        Button(
-            onClick = {
-                navigation.navigateTo(Screens.REGISTER.route)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .testTag("registerButtonTest")) {
-            Text("Signup")
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    SmartCalendarTheme {
-        GreetingScreen(rememberNavigation(), name ="User")
     }
 }

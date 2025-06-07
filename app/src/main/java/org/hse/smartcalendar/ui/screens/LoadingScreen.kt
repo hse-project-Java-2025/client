@@ -3,7 +3,6 @@ package org.hse.smartcalendar.ui.screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -22,13 +21,21 @@ import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.view.model.InitViewModel
+import org.hse.smartcalendar.view.model.StatisticsViewModel
 
 @Composable
-fun LoadingScreen(navigation: Navigation){
-    val viewModel: InitViewModel = viewModel()//гарантирует 1 модель на Composable
-    val initState by viewModel.initResult.observeAsState()
+fun LoadingScreen(navigation: Navigation, statisticsVM: StatisticsViewModel){
+    val initVM: InitViewModel = viewModel()//гарантирует 1 модель на Composable
+    val initState by initVM.initResult.observeAsState()
+    val statisticsState by statisticsVM.initResult.observeAsState()
+
     LaunchedEffect(Unit) {
-        viewModel.initUser()
+        initVM.initUser()
+    }
+    LaunchedEffect(initState) {
+        if (initState is NetworkResponse.Success) {
+            statisticsVM.init()
+        }
     }
     Column(
         modifier = Modifier
@@ -39,28 +46,34 @@ fun LoadingScreen(navigation: Navigation){
     ) {
         Button(
             onClick = {
-                viewModel.initUser()
+                initVM.initUser()
             },
         ) {
             Text("Retry")
         }
-        when (val state = initState) {
-            is NetworkResponse.Loading -> {
+        when  {
+            initState is NetworkResponse.Loading || initState is NetworkResponse.Success && statisticsState is NetworkResponse.Loading-> {
                 CircularProgressIndicator()
+                Text("Loading user data")
             }
-            is NetworkResponse.Success -> {
-                LaunchedEffect(state) {
+            initState is NetworkResponse.Success && statisticsState is NetworkResponse.Success-> {
+                LaunchedEffect(statisticsState) {
                     delay(1000)
                     navigation.navigateToMainApp(Screens.CALENDAR.route)
                 }
             }
-            is NetworkResponse.Error -> {
-                Text("Error: ${state.message}", color = MaterialTheme.colorScheme.error)
+            initState is NetworkResponse.Error -> {
+                Text("Error: ${(initState as NetworkResponse.Error).message}", color = MaterialTheme.colorScheme.error)
             }
-            is NetworkResponse.NetworkError -> {
-                Text("Check internet connection: ${state.exceptionMessage}", color = MaterialTheme.colorScheme.error)
+            initState is NetworkResponse.NetworkError -> {
+                Text("Check internet connection: ${(initState as NetworkResponse.NetworkError).exceptionMessage}", color = MaterialTheme.colorScheme.error)
             }
-            null -> {}
+            statisticsState is NetworkResponse.Error -> {
+                Text("Error loading statistics: ${(statisticsState as NetworkResponse.Error).message}", color = MaterialTheme.colorScheme.error)
+            }
+            statisticsState is NetworkResponse.NetworkError -> {
+                Text("Statistics: check connection: ${(statisticsState as NetworkResponse.NetworkError).exceptionMessage}", color = MaterialTheme.colorScheme.error)
+            }
         }
     }
 }

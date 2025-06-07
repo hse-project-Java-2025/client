@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import org.hse.smartcalendar.AuthViewModel
 import org.hse.smartcalendar.notification.ReminderViewModel
 import org.hse.smartcalendar.ui.elements.Password
@@ -44,15 +45,24 @@ import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.view.model.ListViewModel
+import org.hse.smartcalendar.view.model.StatisticsManager
+import org.hse.smartcalendar.view.model.StatisticsViewModel
+import org.hse.smartcalendar.view.model.TaskEditViewModel
 
 //здесь работает навигация
 @Preview
 @Composable
 fun SettingsScreenPreview() {
     SmartCalendarTheme {
-        val listModel = ListViewModel()
+        val statisticsViewModel = viewModel<StatisticsViewModel> ()
+        val statisticsManager = StatisticsManager(statisticsViewModel)
+        val listModel = ListViewModel(statisticsManager = statisticsManager)
+        val taskEditViewModel = TaskEditViewModel(listModel)
         App(
-            startDestination = Screens.SETTINGS.route
+            startDestination = Screens.SETTINGS.route,
+            listVM = listModel,
+            statisticsVM = statisticsViewModel,
+            taskEditVM = taskEditViewModel
         )
     }
 }

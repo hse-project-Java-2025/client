@@ -11,6 +11,7 @@ fun editHandler(
     isEmptyTitle: MutableState<Boolean>,
     isConflictInTimeField: MutableState<Boolean>,
     isNestedTask: MutableState<Boolean>,
+    statsUpdateOldToNewTask: (DailyTask, DailyTask)-> Unit
 ) {
     isEmptyTitle.value = false
     isNestedTask.value = false
@@ -19,8 +20,9 @@ fun editHandler(
     isEmptyTitle.value = newTask.getDailyTaskTitle().isEmpty()
     isConflictInTimeField.value = newTask.getDailyTaskStartTime() > newTask.getDailyTaskEndTime()
     isNestedTask.value = !viewModel.isUpdatable(oldTask, newTask)
-
+    newTask.setId(oldTask.getId())
     if (!isEmptyTitle.value && !isConflictInTimeField.value && !isNestedTask.value) {
         oldTask.updateDailyTask(newTask)
+        statsUpdateOldToNewTask(oldTask, newTask)
     }
 }

@@ -17,7 +17,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import org.hse.smartcalendar.data.DailyTaskType
+import org.hse.smartcalendar.data.TotalTimeTaskTypes
 import org.hse.smartcalendar.ui.elements.ChartCirclePie
 import org.hse.smartcalendar.ui.elements.ChartModel
 import org.hse.smartcalendar.ui.elements.CircleColored
@@ -25,17 +27,13 @@ import org.hse.smartcalendar.ui.navigation.TopButton
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.rememberNavigation
+import org.hse.smartcalendar.view.model.AbstractStatisticsViewModel.Companion.toPercent
 import org.hse.smartcalendar.view.model.StatisticsViewModel
-import org.hse.smartcalendar.view.model.StatisticsViewModel.Companion.toPercent
 
 @Composable
 fun StatisticsScreen(navigation: Navigation, openMenu: () -> Unit, statisticsModel: StatisticsViewModel) {
     fun safeDelete(dividend: Long, divisor: Long): Float {
-        if (divisor == (0).toLong()) {
-            return (0).toFloat()
-        } else {
-            return (dividend).toFloat() / divisor
-        }
+        return if (divisor == 0L || dividend == 0L) 0f else dividend.toFloat() / divisor
     }
     fun safeDelete(dividend: Int, divisor: Int): Float {
         return safeDelete(dividend.toLong(), divisor.toLong())
@@ -47,39 +45,28 @@ fun StatisticsScreen(navigation: Navigation, openMenu: () -> Unit, statisticsMod
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            Row(){
-                Box(modifier = Modifier.weight(1.0f / 3)) {
-                    fun progress():Float{ return safeDelete(
-                        statisticsModel.getTodayCompletedTime().toMinutes(),
-                        statisticsModel.getTodayPlannedTime().toMinutes()
-                    )}
-                    ProgressCircleWithText(
-                        progress = { progress() },
-                        text = "Completed/Planned",
-                        color = Color.Blue
-                    )
-                }
-                Box(modifier = Modifier.weight(1.0f / 3)) {
-                    fun progress():Float{ return safeDelete(
-                        statisticsModel.getTodayCompletedTime().toMinutes(),
-                        statisticsModel.getAverageDailyTime().toMinutes()
-                    )}
-                    ProgressCircleWithText(
-                        progress = { progress() },
-                        text = "Completed/Average",
-                        color = Color.Green
-                    )
-                }
-                Box(modifier = Modifier.weight(1.0f / 3)) {
-                    fun progress():Float{return statisticsModel.getTodayContinusSuccessDays().getAmount().toFloat()/
-                            statisticsModel.getRecordContiniusSuccessDays().getAmount()
-                    }
-                    ProgressCircleWithText(
-                        progress = { progress() },
-                        text = "Days in a row, when completed all the tasks",
-                        color = Color.Red
-                    )
-                }
+            Row {
+                SafeProgressBox(
+                    dividend = statisticsModel.getTodayCompletedTime().time.inWholeMinutes,
+                    divisor = statisticsModel.getTodayPlannedTime().time.inWholeMinutes,
+                    label = "Completed/Planned",
+                    color = Color.Blue,
+                    modifier = Modifier.weight(1f / 3f)
+                )
+                SafeProgressBox(
+                    dividend = statisticsModel.getTodayCompletedTime().time.inWholeMinutes,
+                    divisor = statisticsModel.getAverageDailyTime().time.inWholeMinutes,
+                    label = "Completed/Average",
+                    color = Color.Green,
+                    modifier = Modifier.weight(1f / 3f)
+                )
+                SafeProgressBox(
+                    dividend = statisticsModel.getTodayContinusSuccessDays().amount.toLong(),
+                    divisor = statisticsModel.getRecordContiniusSuccessDays().amount.toLong(),
+                    label = "Days in a row, when completed all the tasks",
+                    color = Color.Red,
+                    modifier = Modifier.weight(1f / 3f)
+                )
             }
             Column(verticalArrangement = Arrangement.Center) {
                 Row {
@@ -108,7 +95,7 @@ fun StatisticsScreen(navigation: Navigation, openMenu: () -> Unit, statisticsMod
 }
 @Composable
 fun ActivityTypesDataDisplay(modifier: Modifier=Modifier,
-                             typesModel: StatisticsViewModel.TotalTimeTaskTypes,
+                             typesModel: TotalTimeTaskTypes,
                              columnHeight: Dp
 ){
     val charts = listOf(
@@ -117,14 +104,14 @@ fun ActivityTypesDataDisplay(modifier: Modifier=Modifier,
         ChartModel(value = typesModel.CommonPercent, color = DailyTaskType.COMMON.color),
         ChartModel(value = typesModel.WorkPercent, color = DailyTaskType.WORK.color),
     )
-    val TableData = mapOf("Work" to Pair(typesModel.WorkPercent, DailyTaskType.WORK.color),
+    val tableData = mapOf("Work" to Pair(typesModel.WorkPercent, DailyTaskType.WORK.color),
         "Study" to
                 Pair(typesModel.StudyPercent, DailyTaskType.STUDIES.color),
         "Fitness" to Pair(typesModel.FitnessPercent, DailyTaskType.FITNESS.color),
         "Common" to Pair(typesModel.CommonPercent, DailyTaskType.COMMON.color))
     Column(verticalArrangement = Arrangement.Center) {
         ChartCirclePie(modifier.align(Alignment.CenterHorizontally), charts)
-        TableData.forEach {
+        tableData.forEach {
             val (text, data) = it
             val (percent, color) = data
             Row(
@@ -140,6 +127,30 @@ fun ActivityTypesDataDisplay(modifier: Modifier=Modifier,
         }
     }
 }
+@Composable
+fun SafeProgressBox(
+    dividend: Long,
+    divisor: Long,
+    label: String,
+    color: Color,
+    modifier: Modifier = Modifier
+) {
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+        if (dividend == 0L) {
+            Box(modifier = modifier.then(Modifier.size(100.dp)), contentAlignment = Alignment.Center) {
+                Text("No data")
+            }
+        } else {
+            fun progress(): Float = dividend.toFloat() / divisor
+            ProgressCircleWithText(
+                progress = { progress() },
+                text = label,
+                color = color
+            )
+        }
+    }
+}
+
 @Composable
 fun ProgressCircleWithText(progress: ()->Float, text: String, color: Color){
     Column (horizontalAlignment = Alignment.CenterHorizontally){
@@ -159,6 +170,7 @@ fun ProgressCircleWithText(progress: ()->Float, text: String, color: Color){
 @Composable
 fun StatisticsPreview(){
     SmartCalendarTheme {
-        StatisticsScreen(rememberNavigation(), {}, StatisticsViewModel())
+        val statisticsModel: StatisticsViewModel = viewModel ()
+        StatisticsScreen(rememberNavigation(), {}, statisticsModel)
     }
 }

@@ -1,8 +1,7 @@
 package org.hse.smartcalendar.network
 
 import kotlinx.datetime.LocalDateTime
-import org.hse.smartcalendar.network.NetworkResponse.Error
-import retrofit2.Response
+import kotlinx.serialization.Serializable
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
 
@@ -21,24 +20,68 @@ data class ChangeCredentialsRequest(
     val newUsername: String,
     val newPassword: String
 )
-
-data class AddTaskRequest(
+@Serializable
+data class EditTaskRequest(
+    val creationTime: LocalDateTime,
     val title: String,
     val description: String,
     val start: LocalDateTime,
     val end: LocalDateTime,
     val location: String,
-    val type: DailyTaskType
+    val type: DailyTaskType,
+    val completed: Boolean
 ){
     companion object{
-        fun fromTask(task: DailyTask): AddTaskRequest{
-            return AddTaskRequest(
+        fun fromTask(task: DailyTask): EditTaskRequest{
+            return EditTaskRequest(
                 title = task.getDailyTaskTitle(),
                 description = task.getDailyTaskDescription(),
                 start = LocalDateTime(task.getTaskDate(), task.getDailyTaskStartTime()),
                 end = LocalDateTime(task.getTaskDate(), task.getDailyTaskEndTime()),
                 location = "",
-                type = task.getDailyTaskType()
+                type = task.getDailyTaskType(),
+                creationTime = task.getDailyTaskCreationTime(),
+                completed = task.isComplete()
+            )
+        }
+    }
+}
+@Serializable
+data class CompleteStatusRequest(
+    val completed: Boolean
+){
+    companion object {
+        fun fromTask(task: DailyTask): CompleteStatusRequest {
+            return CompleteStatusRequest(task.isComplete())
+        }
+    }
+}
+
+@Serializable
+data class TaskRequest(
+    val id: String,
+    val title: String,
+    val description: String,
+    val start: LocalDateTime,
+    val end: LocalDateTime,
+    val date: String,
+    val type: DailyTaskType,
+    val creationTime: LocalDateTime,
+    val complete: Boolean
+) {
+    companion object {
+        fun fromTask(task: DailyTask): TaskRequest {
+            val date = task.getTaskDate()
+            return TaskRequest(
+                id = task.getId().toString(),
+                title = task.getDailyTaskTitle(),
+                description = task.getDailyTaskDescription(),
+                start = LocalDateTime(date = date, time = task.getDailyTaskStartTime()),
+                end = LocalDateTime(date = date, time = task.getDailyTaskEndTime()),
+                date = date.toString(),
+                type = task.getDailyTaskType(),
+                creationTime = task.getDailyTaskCreationTime(),
+                complete = task.isComplete()
             )
         }
     }

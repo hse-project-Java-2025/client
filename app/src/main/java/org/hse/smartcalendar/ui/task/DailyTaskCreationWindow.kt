@@ -46,6 +46,8 @@ import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.fromMinutesOfDay
 import org.hse.smartcalendar.utility.toMinutesOfDay
 import org.hse.smartcalendar.view.model.ListViewModel
+import org.hse.smartcalendar.view.model.StatisticsManager
+import org.hse.smartcalendar.view.model.StatisticsViewModel
 import java.io.File
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -438,7 +440,7 @@ fun BottomSheetPreview() {
             endTime = endTime,
             addTask = {},
             taskType = taskType,
-            viewModel = ListViewModel(),
+            viewModel = ListViewModel(StatisticsManager(StatisticsViewModel())),
             onRecordStop = TODO(),
             audioFile = audioFile,
         )

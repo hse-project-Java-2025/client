@@ -19,16 +19,16 @@ import kotlinx.coroutines.launch
 import org.hse.smartcalendar.AuthScreen
 import org.hse.smartcalendar.AuthType
 import org.hse.smartcalendar.AuthViewModel
-import org.hse.smartcalendar.activity.GreetingScreen
 import org.hse.smartcalendar.notification.ReminderViewModel
 import org.hse.smartcalendar.notification.ReminderViewModelFactory
 import org.hse.smartcalendar.ui.screens.AchievementsScreen
 import org.hse.smartcalendar.ui.screens.ChangeLogin
 import org.hse.smartcalendar.ui.screens.ChangePassword
+import org.hse.smartcalendar.ui.screens.GreetingScreen
 import org.hse.smartcalendar.ui.screens.LoadingScreen
-import org.hse.smartcalendar.ui.task.DailyTasksList
 import org.hse.smartcalendar.ui.screens.SettingsScreen
 import org.hse.smartcalendar.ui.screens.StatisticsScreen
+import org.hse.smartcalendar.ui.task.DailyTasksList
 import org.hse.smartcalendar.ui.task.TaskEditWindow
 import org.hse.smartcalendar.utility.AppDrawer
 import org.hse.smartcalendar.utility.Navigation
@@ -43,9 +43,12 @@ import org.hse.smartcalendar.view.model.TaskEditViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App(
-    startDestination: String = Screens.GREETING.route
+    startDestination: String = Screens.GREETING.route,
+    statisticsVM: StatisticsViewModel,
+    listVM: ListViewModel,
+    taskEditVM: TaskEditViewModel
 ) {
-    val authModel = AuthViewModel()
+    val authModel: AuthViewModel = viewModel()
     val navigation = rememberNavigation()
     val coroutineScope = rememberCoroutineScope()
     val currentRoute = navigation.navController.currentDestination?.route ?: startDestination
@@ -70,18 +73,16 @@ fun App(
             },
             drawerState = DrawerState,
             gesturesEnabled = !isExpandedScreen
-        ){NestedNavigator(navigation, authModel,openDrawer )
+        ){NestedNavigator(navigation, authModel,openDrawer,statisticsVM, listVM, taskEditVM )
         }
     } else {
-        NestedNavigator(navigation, authModel,openDrawer )
+        NestedNavigator(navigation, authModel,openDrawer, statisticsVM, listVM, taskEditVM )
     }
 }
 @Composable
-fun NestedNavigator(navigation: Navigation, authModel: AuthViewModel,openDrawer: ()-> Unit){
-    val listModel =  ListViewModel()
-    val editModel =  TaskEditViewModel(listModel)
-    val statisticsModel = StatisticsViewModel()
-    var settingsViewModel=SettingsViewModel()
+fun NestedNavigator(navigation: Navigation, authModel: AuthViewModel,openDrawer: ()-> Unit,
+                    statisticsModel: StatisticsViewModel, listModel: ListViewModel, editModel: TaskEditViewModel){
+    var settingsViewModel: SettingsViewModel = viewModel()
     val reminderModel: ReminderViewModel = viewModel(factory = ReminderViewModelFactory(
         LocalContext.current.applicationContext as Application
     ))
@@ -104,7 +105,7 @@ fun NestedNavigator(navigation: Navigation, authModel: AuthViewModel,openDrawer:
                 AuthScreen(navigation, authModel, AuthType.Login)
             }
             composable(Screens.LOADING.route) {
-                LoadingScreen(navigation)
+                LoadingScreen(navigation, statisticsModel)
             }
         }
 

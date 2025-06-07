@@ -10,7 +10,6 @@ import org.hse.smartcalendar.network.LoginResponse
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.network.RegisterRequest
 import org.hse.smartcalendar.network.UserInfoResponse
-import retrofit2.Response
 
 //Repository - логика работы с задачами, получает данные,
 // формирует и отправляет запрос, возвращает данные/exception

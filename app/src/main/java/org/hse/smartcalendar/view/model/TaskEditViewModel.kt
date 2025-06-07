@@ -4,17 +4,20 @@ import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailyTask
+import org.hse.smartcalendar.data.DailyTaskAction
+import org.hse.smartcalendar.data.WorkManagerHolder
 import org.hse.smartcalendar.utility.editHandler
 
 class TaskEditViewModel(
     val listViewModel: ListViewModel
 ) : ViewModel() {
+    private val workManager = WorkManagerHolder.getInstance()
     private var task: DailyTask = DailyTask(
         title = "Preview title",
         description = "Preview description",
         start = LocalTime(0, 0),
         end = LocalTime(23, 59),
-        date = DailyTask.DefaultDate.date
+        date = DailyTask.defaultDate
     )
     val changes = task
 
@@ -26,7 +29,6 @@ class TaskEditViewModel(
         task = newTask
         changes.updateDailyTask(newTask)
     }
-
     fun updateInnerTask(
         isEmptyTitle: MutableState<Boolean>,
         isConflictInTimeField: MutableState<Boolean>,
@@ -38,7 +40,11 @@ class TaskEditViewModel(
             viewModel = listViewModel,
             isEmptyTitle = isEmptyTitle,
             isConflictInTimeField = isConflictInTimeField,
-            isNestedTask = isNestedTask
+            isNestedTask = isNestedTask,
+            statsUpdateOldToNewTask = { oldTask, newTask->
+                    listViewModel.statisticsManager.updateDailyTask(oldTask=oldTask, newTask = newTask)
+                listViewModel.scheduleTaskRequest(newTask, DailyTaskAction.Type.EDIT)
+            }
         )
     }
 }
