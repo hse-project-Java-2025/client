@@ -18,7 +18,7 @@ class StatisticsManager(private val viewModel: AbstractStatisticsViewModel){
         viewModel.createOrDeleteTask(
             dailyTaskList= dailyTaskList,
         task = task,
-        isCreate = false)
+        isCreate = true)
     }
 
     /**
