@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WorkManagerHolder.init(this)
-        val statisticsModel: StatisticsViewModel = StatisticsViewModel()
+        val statisticsModel = StatisticsViewModel()
         val listModel =  ListViewModel(StatisticsManager(statisticsModel))
         val editModel =  TaskEditViewModel(listModel)
         enableEdgeToEdge()

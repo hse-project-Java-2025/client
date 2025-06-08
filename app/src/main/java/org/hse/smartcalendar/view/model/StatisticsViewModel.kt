@@ -8,6 +8,7 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.workDataOf
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.Json
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.TotalTimeTaskTypes
@@ -47,7 +48,7 @@ open class AbstractStatisticsViewModel():ViewModel() {
         private set
     var weekTime = WeekTime(0)
         private set
-    var AverageDayTime: AverageDayTimeVars = AverageDayTimeVars(totalDays = 1, totalWorkMinutes =  0)
+    var AverageDayTime: AverageDayTimeVars = AverageDayTimeVars(firstDay = LocalDate(2025, 6, 8), totalWorkMinutes =  0)
         private set
     var TodayTime: TodayTimeVars = TodayTimeVars(0, 0)
         private set
@@ -131,7 +132,10 @@ open class AbstractStatisticsViewModel():ViewModel() {
         return DaysAmount(statisticsCalculator.getTodayContinuesSuccessDays())
     }
     fun getTotalTimeActivityTypes():TotalTimeTaskTypes{
-        return TotalTimeTaskTypes(TotalTime.Common.time.inWholeMinutes, TotalTime.Work.time.inWholeMinutes, TotalTime.Study.time.inWholeMinutes, TotalTime.Fitness.time.inWholeMinutes)
+        return TotalTimeTaskTypes(TotalTime.Common.time.inWholeMinutes,
+            TotalTime.Work.time.inWholeMinutes,
+            TotalTime.Study.time.inWholeMinutes,
+            TotalTime.Fitness.time.inWholeMinutes)
     }
     fun getWeekWorkTime(): TimePeriod{
         return weekTime.All

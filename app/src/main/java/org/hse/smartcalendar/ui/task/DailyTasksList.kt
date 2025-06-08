@@ -124,6 +124,8 @@ fun DailyTasksList(
                     DailyTaskCard(
                         it,
                         onCompletionChange = {
+                            if (!it.isComplete()){reminderModel.cancelReminder(it)}
+                            else {reminderModel.scheduleReminder(it)}
                             viewModel.changeTaskCompletion(it, !it.isComplete())
                         },
                         taskEditViewModel = taskEditViewModel,
@@ -301,7 +303,8 @@ fun DailyTaskListPreview() {
                 onCancel = { navController.popBackStack() },
                 taskEditViewModel = taskEditViewModel,
                 navController = navController,
-                onDelete = { }
+                onDelete = { },
+                reminderModel = reminderModel
             )
         }
     }

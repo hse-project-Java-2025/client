@@ -3,6 +3,7 @@ package org.hse.smartcalendar.view.model
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
@@ -36,8 +37,6 @@ class ReminderViewModel(application: Application): ViewModel() {
 
     internal fun scheduleReminder(
         task: DailyTask): Boolean {
-        //ReminderVm ff62295
-        //разные ссылки на VM
         if (!isReminders.value){
             return false
         }
@@ -69,8 +68,15 @@ class ReminderViewModel(application: Application): ViewModel() {
                 ReminderWorker.Companion.END_KEY to LocalTime.prettyPrint(task.getDailyTaskEndTime()),
             )
         )
-        workManager.enqueue(myWorkRequestBuilder.build())
+        workManager.enqueueUniqueWork(
+            "reminder${task.getId()}",
+            ExistingWorkPolicy.REPLACE,
+            myWorkRequestBuilder.build())
         return true
+    }
+    internal fun cancelReminder(task: DailyTask) {
+        val workName = "reminder${task.getId()}"
+        workManager.cancelUniqueWork(workName)
     }
 }
 

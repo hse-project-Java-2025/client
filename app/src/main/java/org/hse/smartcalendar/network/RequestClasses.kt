@@ -4,6 +4,7 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
+import org.hse.smartcalendar.utility.TimeUtils
 
 data class LoginRequest(
     val username: String,
@@ -12,7 +13,8 @@ data class LoginRequest(
 data class RegisterRequest(
     val username: String,
     val email: String,
-    val password: String
+    val password: String,
+    val firstDay:String = TimeUtils.getCurrentDateTime().date.toString()
 )
 data class ChangeCredentialsRequest(
     val currentUsername: String,

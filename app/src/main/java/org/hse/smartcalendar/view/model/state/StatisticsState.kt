@@ -1,8 +1,10 @@
 package org.hse.smartcalendar.view.model.state
 
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.daysUntil
 import org.hse.smartcalendar.network.AverageDayTime
 import org.hse.smartcalendar.network.TodayTime
-import kotlin.math.max
+import org.hse.smartcalendar.utility.TimeUtils
 
 class TodayTimeVars(planned: Long, completed: Long){
     val Planned: DayPeriod = DayPeriod(planned)
@@ -14,15 +16,16 @@ class TodayTimeVars(planned: Long, completed: Long){
         }
     }
 }
-class AverageDayTimeVars(totalWorkMinutes: Long, val totalDays: Long){
-    var All: DayPeriod = DayPeriod(totalWorkMinutes/totalDays)
+class AverageDayTimeVars(totalWorkMinutes: Long, val firstDay: LocalDate){
+    private val dayLength = firstDay.daysUntil(TimeUtils.getCurrentDateTime().date)+1
+    var All: DayPeriod = DayPeriod(totalWorkMinutes/dayLength)
     fun update(totalTimeMinutes: Long){
-        All = DayPeriod(totalTimeMinutes/totalDays)
+        All = DayPeriod(totalTimeMinutes/dayLength)
     }
     companion object{
         fun fromAverageDayDTO(averageDayTimeDTO: AverageDayTime): AverageDayTimeVars{
             return AverageDayTimeVars(totalWorkMinutes = averageDayTimeDTO.totalWorkMinutes,
-                totalDays = max(averageDayTimeDTO.totalDays, 1)
+                firstDay = averageDayTimeDTO.firstDay
             )
         }
     }

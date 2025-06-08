@@ -1,5 +1,6 @@
 package org.hse.smartcalendar.network
 
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import org.hse.smartcalendar.data.TotalTimeTaskTypes
 import org.hse.smartcalendar.view.model.StatisticsViewModel
@@ -33,7 +34,7 @@ data class StatisticsDTO(
                 ),
                 averageDayTime = AverageDayTime(
                     totalWorkMinutes = viewModel.getTotalWorkTime().time.inWholeMinutes,
-                    totalDays = 7
+                    firstDay = viewModel.AverageDayTime.firstDay
                 )
             )
         }
@@ -68,5 +69,5 @@ data class ContinuesSuccessDays(
 @Serializable
 data class AverageDayTime(
     val totalWorkMinutes: Long,
-    val totalDays: Long
+    val firstDay: LocalDate
 )

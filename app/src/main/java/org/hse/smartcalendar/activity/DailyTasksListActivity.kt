@@ -74,7 +74,9 @@ fun ListNavigation(
                     listViewModel.removeDailyTask(task)
 
                 }, onCancel = {},
-                taskEditViewModel = taskEditViewModel, navController = navController
+                taskEditViewModel = taskEditViewModel,
+                navController = navController,
+                reminderModel = reminderModel
             )
         }
         composable(route = Screens.SETTINGS.route) {

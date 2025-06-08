@@ -140,12 +140,14 @@ fun NestedNavigator(navigation: Navigation, authModel: AuthViewModel,openDrawer:
             }
             composable(Screens.EDIT_TASK.route) {
                 TaskEditWindow(
-                    onSave = {},
+                    onSave = {task->reminderModel.scheduleReminder(task)},
                     onDelete = { task ->
                         listModel.removeDailyTask(task)
-
+                        reminderModel.cancelReminder(task)
                     }, onCancel = {},
-                    taskEditViewModel = editModel, navController = navigation.navController
+                    taskEditViewModel = editModel,
+                    reminderModel = reminderModel,
+                    navController = navigation.navController
                 )
             }
         }
