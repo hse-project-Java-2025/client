@@ -13,17 +13,17 @@ import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.TotalTimeTaskTypes
 import org.hse.smartcalendar.data.WorkManagerHolder
 import org.hse.smartcalendar.network.ApiClient
-import org.hse.smartcalendar.network.AverageDayTime
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.network.StatisticsDTO
-import org.hse.smartcalendar.network.TodayTime
 import org.hse.smartcalendar.work.StatisticsUploadWorker
 import org.hse.smartcalendar.repository.StatisticsRepository
-import org.hse.smartcalendar.utility.DayPeriod
-import org.hse.smartcalendar.utility.DaysAmount
-import org.hse.smartcalendar.utility.StatisticsCalculator
-import org.hse.smartcalendar.utility.TimePeriod
-import kotlin.math.max
+import org.hse.smartcalendar.view.model.state.DayPeriod
+import org.hse.smartcalendar.view.model.state.DaysAmount
+import org.hse.smartcalendar.view.model.state.StatisticsCalculator
+import org.hse.smartcalendar.view.model.state.TimePeriod
+import org.hse.smartcalendar.view.model.state.AverageDayTimeVars
+import org.hse.smartcalendar.view.model.state.TodayTimeVars
+import org.hse.smartcalendar.view.model.state.WeekTime
 import kotlin.math.roundToInt
 
 open class AbstractStatisticsViewModel():ViewModel() {
@@ -42,38 +42,16 @@ open class AbstractStatisticsViewModel():ViewModel() {
             return (part * 1000).roundToInt().toFloat() / 10
         }
     }
-    private class WeekTime(all: Long){
-        val All: TimePeriod = TimePeriod(all)
-    }
-    private class TodayTimeVars(planned: Long, completed: Long){
-        val Planned: DayPeriod = DayPeriod(planned)
-        var Completed: DayPeriod = DayPeriod(completed)
-        companion object{
-            fun fromTodayTimeDTO(todayTimeDTO: TodayTime): TodayTimeVars{
-                return TodayTimeVars(planned = todayTimeDTO.planned,
-                    completed = todayTimeDTO.completed)
-            }
-        }
-    }
-    private class AverageDayTimeVars(totalWorkMinutes: Long, val totalDays: Long){
-        var All: DayPeriod = DayPeriod(totalWorkMinutes/totalDays)
-        fun update(totalTimeMinutes: Long){
-            All = DayPeriod(totalTimeMinutes/totalDays)
-        }
-        companion object{
-            fun fromAverageDayDTO(averageDayTimeDTO: AverageDayTime): AverageDayTimeVars{
-                return AverageDayTimeVars(totalWorkMinutes = averageDayTimeDTO.totalWorkMinutes,
-                    totalDays = max(averageDayTimeDTO.totalDays, 1)
-                )
-            }
-        }
-    }
 
     var TotalTime: TotalTimeTaskTypes = TotalTimeTaskTypes(0, 0, 0, 0)
-    private var weekTime = WeekTime(0)
-    private var AverageDayTime: AverageDayTimeVars = AverageDayTimeVars(totalDays = 1, totalWorkMinutes =  0)
-    private var TodayTime: TodayTimeVars = TodayTimeVars(0, 0)
-    private var statisticsCalculator: StatisticsCalculator = StatisticsCalculator()
+        private set
+    var weekTime = WeekTime(0)
+        private set
+    var AverageDayTime: AverageDayTimeVars = AverageDayTimeVars(totalDays = 1, totalWorkMinutes =  0)
+        private set
+    var TodayTime: TodayTimeVars = TodayTimeVars(0, 0)
+        private set
+    val statisticsCalculator: StatisticsCalculator = StatisticsCalculator()
     fun init(){
         viewModelScope.launch {
             _initResult.value = NetworkResponse.Loading
@@ -101,7 +79,9 @@ open class AbstractStatisticsViewModel():ViewModel() {
     }
     fun createOrDeleteTask(task: DailyTask, isCreate: Boolean, dailyTaskList: List<DailyTask>){
         createOrDeleteTask(task, isCreate)
-        statisticsCalculator.addOrDeleteTask(dailyTaskList)
+        statisticsCalculator.addOrDeleteTask(
+            StatisticsCalculator.AddOrDeleteRequest
+                (date = task.getTaskDate(), dateTasks = dailyTaskList))
         uploadStatistics()
     }
 

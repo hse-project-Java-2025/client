@@ -173,7 +173,7 @@ fun AchievementsScreenPreview() {
 fun AchievementElementPreview() {
     SmartCalendarTheme {
         AchievementCard(
-            AchievementType.Fire,
+            AchievementType.Streak,
             parameter = 5
         )
     }

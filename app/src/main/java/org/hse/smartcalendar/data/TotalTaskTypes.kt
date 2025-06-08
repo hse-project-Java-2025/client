@@ -1,6 +1,6 @@
 package org.hse.smartcalendar.data
 
-import org.hse.smartcalendar.utility.TimePeriod
+import org.hse.smartcalendar.view.model.state.TimePeriod
 import org.hse.smartcalendar.view.model.AbstractStatisticsViewModel.Companion.getPercent
 
 class TotalTimeTaskTypes(common: Long, work: Long, study: Long, fitness: Long){

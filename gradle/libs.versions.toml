@@ -44,6 +44,7 @@ runtimeLivedata = "1.8.2"
 uiTestJunit4 = "<latest-version>"
 uiTestManifest = "<latest-version>"
 workRuntimeKtx = "2.10.1"
+junitJupiterVersion = "5.8.1"
 
 
 [libraries]
@@ -96,6 +97,7 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "converte
 retrofit-v2110 = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "uiTestJunit4" }
 ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "uiTestManifest" }
+jupiter-junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiterVersion" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
