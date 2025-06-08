@@ -2,16 +2,21 @@ name: Android CI
 
 on:
   push:
+    branches:
+      - main
+      - 'feature/**'
   pull_request:
+    branches:
+      - '*'
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
-
-    services:
+    runs-on: macos-latest
+    env:
+      ANDROID_SDK_ROOT: /Users/runner/Library/Android/sdk
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Cache Gradle packages
@@ -30,30 +35,35 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Set up Android SDK
+      - name: Install Android SDK
         uses: android-actions/setup-android@v2
         with:
-          sdk-version: "33.0.0"    
           api-level: 33
-          build-tools: "33.0.0"
+          build-tools: "33.0.2"
+          components: |
+            platform-tools
+            emulator
+            tools
+            platforms;android-33
+            system-images;android-33;google_apis;x86_64
 
-      - name: Start Android emulator
+      - name: Accept Android SDK licenses
+        run: yes | sdkmanager --licenses
+
+      - name: Create and start emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 33
           target: google_apis
           arch: x86_64
-          emulator-options: -no-window -gpu swiftshader_indirect
+          force-avd-creation: true
+          emulator-options: -no-window -no-boot-anim -gpu swiftshader_indirect
+          disable-animations: true
+          emulator-boot-timeout: 180
 
-      - name: Assemble debug APK
-        run: ./gradlew assembleDebug --no-daemon
-
-      - name: Run unit tests
-        run: ./gradlew testDebugUnitTest --no-daemon
-
-      - name: Run instrumentation tests
-        run: ./gradlew connectedDebugAndroidTest --no-daemon
-
-      - name: Stop emulator
-        if: always()
-        run: adb -s emulator-5554 emu kill || true
+      - name: Build debug APK, run unit & instrumentation tests
+        run: |
+          ./gradlew clean assembleDebug \
+            testDebugUnitTest \
+            connectedDebugAndroidTest \
+            --stacktrace
