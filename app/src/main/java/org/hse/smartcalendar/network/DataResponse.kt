@@ -6,6 +6,7 @@ import kotlinx.datetime.LocalTime
 import kotlinx.serialization.Serializable
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
+import org.hse.smartcalendar.utility.TimeUtils
 import java.util.UUID
 
 data class RegisterResponse (
@@ -57,5 +58,32 @@ data class TaskResponse(
             creationTime = creationTime,
             isComplete = complete
         )
+    }
+}
+@Serializable
+data class ChatTaskResponse(
+    val id: String,
+    val title: String,
+    val description: String,
+    val start: LocalDateTime?,
+    val end: LocalDateTime?,
+    val date: String,
+    val type: String?,
+    val creationTime: LocalDateTime?,
+    val complete: Boolean?
+) {
+    fun toDailyTask(): DailyTask {
+        val task = DailyTask(
+            id = UUID.fromString(id),
+            title = title,
+            description = description,
+            start = start?.time ?: LocalTime(0, 0),
+            end = end?.time ?: LocalTime(0, 0),
+            date = (start ?: end?: creationTime?: TimeUtils.getCurrentDateTime()).date ,
+            type = DailyTaskType.valueOf(type?.uppercase() ?: "COMMON"),
+            creationTime = creationTime?: TimeUtils.getCurrentDateTime(),
+            isComplete = complete == true,
+        )
+        return task
     }
 }

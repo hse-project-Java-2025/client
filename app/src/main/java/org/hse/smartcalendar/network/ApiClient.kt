@@ -41,6 +41,9 @@ object ApiClient {
     val statisticsApiService: StatisticsApiInterface by lazy {
         retrofit.create(StatisticsApiInterface::class.java)
     }
+    val audioApiService : AudioApiInterface by lazy {
+        retrofit.create(AudioApiInterface::class.java)
+    }
 }
 class AuthInterceptor(private val tokenProvider: () -> String?) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {

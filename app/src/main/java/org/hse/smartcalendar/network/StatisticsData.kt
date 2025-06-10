@@ -3,7 +3,8 @@ package org.hse.smartcalendar.network
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import org.hse.smartcalendar.data.TotalTimeTaskTypes
-import org.hse.smartcalendar.view.model.StatisticsViewModel
+import org.hse.smartcalendar.store.StatisticsStore
+
 @Serializable
 data class StatisticsDTO(
     val totalTime: TotalTime,
@@ -13,9 +14,8 @@ data class StatisticsDTO(
     val averageDayTime: AverageDayTime
 ) {
     companion object {
-        fun fromViewModel(viewModel: StatisticsViewModel): StatisticsDTO {
-            val totalTime = viewModel.getTotalTimeActivityTypes()
-
+        fun fromStore(): StatisticsDTO {
+            val totalTime: TotalTimeTaskTypes = StatisticsStore.totalTime
             return StatisticsDTO(
                 totalTime = TotalTime(
                     common = totalTime.Common.time.inWholeMinutes,
@@ -23,18 +23,18 @@ data class StatisticsDTO(
                     study = totalTime.Study.time.inWholeMinutes,
                     fitness = totalTime.Fitness.time.inWholeMinutes
                 ),
-                weekTime = viewModel.getWeekWorkTime().time.inWholeMinutes,
+                weekTime = StatisticsStore.weekTime.All.time.inWholeMinutes,
                 todayTime = TodayTime(
-                    planned = viewModel.getTodayPlannedTime().time.inWholeMinutes,
-                    completed = viewModel.getTodayCompletedTime().time.inWholeMinutes
+                    planned   = StatisticsStore.todayTime.Planned.time.inWholeMinutes,
+                    completed = StatisticsStore.todayTime.Completed.time.inWholeMinutes
                 ),
                 continuesSuccessDays = ContinuesSuccessDays(
-                    record = viewModel.getRecordContinuesSuccessDays().amount.toLong(),
-                    now = viewModel.getTodayContinuesSuccessDays().amount.toLong()
+                    record = StatisticsStore.calculator.getRecordContinuesSuccessDays().toLong(),
+                    now    = StatisticsStore.calculator.getTodayContinuesSuccessDays().toLong()
                 ),
                 averageDayTime = AverageDayTime(
-                    totalWorkMinutes = viewModel.getTotalWorkTime().time.inWholeMinutes,
-                    firstDay = viewModel.AverageDayTime.firstDay
+                    totalWorkMinutes = StatisticsStore.averageDayTime.All.time.inWholeMinutes,
+                    firstDay         = StatisticsStore.averageDayTime.firstDay
                 )
             )
         }

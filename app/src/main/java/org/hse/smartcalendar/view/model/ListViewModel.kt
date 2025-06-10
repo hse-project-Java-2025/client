@@ -157,6 +157,7 @@ class ListViewModel(statisticsManager: StatisticsManager) : AbstractListViewMode
         description: AudioDescription,
     ): DailyTask? {
         // TODO Надо написать отправку файла и обработку ответа.
+
         Thread.sleep(1000)
         val task: DailyTask = DailyTask(
             title = "TODO",
@@ -165,6 +166,10 @@ class ListViewModel(statisticsManager: StatisticsManager) : AbstractListViewMode
             end = LocalTime(0, 0),
             date = DailyTask.defaultDate
         )
+        val nowDate = this.getScheduleDate()
+        this.changeDailyTaskSchedule(task.getTaskDate())
+        this.addDailyTask(task)
+        this.changeDailyTaskSchedule(nowDate)
         return task
     }
 

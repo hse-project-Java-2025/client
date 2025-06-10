@@ -7,11 +7,6 @@ import org.hse.smartcalendar.network.StatisticsDTO
 import org.hse.smartcalendar.view.model.StatisticsViewModel
 
 class StatisticsRepository(private val api: StatisticsApiInterface): BaseRepository() {
-    suspend fun updateStatistics(viewModel: StatisticsViewModel): NetworkResponse<ResponseBody> {
-        return withIdRequest { id ->
-            api.updateUserStatistics(id, StatisticsDTO.fromViewModel(viewModel))
-        }
-    }
     suspend fun updateStatistics(statisticsRequest: StatisticsDTO): NetworkResponse<ResponseBody> {
         return withIdRequest { id ->
             api.updateUserStatistics(id, statisticsRequest)
