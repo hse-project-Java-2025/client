@@ -12,6 +12,9 @@ class TimeUtils {
         fun getCurrentDateTime(): LocalDateTime {
             return Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault());
         }
+        fun getCurrentTimezone(): TimeZone{
+            return TimeZone.currentSystemDefault()
+        }
 
         fun numberToWord(amount: Int, item: String): String {
             if (amount != 0) {

@@ -8,19 +8,24 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.workDataOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.minus
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.json.Json
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.TotalTimeTaskTypes
+import org.hse.smartcalendar.data.User
 import org.hse.smartcalendar.data.WorkManagerHolder
 import org.hse.smartcalendar.network.ApiClient
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.network.StatisticsDTO
 import org.hse.smartcalendar.repository.StatisticsRepository
+import org.hse.smartcalendar.utility.TimeUtils
 import org.hse.smartcalendar.view.model.state.AverageDayTimeVars
+import org.hse.smartcalendar.view.model.state.StatisticsCalculator
 import org.hse.smartcalendar.view.model.state.TodayTimeVars
 import org.hse.smartcalendar.view.model.state.WeekTime
-import org.hse.smartcalendar.view.model.state.StatisticsCalculator
 import org.hse.smartcalendar.work.StatisticsUploadWorker
 
 object StatisticsStore {
@@ -43,6 +48,32 @@ object StatisticsStore {
         calculator = StatisticsCalculator()
     }
     var uploader: () -> Unit = { uploadStatistics() }
+    private fun updateNextDay(oldDate: LocalDate){
+        val currentDate = TimeUtils.getCurrentDateTime().date
+        if (oldDate == currentDate){
+            return
+        }
+        val schedule = User.getSchedule()
+        val todayTasks = schedule
+            .getOrCreateDailySchedule(currentDate)
+            .getDailyTaskList()
+        val todayPlanned  = todayTasks.sumOf { it.getMinutesLength().toLong() }
+        val todayCompleted = todayTasks
+            .filter { it.isComplete() }
+            .sumOf { it.getMinutesLength().toLong() }
+        todayTime = TodayTimeVars(planned = todayPlanned, completed = todayCompleted)
+        var weekSum = 0L
+        for (offset in 0L..6L) {
+            val date = currentDate.minus(offset, DateTimeUnit.DAY)
+            val tasks = schedule
+                .getOrCreateDailySchedule(date)
+                .getDailyTaskList()
+            weekSum += tasks
+                .filter { it.isComplete() }
+                .sumOf { it.getMinutesLength().toLong() }
+        }
+        weekTime = WeekTime(weekSum)
+    }
     suspend fun init(): NetworkResponse<StatisticsDTO> = withContext(Dispatchers.IO) {
         when(val resp = repository.getStatistics()) {
             is NetworkResponse.Success -> {
@@ -52,6 +83,9 @@ object StatisticsStore {
                 todayTime = TodayTimeVars.fromTodayTimeDTO(d.todayTime)
                 weekTime = WeekTime(d.weekTime)
                 calculator.init(d)
+                val oldDate = d.jsonDate
+                    .toLocalDateTime(TimeUtils.getCurrentTimezone()).date
+                updateNextDay(oldDate)
                 resp
             }
             else -> resp

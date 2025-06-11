@@ -140,7 +140,7 @@ fun SafeProgressBox(
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        if (dividend() == 0L) {
+        if (divisor() == 0L) {
             Box(modifier = modifier.then(Modifier.size(100.dp)), contentAlignment = Alignment.Center) {
                 Text("No data")
             }

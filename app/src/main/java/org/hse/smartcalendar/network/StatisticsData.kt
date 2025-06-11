@@ -1,9 +1,14 @@
 package org.hse.smartcalendar.network
 
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Clock.System
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toInstant
 import kotlinx.serialization.Serializable
 import org.hse.smartcalendar.data.TotalTimeTaskTypes
 import org.hse.smartcalendar.store.StatisticsStore
+import org.hse.smartcalendar.utility.TimeUtils
 
 @Serializable
 data class StatisticsDTO(
@@ -11,7 +16,8 @@ data class StatisticsDTO(
     val weekTime: Long,
     val todayTime: TodayTime,
     val continuesSuccessDays: ContinuesSuccessDays,
-    val averageDayTime: AverageDayTime
+    val averageDayTime: AverageDayTime,
+    val jsonDate: Instant
 ) {
     companion object {
         fun fromStore(): StatisticsDTO {
@@ -35,7 +41,8 @@ data class StatisticsDTO(
                 averageDayTime = AverageDayTime(
                     totalWorkMinutes = StatisticsStore.averageDayTime.All.time.inWholeMinutes,
                     firstDay         = StatisticsStore.averageDayTime.firstDay
-                )
+                ),
+                jsonDate = System.now()
             )
         }
     }
