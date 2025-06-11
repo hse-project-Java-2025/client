@@ -6,13 +6,14 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
+import org.hse.smartcalendar.store.StatisticsStore
 import org.hse.smartcalendar.ui.screens.model.AchievementType
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.TimeUtils
 import org.hse.smartcalendar.utility.fromMinutesOfDay
 import org.hse.smartcalendar.utility.rememberNavigation
 import org.hse.smartcalendar.view.model.AbstractListViewModel
-import org.hse.smartcalendar.view.model.AbstractStatisticsViewModel
+import org.hse.smartcalendar.view.model.StatisticsViewModel
 import org.hse.smartcalendar.view.model.StatisticsManager
 import org.junit.Before
 import org.junit.Rule
@@ -27,6 +28,7 @@ class AchievementsScreenTest {
     val composeTestRule = createComposeRule()
     @Before
     fun initTasks(){
+        StatisticsStore.uploader={}
         firstTask = DailyTask(
             title = "first",
             id = UUID.randomUUID(),
@@ -60,7 +62,7 @@ class AchievementsScreenTest {
     }
     @Test
     fun achievementsShowsStreak() {
-        val statisticsViewModel = AbstractStatisticsViewModel()
+        val statisticsViewModel = StatisticsViewModel()
         val listViewModel = AbstractListViewModel(StatisticsManager(statisticsViewModel))
 //нужно потестить каждый элемент:Planning everything - без заданий 0,
 // с заданием 5ч 5/10, c 24ч 24 часа
@@ -81,7 +83,7 @@ class AchievementsScreenTest {
         assertAchievementData(AchievementType.PlanToday, "5/10")
         assertAchievementData(AchievementType.CommonSpend, "0/10")
         listViewModel.changeTaskCompletion(firstTask, true)
-        assert(statisticsViewModel.getTotalTimeActivityTypes().Common.toMinutes().toInt() == firstTask.getMinutesLength())
+        assert(statisticsViewModel.uiState.value.total.Common.toMinutes().toInt() == firstTask.getMinutesLength())
         composeTestRule.runOnIdle {}
         assertAchievementData(AchievementType.CommonSpend, "5/10")
         assertAchievementData(AchievementType.Streak, "1/5")

@@ -1,7 +1,7 @@
 package org.hse.smartcalendar.data
 
 import org.hse.smartcalendar.view.model.state.TimePeriod
-import org.hse.smartcalendar.view.model.AbstractStatisticsViewModel.Companion.getPercent
+import org.hse.smartcalendar.view.model.StatisticsViewModel.Companion.getPercent
 
 class TotalTimeTaskTypes(common: Long, work: Long, study: Long, fitness: Long){
     val All: TimePeriod = TimePeriod(work+study+common+fitness)
@@ -19,6 +19,14 @@ class TotalTimeTaskTypes(common: Long, work: Long, study: Long, fitness: Long){
         private  set
     var WorkPercent: Float = getPercent(work, totalMinutes)
         private  set
+    fun getPercentByType(type: DailyTaskType): Float {
+        return when (type) {
+            DailyTaskType.COMMON -> CommonPercent
+            DailyTaskType.FITNESS -> FitnessPercent
+            DailyTaskType.WORK -> WorkPercent
+            DailyTaskType.STUDIES -> StudyPercent
+        }
+    }
     fun completeTask(task: DailyTask, isComplete: Boolean){
         val taskMinutesLength = task.getMinutesLength().toLong()
         when(isComplete){
@@ -28,21 +36,18 @@ class TotalTimeTaskTypes(common: Long, work: Long, study: Long, fitness: Long){
             false -> totalMinutes-=taskMinutesLength
         }
         All.addMinutes(taskMinutesLength, isComplete)
-        when(task.getDailyTaskType()){
-            DailyTaskType.COMMON -> {Common.addMinutes(taskMinutesLength, isComplete)
-                CommonPercent=getPercent(Common.toMinutes(), totalMinutes)}
-            DailyTaskType.FITNESS -> {
-                Fitness.addMinutes(taskMinutesLength, isComplete)
-                FitnessPercent=getPercent(Fitness.toMinutes(), totalMinutes)
-            }
-            DailyTaskType.WORK -> {
-                Work.addMinutes(taskMinutesLength, isComplete)
-                WorkPercent=getPercent(Work.toMinutes(), totalMinutes)
-            }
-            DailyTaskType.STUDIES -> {
-                Study.addMinutes(taskMinutesLength, isComplete)
-                StudyPercent=getPercent(Study.toMinutes(), totalMinutes)
-            }
+        when (task.getDailyTaskType()) {
+            DailyTaskType.COMMON -> Common.addMinutes(taskMinutesLength, isComplete)
+            DailyTaskType.FITNESS -> Fitness.addMinutes(taskMinutesLength, isComplete)
+            DailyTaskType.WORK -> Work.addMinutes(taskMinutesLength, isComplete)
+            DailyTaskType.STUDIES -> Study.addMinutes(taskMinutesLength, isComplete)
         }
+        recalculatePercents()
+    }
+    private fun recalculatePercents() {
+        StudyPercent   = getPercent(Study.toMinutes(), totalMinutes)
+        CommonPercent  = getPercent(Common.toMinutes(), totalMinutes)
+        FitnessPercent = getPercent(Fitness.toMinutes(), totalMinutes)
+        WorkPercent    = getPercent(Work.toMinutes(), totalMinutes)
     }
 }

@@ -5,7 +5,7 @@ import org.hse.smartcalendar.data.DailyTask
 /**
  * Класс, передающий изменения ListVM и TaskEditVM в StatisticsVM
  */
-class StatisticsManager(private val viewModel: AbstractStatisticsViewModel){
+class StatisticsManager(private val viewModel: StatisticsViewModel){
     fun changeTaskCompletion(task: DailyTask, isCompleted: Boolean){
         viewModel.changeTaskCompletion(task, isCompleted)
     }

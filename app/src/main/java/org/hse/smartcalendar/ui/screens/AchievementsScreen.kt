@@ -17,6 +17,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,16 +43,16 @@ import org.hse.smartcalendar.ui.theme.Purple
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.Screens
-import org.hse.smartcalendar.view.model.AbstractStatisticsViewModel
+import org.hse.smartcalendar.view.model.StatisticsViewModel
 import org.hse.smartcalendar.view.model.ListViewModel
 import org.hse.smartcalendar.view.model.StatisticsManager
-import org.hse.smartcalendar.view.model.StatisticsViewModel
 import org.hse.smartcalendar.view.model.TaskEditViewModel
-
+import androidx.compose.runtime.getValue
 @Composable
 fun AchievementsScreen(navigation: Navigation,
                        openDrawer: (()->Unit)?=null,
-                       statisticsModel: AbstractStatisticsViewModel) {
+                       statisticsModel: StatisticsViewModel) {
+    val uiState by statisticsModel.uiState.collectAsState()
     val itemsData = AchievementType.entries.toTypedArray()
     Scaffold(
         topBar = { TopButton(openDrawer, navigation, "Achievements") }
@@ -61,10 +62,10 @@ fun AchievementsScreen(navigation: Navigation,
             .padding(paddingValues),
             content = {
                 items(itemsData.size) { index ->
-                        val parameterProvider = itemsData[index].parameterProvider
+                        val parameter = itemsData[index].parameterProvider(uiState)
                         AchievementCard(
                             itemsData[index],
-                            parameterProvider.invoke(statisticsModel)
+                            parameter
                         )
                 }
             }

@@ -41,6 +41,7 @@ import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailySchedule
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
+import org.hse.smartcalendar.network.ChatTaskResponse
 import org.hse.smartcalendar.ui.elements.AudioRecorderButton
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.fromMinutesOfDay
@@ -55,7 +56,7 @@ fun BottomSheet(
     isBottomSheetVisible: MutableState<Boolean>,
     sheetState: SheetState,
     onDismiss: () -> Unit,
-    onRecordStop: () -> DailyTask? = { null },
+    onRecordStop: () -> ChatTaskResponse? = { null },
     audioFile: MutableState<File?>,
     taskTitle: MutableState<String>,
     taskType: MutableState<DailyTaskType>,
@@ -180,13 +181,13 @@ fun BottomSheet(
                         onStop = {
                             val task = onRecordStop()
                             if (task != null) {
-                                isErrorInRecorder.value = false
-                                taskTitle.value = task.getDailyTaskTitle()
-                                taskDescription.value = task.getDailyTaskDescription()
-                                taskType.value = task.getDailyTaskType()
-                                startTime.value =
-                                    LocalTime.toMinutesOfDay(task.getDailyTaskStartTime())
-                                endTime.value = LocalTime.toMinutesOfDay(task.getDailyTaskEndTime())
+                                task.applyToUiStates(
+                                    taskTitle = taskTitle,
+                                    taskDescription = taskDescription,
+                                    taskType = taskType,
+                                    isErrorInRecorder = isErrorInRecorder,
+                                    startTime = startTime,
+                                    endTime = endTime)
                             } else {
                                 isErrorInRecorder.value = true
                             }

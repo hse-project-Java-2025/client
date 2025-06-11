@@ -33,8 +33,16 @@ object StatisticsStore {
         private set
     var weekTime by mutableStateOf(WeekTime(0))
         private set
-    val calculator = StatisticsCalculator()
-
+    var calculator = StatisticsCalculator()
+        private set
+    fun clear() {
+        totalTime = TotalTimeTaskTypes(0, 0, 0, 0)
+        averageDayTime = AverageDayTimeVars(firstDay = LocalDate(1970, 1, 1), totalWorkMinutes = 0)
+        todayTime = TodayTimeVars(0, 0)
+        weekTime = WeekTime(0)
+        calculator = StatisticsCalculator()
+    }
+    var uploader: () -> Unit = { uploadStatistics() }
     suspend fun init(): NetworkResponse<StatisticsDTO> = withContext(Dispatchers.IO) {
         when(val resp = repository.getStatistics()) {
             is NetworkResponse.Success -> {
@@ -58,11 +66,12 @@ object StatisticsStore {
         }
     }
 
-    fun createOrDeleteTask(task: DailyTask, allTasks: List<DailyTask>, isAdd: Boolean) {
-        if (task.isComplete().not() && !isAdd) return
-        if (task.belongsCurrentDay()) todayTime = todayTime.apply { Planned.plusMinutes(task.getMinutesLength(), isAdd) }
-        calculator.addOrDeleteTask(StatisticsCalculator.AddOrDeleteRequest(date = task.getTaskDate(), dateTasks = allTasks))
-        uploadStatistics()
+    fun createOrDeleteTask(task: DailyTask, dateTasks: List<DailyTask>, isAdd: Boolean) {
+        createOrDeleteTask(task, isAdd)
+        calculator.addOrDeleteTask(
+            StatisticsCalculator.AddOrDeleteRequest
+                (date = task.getTaskDate(), dateTasks = dateTasks))
+        uploader()
     }
 
     fun changeTaskCompletion(task: DailyTask, isComplete: Boolean, isUploadStats: Boolean=true) {
@@ -71,7 +80,7 @@ object StatisticsStore {
         totalTime = totalTime.apply { completeTask(task, isComplete) }
         averageDayTime = averageDayTime.apply { update(totalTime.totalMinutes) }
         calculator.changeTaskCompletion(task)
-        if (isUploadStats) {uploadStatistics()}
+        if (isUploadStats) {uploader()}
     }
     fun changeTask(task: DailyTask, newTask: DailyTask){
         if (task.isComplete()){
@@ -80,9 +89,9 @@ object StatisticsStore {
         }
         createOrDeleteTask(task, false)
         createOrDeleteTask(newTask, true)
-        uploadStatistics()
+        uploader()
     }
-    fun uploadStatistics() {
+    private fun uploadStatistics() {
         val workManager = WorkManagerHolder.getInstance()
         val statsDTO = StatisticsDTO.fromStore()
         val json = Json.encodeToString(StatisticsDTO.serializer(), statsDTO)
@@ -97,4 +106,5 @@ object StatisticsStore {
             workRequest
         )
     }
+
 }

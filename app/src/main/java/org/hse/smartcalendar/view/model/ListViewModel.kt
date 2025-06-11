@@ -7,13 +7,14 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.workDataOf
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
@@ -24,7 +25,10 @@ import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskAction
 import org.hse.smartcalendar.data.User
 import org.hse.smartcalendar.data.WorkManagerHolder
+import org.hse.smartcalendar.network.ApiClient
+import org.hse.smartcalendar.network.ChatTaskResponse
 import org.hse.smartcalendar.network.NetworkResponse
+import org.hse.smartcalendar.repository.AudioRepository
 import org.hse.smartcalendar.work.TaskApiWorker
 import java.io.File
 
@@ -40,7 +44,7 @@ open class AbstractListViewModel(val statisticsManager: StatisticsManager) : Vie
             .toLocalDateTime(TimeZone.currentSystemDefault()).date
     )
     val dailyTaskList: SnapshotStateList<DailyTask>  = mutableStateListOf()
-    private val user: User = User
+    protected val user: User = User
     init {
         loadDailyTasks()
     }
@@ -139,7 +143,7 @@ open class AbstractListViewModel(val statisticsManager: StatisticsManager) : Vie
 }
 class ListViewModel(statisticsManager: StatisticsManager) : AbstractListViewModel(statisticsManager) {
     private val workManager = WorkManagerHolder.getInstance()
-
+    private val audioRepo = AudioRepository(ApiClient.audioApiService)
     override fun scheduleTaskRequest(task: DailyTask, action: DailyTaskAction.Type) {
         val taskJson = Json.encodeToString(DailyTaskAction.serializer(), DailyTaskAction(task = task, type = action))
 
@@ -155,22 +159,20 @@ class ListViewModel(statisticsManager: StatisticsManager) : AbstractListViewMode
     fun sendAudio(
         audioFile: MutableState<File?>,
         description: AudioDescription,
-    ): DailyTask? {
-        // TODO Надо написать отправку файла и обработку ответа.
-
-        Thread.sleep(1000)
-        val task: DailyTask = DailyTask(
-            title = "TODO",
-            description = "TODO",
-            start = LocalTime(0, 0),
-            end = LocalTime(0, 0),
-            date = DailyTask.defaultDate
-        )
-        val nowDate = this.getScheduleDate()
-        this.changeDailyTaskSchedule(task.getTaskDate())
-        this.addDailyTask(task)
-        this.changeDailyTaskSchedule(nowDate)
-        return task
+    ): ChatTaskResponse? {
+        val file = audioFile.value
+        var response: ChatTaskResponse? = null
+        if (file!=null) {
+            viewModelScope.launch {
+                _actionResult.value = NetworkResponse.Loading
+                val result  = audioRepo.sendAudioGetResponse(file)
+                if (result is NetworkResponse.Success){
+                     response = result.data
+                }
+                _actionResult.value = result
+            }
+        }
+        return response
     }
 
     class NestedTask(val nestedTask: DailyTask) :

@@ -8,6 +8,7 @@ import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.utility.TimeUtils
 import java.util.UUID
+import androidx.compose.runtime.MutableState
 
 data class RegisterResponse (
     val id: Long? = null,
@@ -85,5 +86,32 @@ data class ChatTaskResponse(
             isComplete = complete == true,
         )
         return task
+    }
+    private fun <T> applyToState(
+        change: T?,
+        state: MutableState<T>
+    ){
+        if (change !=null){
+            state.value = change
+        }
+    }
+    fun applyToUiStates(
+        taskTitle: MutableState<String>,
+        taskDescription: MutableState<String>,
+        taskType: MutableState<DailyTaskType>,
+        startTime: MutableState<Int>,
+        endTime: MutableState<Int>,
+        isErrorInRecorder: MutableState<Boolean>
+    ) {
+        isErrorInRecorder.value = false
+
+        taskTitle.value = this.title
+        taskDescription.value = this.description
+        val newType =  type?.let { DailyTaskType.valueOf(it.uppercase()) }
+        applyToState(newType, taskType)
+        val newStart = start?.time?.toSecondOfDay()?.div(60)
+        applyToState(newStart, startTime)
+        val newEnd = start?.time?.toSecondOfDay()?.div(60)
+        applyToState(newEnd, endTime)
     }
 }
