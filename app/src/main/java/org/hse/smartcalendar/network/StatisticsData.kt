@@ -1,20 +1,27 @@
 package org.hse.smartcalendar.network
 
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Clock.System
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toInstant
 import kotlinx.serialization.Serializable
 import org.hse.smartcalendar.data.TotalTimeTaskTypes
-import org.hse.smartcalendar.view.model.StatisticsViewModel
+import org.hse.smartcalendar.store.StatisticsStore
+import org.hse.smartcalendar.utility.TimeUtils
+
 @Serializable
 data class StatisticsDTO(
     val totalTime: TotalTime,
     val weekTime: Long,
     val todayTime: TodayTime,
     val continuesSuccessDays: ContinuesSuccessDays,
-    val averageDayTime: AverageDayTime
+    val averageDayTime: AverageDayTime,
+    val jsonDate: Instant
 ) {
     companion object {
-        fun fromViewModel(viewModel: StatisticsViewModel): StatisticsDTO {
-            val totalTime = viewModel.getTotalTimeActivityTypes()
-
+        fun fromStore(): StatisticsDTO {
+            val totalTime: TotalTimeTaskTypes = StatisticsStore.totalTime
             return StatisticsDTO(
                 totalTime = TotalTime(
                     common = totalTime.Common.time.inWholeMinutes,
@@ -22,19 +29,20 @@ data class StatisticsDTO(
                     study = totalTime.Study.time.inWholeMinutes,
                     fitness = totalTime.Fitness.time.inWholeMinutes
                 ),
-                weekTime = viewModel.getWeekWorkTime().time.inWholeMinutes,
+                weekTime = StatisticsStore.weekTime.All.time.inWholeMinutes,
                 todayTime = TodayTime(
-                    planned = viewModel.getTodayPlannedTime().time.inWholeMinutes,
-                    completed = viewModel.getTodayCompletedTime().time.inWholeMinutes
+                    planned   = StatisticsStore.todayTime.Planned.time.inWholeMinutes,
+                    completed = StatisticsStore.todayTime.Completed.time.inWholeMinutes
                 ),
                 continuesSuccessDays = ContinuesSuccessDays(
-                    record = viewModel.getRecordContiniusSuccessDays().amount.toLong(),
-                    now = viewModel.getTodayContinusSuccessDays().amount.toLong()
+                    record = StatisticsStore.calculator.getRecordContinuesSuccessDays().toLong(),
+                    now    = StatisticsStore.calculator.getTodayContinuesSuccessDays().toLong()
                 ),
                 averageDayTime = AverageDayTime(
-                    totalWorkMinutes = viewModel.getTotalWorkTime().time.inWholeMinutes,
-                    totalDays = 7
-                )
+                    totalWorkMinutes = StatisticsStore.averageDayTime.All.time.inWholeMinutes,
+                    firstDay         = StatisticsStore.averageDayTime.firstDay
+                ),
+                jsonDate = System.now()
             )
         }
     }
@@ -68,5 +76,5 @@ data class ContinuesSuccessDays(
 @Serializable
 data class AverageDayTime(
     val totalWorkMinutes: Long,
-    val totalDays: Long
+    val firstDay: LocalDate
 )

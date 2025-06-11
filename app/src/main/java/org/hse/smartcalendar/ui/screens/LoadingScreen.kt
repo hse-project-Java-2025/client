@@ -22,9 +22,9 @@ import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.view.model.InitViewModel
 import org.hse.smartcalendar.view.model.StatisticsViewModel
-
+import org.hse.smartcalendar.view.model.ListViewModel
 @Composable
-fun LoadingScreen(navigation: Navigation, statisticsVM: StatisticsViewModel){
+fun LoadingScreen(navigation: Navigation, statisticsVM: StatisticsViewModel, listModel: ListViewModel){
     val initVM: InitViewModel = viewModel()//гарантирует 1 модель на Composable
     val initState by initVM.initResult.observeAsState()
     val statisticsState by statisticsVM.initResult.observeAsState()
@@ -59,6 +59,7 @@ fun LoadingScreen(navigation: Navigation, statisticsVM: StatisticsViewModel){
             initState is NetworkResponse.Success && statisticsState is NetworkResponse.Success-> {
                 LaunchedEffect(statisticsState) {
                     delay(1000)
+                    listModel.loadDailyTasks()
                     navigation.navigateToMainApp(Screens.CALENDAR.route)
                 }
             }

@@ -1,5 +1,6 @@
 package org.hse.smartcalendar.network
 
+import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -9,6 +10,8 @@ import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Multipart
+import retrofit2.http.Part
 import java.util.UUID
 
 interface AuthApiInterface {
@@ -72,4 +75,12 @@ interface StatisticsApiInterface {
 
     @GET("api/statistics/total-time-task-types")
     suspend fun getGlobalTaskTypeStatistics(): Response<TotalTime>
+}
+
+interface AudioApiInterface {
+    @Multipart
+    @POST("api/audio/process")
+    suspend fun processAudio(
+        @Part file: MultipartBody.Part
+    ): Response<List<ChatTaskResponse>>
 }

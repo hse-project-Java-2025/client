@@ -33,8 +33,9 @@ class TaskEditViewModel(
         isEmptyTitle: MutableState<Boolean>,
         isConflictInTimeField: MutableState<Boolean>,
         isNestedTask: MutableState<Boolean>,
-    ) {
-        editHandler(
+        reminderViewModel: ReminderViewModel
+    ): Boolean {
+        return editHandler(
             oldTask = task,
             newTask = changes,
             viewModel = listViewModel,
@@ -44,7 +45,8 @@ class TaskEditViewModel(
             statsUpdateOldToNewTask = { oldTask, newTask->
                     listViewModel.statisticsManager.updateDailyTask(oldTask=oldTask, newTask = newTask)
                 listViewModel.scheduleTaskRequest(newTask, DailyTaskAction.Type.EDIT)
-            }
+            },
+            reminderUpdate = {task ->reminderViewModel.scheduleReminder(task)}
         )
     }
 }

@@ -1,41 +1,37 @@
 package org.hse.smartcalendar.view.model
 
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
-import io.mockk.every
-import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
-import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.data.User
-import org.hse.smartcalendar.data.WorkManagerHolder
+import org.hse.smartcalendar.store.StatisticsStore
 import org.hse.smartcalendar.utility.TimeUtils
-import org.hse.smartcalendar.utility.fromMinutesOfDay
+import org.hse.smartcalendar.view.model.state.CalcState
 import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import java.util.UUID
 import kotlin.test.assertEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @OptIn(ExperimentalCoroutinesApi::class)
 class StatisticsTest {
     private val testDispatcher = StandardTestDispatcher()
-    private lateinit var statisticsViewModel: AbstractStatisticsViewModel
+    private lateinit var statisticsViewModel: StatisticsViewModel
     private lateinit var listViewModel: AbstractListViewModel
-    private lateinit var firstTask: DailyTask
-    private lateinit var secondTask: DailyTask
+    private lateinit var todayWorkTask: DailyTask
+    private lateinit var todayCommonTask: DailyTask
     private lateinit var tomorrowTask: DailyTask
     private lateinit var weekFitnessTask: DailyTask
+    private lateinit var yesterdayTask: DailyTask
 
     fun addTaskInDay(task: DailyTask){
         listViewModel.changeDailyTaskSchedule(task.getTaskDate())
@@ -52,89 +48,106 @@ class StatisticsTest {
         listViewModel.removeDailyTask(task)
         listViewModel.changeDailyTaskSchedule(TimeUtils.getCurrentDateTime().date)
     }
+    fun assertCalculatorState(calcState: CalcState){
+        Assertions.assertEquals(calcState.currentStreak, statisticsViewModel.uiState.value.calculable.continuesCurrent)
+        Assertions.assertEquals(calcState.maxStreak, statisticsViewModel.uiState.value.calculable.continuesTotal)
+        Assertions.assertEquals(calcState.types, statisticsViewModel.uiState.value.calculable.typesInDay)
+    }
+    fun setTasks(){
+        todayWorkTask = TaskProvider.TodayWorkTask.provide()
+        todayCommonTask = TaskProvider.TodayCommonTask.provide()
+        tomorrowTask = TaskProvider.TomorrowTask.provide()
+        weekFitnessTask = TaskProvider.WeekFitnessTask.provide()
+        yesterdayTask = TaskProvider.YesterdayTask.provide()
+    }
+    fun assertPercent(type: DailyTaskType, percent: Float){
+        assertEquals(
+            percent,
+            statisticsViewModel.uiState.value.total.getPercentByType(type),
+            absoluteTolerance = 0.1f)
+    }
     @BeforeAll
-    fun setUp(){
+    fun setUp(){//Global Init, ONE call before ALL tests
         Dispatchers.setMain(testDispatcher)
-        statisticsViewModel = AbstractStatisticsViewModel()
-        listViewModel = AbstractListViewModel(StatisticsManager(statisticsViewModel))
-        firstTask = DailyTask(
-            title = "first",
-            id = UUID.randomUUID(),
-            isComplete = false,
-            type = DailyTaskType.WORK,
-            creationTime = TimeUtils.Companion.getCurrentDateTime(),
-            description = "",
-            start = LocalTime.Companion.fromMinutesOfDay(10),
-            end = LocalTime.Companion.fromMinutesOfDay(30),
-            date = TimeUtils.Companion.getCurrentDateTime().date,
-        )
-        secondTask = DailyTask.fromTime(
-            start = LocalTime.Companion.fromMinutesOfDay(30),
-            end = LocalTime.Companion.fromMinutesOfDay(50),
-            date = TimeUtils.Companion.getCurrentDateTime().date)
-        tomorrowTask = DailyTask.fromTime(
-            start = LocalTime.Companion.fromMinutesOfDay(30),
-            end = LocalTime.Companion.fromMinutesOfDay(50),
-            date = TimeUtils.addDaysToNowDate(1)
-        )
-        weekFitnessTask = DailyTask.fromTimeAndType(
-            start = LocalTime.Companion.fromMinutesOfDay(30),
-            end = LocalTime.Companion.fromMinutesOfDay(50),
-            date = TimeUtils.addDaysToNowDate(-6),
-            type = DailyTaskType.FITNESS
-        )
+        StatisticsStore.uploader = {}
     }
 
-    @AfterAll
+    @AfterAll//Global Clear, ONE call before ALL tests
     fun tearDown() {
         Dispatchers.resetMain()
     }
+    @BeforeEach//Init, call before EACH test
+    fun init(){
+        statisticsViewModel = StatisticsViewModel()
+        listViewModel = AbstractListViewModel(StatisticsManager(statisticsViewModel))
+        setTasks()
+    }
+    @AfterEach//Clear, call after EACH test
+    fun clear(){
+        User.clearSchedule()
+        StatisticsStore.clear()
+    }
+    /**
+     * check state in BeforeAll in WithPreAddedTasks: Add 4 tasks
+     */
     @Nested
     inner class EmptyState {
         @Test
         fun addTaskTest(){
-            listViewModel.addDailyTask(firstTask)
+            listViewModel.addDailyTask(todayWorkTask)
             assertEquals<Long>(
-                firstTask.getMinutesLength().toLong(),
-                statisticsViewModel.getTodayPlannedTime().time.inWholeMinutes,
+                this@StatisticsTest.todayWorkTask.getMinutesLength().toLong(),
+                statisticsViewModel.uiState.value.today.Planned.time.inWholeMinutes,
             )
-            listViewModel.addDailyTask(secondTask)
+            listViewModel.addDailyTask(todayCommonTask)
             assertEquals<Long>(
-                (firstTask.getMinutesLength() + secondTask.getMinutesLength()).toLong(),
-                statisticsViewModel.getTodayPlannedTime().time.inWholeMinutes,
+                (todayWorkTask.getMinutesLength() + todayCommonTask.getMinutesLength()).toLong(),
+                statisticsViewModel.uiState.value.today.Planned.time.inWholeMinutes,
             )
             addTaskInDay(tomorrowTask)
             assertEquals<Long>(
-                (firstTask.getMinutesLength() + secondTask.getMinutesLength()).toLong(),
-                statisticsViewModel.getTodayPlannedTime().time.inWholeMinutes,
+                (todayWorkTask.getMinutesLength() + todayCommonTask.getMinutesLength()).toLong(),
+                statisticsViewModel.uiState.value.today.Planned.time.inWholeMinutes,
             )
             addTaskInDay(weekFitnessTask)
             assertEquals<Long>(
-                (firstTask.getMinutesLength() + secondTask.getMinutesLength()).toLong(),
-                statisticsViewModel.getTodayPlannedTime().time.inWholeMinutes,
+                (todayWorkTask.getMinutesLength() + todayCommonTask.getMinutesLength()).toLong(),
+                statisticsViewModel.uiState.value.today.Planned.time.inWholeMinutes,
             )
         }
+        @Test
+        fun calculatorAddTest(){
+            listViewModel.addDailyTask(todayWorkTask)
+            assertCalculatorState(CalcState(types = 1, currentStreak = 0, maxStreak = 0))
+            listViewModel.addDailyTask(todayCommonTask)
+            assertCalculatorState(CalcState(types = 2, currentStreak = 0, maxStreak = 0))
+            addTaskInDay(tomorrowTask)
+            assertCalculatorState(CalcState(types = 2, currentStreak = 0, maxStreak = 0))
+            addTaskInDay(weekFitnessTask)
+            assertCalculatorState(CalcState(types = 2, currentStreak = 0, maxStreak = 0))
+            listViewModel.removeDailyTask(todayCommonTask)
+            assertCalculatorState(CalcState(types = 1, currentStreak = 0, maxStreak = 0))
+        }
     }
+
+    /**
+     * до каждого теста добавлены 4 задания
+     */
     @Nested
     inner class WithPreAddedTasks{
         @BeforeEach
         fun addTasks(){
-            //User - синглтон
-            User.clearSchedule()
-            //нам нужен чистый listViewModel перед каждым тестом
-            statisticsViewModel = AbstractStatisticsViewModel()
-            listViewModel = AbstractListViewModel(StatisticsManager(statisticsViewModel))
-            listViewModel.addDailyTask(firstTask)
-            listViewModel.addDailyTask(secondTask)
+            listViewModel.addDailyTask(todayWorkTask)
+            listViewModel.addDailyTask(todayCommonTask)
             addTaskInDay(tomorrowTask)
             addTaskInDay(weekFitnessTask)
         }
         @Test
         fun deleteTaskTest(){
-            listViewModel.removeDailyTask(firstTask)
+            listViewModel.removeDailyTask(todayWorkTask)
             assertEquals<Long>(
-                (secondTask.getMinutesLength()).toLong(),
-                statisticsViewModel.getTodayPlannedTime().time.inWholeMinutes
+                (todayCommonTask.getMinutesLength()).toLong(),
+                statisticsViewModel.uiState.value.today.Planned.time.inWholeMinutes
             )
         }
         fun assertTaskTimeEquals(task: DailyTask, parameter: Long){
@@ -159,52 +172,52 @@ class StatisticsTest {
         }
         @Test
         fun completeTaskTest(){
-            listViewModel.changeTaskCompletion(firstTask, true)
+            listViewModel.changeTaskCompletion(todayWorkTask, true)
             assertTaskTimeEquals(
-                firstTask,
-                listOf(statisticsViewModel.getWeekWorkTime().time.inWholeMinutes,
-                    statisticsViewModel.getTodayCompletedTime().time.inWholeMinutes,
-                    statisticsViewModel.getTotalWorkTime().time.inWholeMinutes,
-                    statisticsViewModel.getTotalTimeActivityTypes().Work.time.inWholeMinutes)
+                todayWorkTask,
+                listOf(statisticsViewModel.uiState.value.week.All.time.inWholeMinutes,
+                    statisticsViewModel.uiState.value.today.Completed.time.inWholeMinutes,
+                    statisticsViewModel.uiState.value.total.All.time.inWholeMinutes,
+                    statisticsViewModel.uiState.value.total.Work.time.inWholeMinutes)
             )
             assertEquals(
                 100.0f,
-                statisticsViewModel.getTotalTimeActivityTypes().WorkPercent
+                statisticsViewModel.uiState.value.total.WorkPercent
             )
-            listViewModel.changeTaskCompletion(firstTask, true)
+            listViewModel.changeTaskCompletion(todayWorkTask, true)
             assertTaskTimeEquals(
-                firstTask,
-                listOf(statisticsViewModel.getWeekWorkTime().time.inWholeMinutes,
-                    statisticsViewModel.getTodayCompletedTime().time.inWholeMinutes,
-                    statisticsViewModel.getTotalWorkTime().time.inWholeMinutes,
-                    statisticsViewModel.getTotalTimeActivityTypes().Work.time.inWholeMinutes)
+                todayWorkTask,
+                listOf(statisticsViewModel.uiState.value.week.All.time.inWholeMinutes,
+                    statisticsViewModel.uiState.value.today.Completed.time.inWholeMinutes,
+                    statisticsViewModel.uiState.value.total.All.time.inWholeMinutes,
+                    statisticsViewModel.uiState.value.total.Work.time.inWholeMinutes)
             )
             assertEquals(
                 100.0f,
-                statisticsViewModel.getTotalTimeActivityTypes().WorkPercent
+                statisticsViewModel.uiState.value.total.WorkPercent
             )
-            listViewModel.changeTaskCompletion(secondTask, true)
+            listViewModel.changeTaskCompletion(todayCommonTask, true)
             assertTaskTimeEquals(
-                listOf(firstTask, secondTask),
-                listOf(statisticsViewModel.getWeekWorkTime().time.inWholeMinutes,
-                    statisticsViewModel.getTodayCompletedTime().time.inWholeMinutes,
-                    statisticsViewModel.getTotalWorkTime().time.inWholeMinutes)
-            )
-            assertTaskTimeEquals(
-                firstTask,
-                statisticsViewModel.getTotalTimeActivityTypes().Work.time.inWholeMinutes
+                listOf(todayWorkTask, todayCommonTask),
+                listOf(statisticsViewModel.uiState.value.week.All.time.inWholeMinutes,
+                    statisticsViewModel.uiState.value.today.Completed.time.inWholeMinutes,
+                    statisticsViewModel.uiState.value.total.All.time.inWholeMinutes)
             )
             assertTaskTimeEquals(
-                secondTask,
-                statisticsViewModel.getTotalTimeActivityTypes().Common.time.inWholeMinutes
+                todayWorkTask,
+                statisticsViewModel.uiState.value.total.Work.time.inWholeMinutes
             )
-            listViewModel.changeTaskCompletion(secondTask, false)
             assertTaskTimeEquals(
-                firstTask,
-                listOf(statisticsViewModel.getWeekWorkTime().time.inWholeMinutes,
-                    statisticsViewModel.getTodayCompletedTime().time.inWholeMinutes,
-                    statisticsViewModel.getTotalWorkTime().time.inWholeMinutes,
-                    statisticsViewModel.getTotalTimeActivityTypes().Work.time.inWholeMinutes)
+                todayCommonTask,
+                statisticsViewModel.uiState.value.total.Common.time.inWholeMinutes
+            )
+            listViewModel.changeTaskCompletion(todayCommonTask, false)
+            assertTaskTimeEquals(
+                todayWorkTask,
+                listOf(statisticsViewModel.uiState.value.week.All.time.inWholeMinutes,
+                    statisticsViewModel.uiState.value.today.Completed.time.inWholeMinutes,
+                    statisticsViewModel.uiState.value.total.All.time.inWholeMinutes,
+                    statisticsViewModel.uiState.value.total.Work.time.inWholeMinutes)
             )
         }
         @Test
@@ -212,27 +225,27 @@ class StatisticsTest {
             changeTaskInDay(tomorrowTask, true)
             assertTaskTimeEquals(
                 listOf(),
-                listOf(statisticsViewModel.getWeekWorkTime().time.inWholeMinutes,
-                    statisticsViewModel.getTodayCompletedTime().time.inWholeMinutes,
-                    statisticsViewModel.getTotalTimeActivityTypes().Work.time.inWholeMinutes)
+                listOf(statisticsViewModel.uiState.value.week.All.time.inWholeMinutes,
+                    statisticsViewModel.uiState.value.today.Completed.time.inWholeMinutes,
+                    statisticsViewModel.uiState.value.total.Work.time.inWholeMinutes)
             )
             assertTaskTimeEquals(
                 listOf(tomorrowTask),
-                listOf(statisticsViewModel.getTotalWorkTime().time.inWholeMinutes,
-                    statisticsViewModel.getTotalTimeActivityTypes().Common.time.inWholeMinutes)
+                listOf(statisticsViewModel.uiState.value.total.All.time.inWholeMinutes,
+                    statisticsViewModel.uiState.value.total.Common.time.inWholeMinutes)
             )
             changeTaskInDay(weekFitnessTask, true)
             assertTaskTimeEquals(
                 weekFitnessTask,
-                listOf(statisticsViewModel.getWeekWorkTime().time.inWholeMinutes,
-                    statisticsViewModel.getTotalTimeActivityTypes().Fitness.time.inWholeMinutes)
+                listOf(statisticsViewModel.uiState.value.week.All.time.inWholeMinutes,
+                    statisticsViewModel.uiState.value.total.Fitness.time.inWholeMinutes)
             )
             assertTaskTimeEquals(
                 listOf(tomorrowTask, weekFitnessTask),
-                listOf(statisticsViewModel.getTotalWorkTime().time.inWholeMinutes)
+                listOf(statisticsViewModel.uiState.value.total.All.time.inWholeMinutes)
             )
             assertEquals(50.0f,
-                statisticsViewModel.getTotalTimeActivityTypes().FitnessPercent)
+                statisticsViewModel.uiState.value.total.FitnessPercent)
         }
 
         /**
@@ -242,42 +255,73 @@ class StatisticsTest {
         fun integrityTest(){
             changeTaskInDay(tomorrowTask, true)
             changeTaskInDay(weekFitnessTask, true)
-            changeTaskInDay(firstTask, true)
+            changeTaskInDay(todayWorkTask, true)
             changeTaskInDay(weekFitnessTask, false)
             changeTaskInDay(weekFitnessTask, true)
             assertTaskTimeEquals(
-                listOf(weekFitnessTask, firstTask),
-                listOf(statisticsViewModel.getWeekWorkTime().time.inWholeMinutes)
+                listOf(weekFitnessTask, todayWorkTask),
+                listOf(statisticsViewModel.uiState.value.week.All.time.inWholeMinutes)
             )
             assertEquals(100.0f/3,
-                statisticsViewModel.getTotalTimeActivityTypes().FitnessPercent,
+                statisticsViewModel.uiState.value.total.FitnessPercent,
                 absoluteTolerance = 0.1f)
-            listViewModel.removeDailyTask(firstTask)
+            listViewModel.removeDailyTask(todayWorkTask)
             assertTaskTimeEquals(
                 listOf(),
-                listOf(statisticsViewModel.getTodayCompletedTime().time.inWholeMinutes)
+                listOf(statisticsViewModel.uiState.value.today.Completed.time.inWholeMinutes)
             )
             assertTaskTimeEquals(
                 listOf(weekFitnessTask),
-                listOf(statisticsViewModel.getWeekWorkTime().time.inWholeMinutes)
+                listOf(statisticsViewModel.uiState.value.week.All.time.inWholeMinutes)
             )
             assertTaskTimeEquals(
                 listOf(weekFitnessTask, tomorrowTask),
-                listOf(statisticsViewModel.getTotalWorkTime().time.inWholeMinutes)
+                listOf(statisticsViewModel.uiState.value.total.All.time.inWholeMinutes)
             )
             changeTaskInDay(tomorrowTask, false)
             assertTaskTimeEquals(
                 listOf(weekFitnessTask),
-                listOf(statisticsViewModel.getTotalWorkTime().time.inWholeMinutes)
+                listOf(statisticsViewModel.uiState.value.total.All.time.inWholeMinutes)
             )
             removeTaskInDay(tomorrowTask)
             assertTaskTimeEquals(
                 listOf(weekFitnessTask),
-                listOf(statisticsViewModel.getTotalWorkTime().time.inWholeMinutes)
+                listOf(statisticsViewModel.uiState.value.total.All.time.inWholeMinutes)
             )
-            assertEquals(100.0f,
-                statisticsViewModel.getTotalTimeActivityTypes().FitnessPercent,
-                absoluteTolerance = 0.1f)
+            assertPercent(DailyTaskType.FITNESS, 100.0f)
+        }
+        @Test
+        fun percentTest(){
+            changeTaskInDay(weekFitnessTask, true)
+            assertPercent(DailyTaskType.FITNESS, 100.0f)
+            changeTaskInDay(todayWorkTask, true)
+            assertPercent(DailyTaskType.WORK, 50.0f)
+            changeTaskInDay(todayWorkTask, false)
+            assertPercent(DailyTaskType.FITNESS, 100.0f)
+            changeTaskInDay(todayWorkTask, true)
+            assertPercent(DailyTaskType.FITNESS, 50.0f)
+            removeTaskInDay(todayWorkTask)
+            assertPercent(DailyTaskType.FITNESS, 100.0f)
+        }
+
+        /**
+         * check what listVM changes apply to statsCalculator
+         */
+        @Test
+        fun calculateTest(){
+            assertCalculatorState(CalcState(types = 2, currentStreak = 0, maxStreak = 0))
+            changeTaskInDay(tomorrowTask, true)
+            assertEquals(0, statisticsViewModel.uiState.value.calculable.continuesCurrent)
+            changeTaskInDay(todayWorkTask, true)
+            assertEquals(0, statisticsViewModel.uiState.value.calculable.continuesCurrent)
+            changeTaskInDay(todayCommonTask, true)
+            assertCalculatorState(CalcState(types = 2, currentStreak = 1, maxStreak = 1))
+            addTaskInDay(yesterdayTask)
+            changeTaskInDay(yesterdayTask, true)
+            assertCalculatorState(CalcState(types = 2, currentStreak = 2, maxStreak = 2))
+            removeTaskInDay(todayWorkTask)
+            removeTaskInDay(todayCommonTask)
+            assertCalculatorState(CalcState(types = 0, currentStreak = 0, maxStreak = 2))
         }
     }
 }

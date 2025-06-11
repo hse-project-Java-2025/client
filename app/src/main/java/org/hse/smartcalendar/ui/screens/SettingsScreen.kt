@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.hse.smartcalendar.AuthViewModel
-import org.hse.smartcalendar.notification.ReminderViewModel
+import org.hse.smartcalendar.view.model.ReminderViewModel
 import org.hse.smartcalendar.ui.elements.Password
 import org.hse.smartcalendar.ui.elements.Person
 import org.hse.smartcalendar.ui.elements.Reminder

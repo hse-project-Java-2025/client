@@ -1,4 +1,4 @@
-package org.hse.smartcalendar.notification
+package org.hse.smartcalendar.work
 
 import android.annotation.SuppressLint
 import android.app.PendingIntent

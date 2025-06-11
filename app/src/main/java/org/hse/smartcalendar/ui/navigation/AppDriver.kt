@@ -1,4 +1,4 @@
-package org.hse.smartcalendar.utility
+package org.hse.smartcalendar.ui.navigation
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -18,6 +18,9 @@ import org.hse.smartcalendar.ui.elements.Finance
 import org.hse.smartcalendar.ui.elements.Follow_the_signs
 import org.hse.smartcalendar.ui.elements.Medal
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
+import org.hse.smartcalendar.utility.Navigation
+import org.hse.smartcalendar.utility.Screens
+import org.hse.smartcalendar.utility.rememberNavigation
 
 
 @Composable

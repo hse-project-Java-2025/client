@@ -19,8 +19,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +43,8 @@ import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailySchedule
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
+import org.hse.smartcalendar.network.ChatTaskResponse
+import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.ui.elements.AudioRecorderButton
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.fromMinutesOfDay
@@ -55,7 +59,7 @@ fun BottomSheet(
     isBottomSheetVisible: MutableState<Boolean>,
     sheetState: SheetState,
     onDismiss: () -> Unit,
-    onRecordStop: () -> DailyTask? = { null },
+    onRecordStop: () -> ChatTaskResponse? = { null },
     audioFile: MutableState<File?>,
     taskTitle: MutableState<String>,
     taskType: MutableState<DailyTaskType>,
@@ -71,9 +75,13 @@ fun BottomSheet(
     val isNestedTask = rememberSaveable { mutableStateOf(false) }
     val fstFiledHasFormatError = rememberSaveable { mutableStateOf(false) }
     val sndFiledHasFormatError = rememberSaveable { mutableStateOf(false) }
-
+    val actionResult by viewModel.actionResult.observeAsState()
     val isErrorInRecorder = rememberSaveable { mutableStateOf(false) }
-
+    LaunchedEffect(isBottomSheetVisible.value) {
+        if (isBottomSheetVisible.value){
+            isErrorInRecorder.value = false
+        }
+    }
     if (isBottomSheetVisible.value) {
         ModalBottomSheet(
             onDismissRequest = {
@@ -154,9 +162,14 @@ fun BottomSheet(
 
                 Spacer(modifier = Modifier.padding(12.dp))
                 Box(Modifier.align(Alignment.CenterHorizontally)) {
+                    val errorMsg = when (actionResult) {
+                        is NetworkResponse.Error -> (actionResult as NetworkResponse.Error).message
+                        is NetworkResponse.NetworkError -> (actionResult as NetworkResponse.NetworkError).exceptionMessage
+                        else -> "Unknown error"
+                    }
                     if (isErrorInRecorder.value) {
                         Text(
-                            text = "Error in Audio",
+                            text = "Error in Audio:$errorMsg",
                             color = MaterialTheme.colorScheme.error,
                             fontSize = 12.sp,
                             modifier = Modifier.padding(top = 4.dp)
@@ -180,13 +193,13 @@ fun BottomSheet(
                         onStop = {
                             val task = onRecordStop()
                             if (task != null) {
-                                isErrorInRecorder.value = false
-                                taskTitle.value = task.getDailyTaskTitle()
-                                taskDescription.value = task.getDailyTaskDescription()
-                                taskType.value = task.getDailyTaskType()
-                                startTime.value =
-                                    LocalTime.toMinutesOfDay(task.getDailyTaskStartTime())
-                                endTime.value = LocalTime.toMinutesOfDay(task.getDailyTaskEndTime())
+                                task.applyToUiStates(
+                                    taskTitle = taskTitle,
+                                    taskDescription = taskDescription,
+                                    taskType = taskType,
+                                    isErrorInRecorder = isErrorInRecorder,
+                                    startTime = startTime,
+                                    endTime = endTime)
                             } else {
                                 isErrorInRecorder.value = true
                             }

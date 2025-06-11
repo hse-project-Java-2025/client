@@ -25,13 +25,17 @@ import org.hse.smartcalendar.ui.elements.ChartModel
 import org.hse.smartcalendar.ui.elements.CircleColored
 import org.hse.smartcalendar.ui.navigation.TopButton
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
+import androidx.compose.runtime.collectAsState
 import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.rememberNavigation
-import org.hse.smartcalendar.view.model.AbstractStatisticsViewModel.Companion.toPercent
+import org.hse.smartcalendar.view.model.StatisticsViewModel.Companion.toPercent
 import org.hse.smartcalendar.view.model.StatisticsViewModel
+import androidx.compose.runtime.getValue
+import org.hse.smartcalendar.view.model.state.DaysAmount
 
 @Composable
 fun StatisticsScreen(navigation: Navigation, openMenu: () -> Unit, statisticsModel: StatisticsViewModel) {
+    val uiState by statisticsModel.uiState.collectAsState()
     fun safeDelete(dividend: Long, divisor: Long): Float {
         return if (divisor == 0L || dividend == 0L) 0f else dividend.toFloat() / divisor
     }
@@ -47,22 +51,22 @@ fun StatisticsScreen(navigation: Navigation, openMenu: () -> Unit, statisticsMod
         ) {
             Row {
                 SafeProgressBox(
-                    dividend = statisticsModel.getTodayCompletedTime().time.inWholeMinutes,
-                    divisor = statisticsModel.getTodayPlannedTime().time.inWholeMinutes,
+                    dividend = {uiState.today.Completed.time.inWholeMinutes},
+                    divisor = {uiState.today.Planned.time.inWholeMinutes},
                     label = "Completed/Planned",
                     color = Color.Blue,
                     modifier = Modifier.weight(1f / 3f)
                 )
                 SafeProgressBox(
-                    dividend = statisticsModel.getTodayCompletedTime().time.inWholeMinutes,
-                    divisor = statisticsModel.getAverageDailyTime().time.inWholeMinutes,
+                    dividend = {uiState.today.Completed.time.inWholeMinutes},
+                    divisor = {uiState.averageDay.All.time.inWholeMinutes},
                     label = "Completed/Average",
                     color = Color.Green,
                     modifier = Modifier.weight(1f / 3f)
                 )
                 SafeProgressBox(
-                    dividend = statisticsModel.getTodayContinusSuccessDays().amount.toLong(),
-                    divisor = statisticsModel.getRecordContiniusSuccessDays().amount.toLong(),
+                    dividend = {uiState.calculable.continuesCurrent.toLong()},
+                    divisor = {uiState.calculable.continuesTotal.toLong()},
                     label = "Days in a row, when completed all the tasks",
                     color = Color.Red,
                     modifier = Modifier.weight(1f / 3f)
@@ -72,43 +76,43 @@ fun StatisticsScreen(navigation: Navigation, openMenu: () -> Unit, statisticsMod
                 Row {
                     Box(modifier = Modifier.weight(0.5f), contentAlignment = Alignment.Center){
                         Column {
-                            Text("Average work time:")
+                            Text("Average activity time:")
                             Text("Today planned work time:")
-                            Text("Total work time:")
+                            Text("Total activity time:")
                             Text("Maximum days in a row when all tasks are completed:")
                         }
                     }
                     Box(modifier = Modifier.weight(0.5f)){
                         Column {
-                            Text(statisticsModel.getAverageDailyTime().toFullString())
-                            Text(statisticsModel.getTodayPlannedTime().toFullString())
-                            Text(statisticsModel.getTotalWorkTime().toPrettyString())
-                            Text(statisticsModel.getRecordContiniusSuccessDays().toPrettyString())
+                            Text(uiState.averageDay.All.toFullString())
+                            Text(uiState.today.Planned.toFullString())
+                            Text(uiState.total.All.toPrettyString())
+                            Text(DaysAmount(uiState.calculable.continuesTotal).toPrettyString())
                         }
                     }
                 }
             }
-            ActivityTypesDataDisplay(typesModel = statisticsModel.getTotalTimeActivityTypes(),
+            ActivityTypesDataDisplay(typesModel = {uiState.total},
                 columnHeight = 8.dp);
         }
     }
 }
 @Composable
 fun ActivityTypesDataDisplay(modifier: Modifier=Modifier,
-                             typesModel: TotalTimeTaskTypes,
+                             typesModel: ()->TotalTimeTaskTypes,
                              columnHeight: Dp
 ){
     val charts = listOf(
-        ChartModel(value = typesModel.StudyPercent, color = DailyTaskType.STUDIES.color),
-        ChartModel(value = typesModel.FitnessPercent, color = DailyTaskType.FITNESS.color),
-        ChartModel(value = typesModel.CommonPercent, color = DailyTaskType.COMMON.color),
-        ChartModel(value = typesModel.WorkPercent, color = DailyTaskType.WORK.color),
+        ChartModel(value = typesModel().StudyPercent, color = DailyTaskType.STUDIES.color),
+        ChartModel(value = typesModel().FitnessPercent, color = DailyTaskType.FITNESS.color),
+        ChartModel(value = typesModel().CommonPercent, color = DailyTaskType.COMMON.color),
+        ChartModel(value = typesModel().WorkPercent, color = DailyTaskType.WORK.color),
     )
-    val tableData = mapOf("Work" to Pair(typesModel.WorkPercent, DailyTaskType.WORK.color),
+    val tableData = mapOf("Work" to Pair(typesModel().WorkPercent, DailyTaskType.WORK.color),
         "Study" to
-                Pair(typesModel.StudyPercent, DailyTaskType.STUDIES.color),
-        "Fitness" to Pair(typesModel.FitnessPercent, DailyTaskType.FITNESS.color),
-        "Common" to Pair(typesModel.CommonPercent, DailyTaskType.COMMON.color))
+                Pair(typesModel().StudyPercent, DailyTaskType.STUDIES.color),
+        "Fitness" to Pair(typesModel().FitnessPercent, DailyTaskType.FITNESS.color),
+        "Common" to Pair(typesModel().CommonPercent, DailyTaskType.COMMON.color))
     Column(verticalArrangement = Arrangement.Center) {
         ChartCirclePie(modifier.align(Alignment.CenterHorizontally), charts)
         tableData.forEach {
@@ -129,19 +133,19 @@ fun ActivityTypesDataDisplay(modifier: Modifier=Modifier,
 }
 @Composable
 fun SafeProgressBox(
-    dividend: Long,
-    divisor: Long,
+    dividend: ()->Long,
+    divisor: ()->Long,
     label: String,
     color: Color,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        if (dividend == 0L) {
+        if (divisor() == 0L) {
             Box(modifier = modifier.then(Modifier.size(100.dp)), contentAlignment = Alignment.Center) {
                 Text("No data")
             }
         } else {
-            fun progress(): Float = dividend.toFloat() / divisor
+            fun progress(): Float = dividend().toFloat() / divisor()
             ProgressCircleWithText(
                 progress = { progress() },
                 text = label,

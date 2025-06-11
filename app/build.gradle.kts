@@ -46,6 +46,7 @@ android {
 
 dependencies {
     testImplementation(libs.mockk)
+    testImplementation(libs.jupiter.junit.jupiter)
     androidTestImplementation(libs.ui.test.junit4)
     debugImplementation(libs.ui.test.manifest)
     implementation(libs.androidx.lifecycle.process)

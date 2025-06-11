@@ -17,12 +17,14 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -33,6 +35,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import org.hse.smartcalendar.R
 import org.hse.smartcalendar.ui.navigation.App
 import org.hse.smartcalendar.ui.navigation.TopButton
+import org.hse.smartcalendar.ui.screens.model.AchievementType
 import org.hse.smartcalendar.ui.theme.DarkBlue
 import org.hse.smartcalendar.ui.theme.DarkRed
 import org.hse.smartcalendar.ui.theme.Graphite
@@ -40,60 +43,17 @@ import org.hse.smartcalendar.ui.theme.Purple
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.Screens
+import org.hse.smartcalendar.view.model.StatisticsViewModel
 import org.hse.smartcalendar.view.model.ListViewModel
 import org.hse.smartcalendar.view.model.StatisticsManager
-import org.hse.smartcalendar.view.model.StatisticsViewModel
 import org.hse.smartcalendar.view.model.TaskEditViewModel
-import kotlin.time.DurationUnit
-
+import androidx.compose.runtime.getValue
 @Composable
 fun AchievementsScreen(navigation: Navigation,
                        openDrawer: (()->Unit)?=null,
                        statisticsModel: StatisticsViewModel) {
-    val fire = AchievementData(
-        "Eternal Flame",
-        R.drawable.fire,
-        { i -> "Reach a $i day streak" },
-        statisticsModel.getRecordContiniusSuccessDays().amount.toLong(),
-        listOf(5, 10, 20, 50, 100)
-    )
-    val plan = AchievementData(
-        "Planning everything",
-        R.drawable.writing_hand,
-        { i -> "Plan $i hours of your time today" },
-        statisticsModel.getTodayPlannedTime().toMinutes() / 60,
-        listOf(5, 10, 20, 24)
-    )
-    val common = AchievementData(
-        "Types are boring",
-        R.drawable.yawning_face,
-        { i -> "Spend $i hours with common tasks" },
-        statisticsModel.getTotalTimeActivityTypes().Common.time.toLong(DurationUnit.HOURS),
-        listOf(10, 20, 50, 100, 1000)
-    )
-    val taskByTask = AchievementData(
-        "Hour by Hour",
-        R.drawable.tasks_complete,
-        { i -> "Work a total of $i hours" },
-        statisticsModel.getTotalWorkTime().toMinutes()/60,
-        listOf(10, 20, 50, 100, 1000)
-    )
-    val automatic = AchievementData(
-        "Mechanical Focus",
-        R.drawable.robot,
-        { i -> "Work a total of $i hours last week" },
-        statisticsModel.getWeekWorkTime().toMinutes()/60/7,
-        listOf(4, 6, 8, 10)
-    )
-    val totallyBalanced = AchievementData(
-        "Totally balanced",
-        R.drawable.balance_scale,
-        { i -> "Have $i types of task in day" },
-        statisticsModel.getTypesInDay(),
-        listOf(4)
-    )
-    val itemsData =
-        listOf(fire, plan, common, taskByTask, automatic, totallyBalanced)
+    val uiState by statisticsModel.uiState.collectAsState()
+    val itemsData = AchievementType.entries.toTypedArray()
     Scaffold(
         topBar = { TopButton(openDrawer, navigation, "Achievements") }
     ) {paddingValues->
@@ -102,7 +62,11 @@ fun AchievementsScreen(navigation: Navigation,
             .padding(paddingValues),
             content = {
                 items(itemsData.size) { index ->
-                    AchievementCard(itemsData[index])
+                        val parameter = itemsData[index].parameterProvider(uiState)
+                        AchievementCard(
+                            itemsData[index],
+                            parameter
+                        )
                 }
             }
         )
@@ -111,23 +75,25 @@ fun AchievementsScreen(navigation: Navigation,
 }
 
 @Composable
-fun AchievementCard(data: AchievementData) {
+fun AchievementCard(data: AchievementType,
+                    parameter: Long) {
     val colors: List<Color> = listOf(colorResource(R.color.bronze), Color.LightGray, Color.Yellow, colorResource(R.color.emerald), Color.Cyan, Color.Cyan)
     val backColors: List<Color> = listOf(DarkBlue, Graphite, Purple, Color.DarkGray, DarkRed, DarkRed)
     var level = 0
     var description = data.description
     val lastLevel = data.levels.takeLast(1)[0]
-    if (lastLevel <= data.parameter) {
+    if (lastLevel <= parameter) {
         description = { long -> "You have max level, you achieve:" + data.description(lastLevel) }
         level = data.levels.size-1
     } else {
-        while (data.levels[level] <= data.parameter) {
+        while (data.levels[level] <= parameter) {
             level++
         }
     }
     Row(
         Modifier
             .padding(32.dp)
+            .testTag(data.testTag)
     ) {
         Box(modifier = Modifier.weight(0.3f)
             .wrapContentSize(align = Alignment.Center)
@@ -165,31 +131,26 @@ fun AchievementCard(data: AchievementData) {
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
-                    data.parameter.toString() + "/" + data.levels[level].toString(),
+                    parameter.toString() + "/" + data.levels[level].toString(),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Light
                 )
 
             }
             LinearProgressIndicator(
-                progress = { data.parameter.toFloat() / data.levels[level] },
+                progress = {parameter.toFloat() / data.levels[level] },
                 color = Color.Yellow,
                 trackColor = Color.LightGray,
                 modifier = Modifier
                     .padding(8.dp)
                     .align(Alignment.Start)
+                    .testTag("${data.testTag}_progress")
             )
             Text(description(data.levels.get(level)))
         }
     }
 }
 
-data class AchievementData(
-    val title: String,
-    val iconId: Int, val description: (Long) -> String,
-    val parameter: Long,
-    val levels: List<Long>
-)
 
 @Preview
 @Composable
@@ -213,13 +174,8 @@ fun AchievementsScreenPreview() {
 fun AchievementElementPreview() {
     SmartCalendarTheme {
         AchievementCard(
-            AchievementData(
-                title = "Eternal Flame",
-                iconId = R.drawable.fire,
-                description = { i -> "Reach a $i day streak" },
-                parameter = 5,
-                levels = listOf(5, 10, 20, 50, 100)
-            )
+            AchievementType.Streak,
+            parameter = 5
         )
     }
 }

@@ -19,8 +19,8 @@ import kotlinx.coroutines.launch
 import org.hse.smartcalendar.AuthScreen
 import org.hse.smartcalendar.AuthType
 import org.hse.smartcalendar.AuthViewModel
-import org.hse.smartcalendar.notification.ReminderViewModel
-import org.hse.smartcalendar.notification.ReminderViewModelFactory
+import org.hse.smartcalendar.view.model.ReminderViewModel
+import org.hse.smartcalendar.view.model.ReminderViewModelFactory
 import org.hse.smartcalendar.ui.screens.AchievementsScreen
 import org.hse.smartcalendar.ui.screens.ChangeLogin
 import org.hse.smartcalendar.ui.screens.ChangePassword
@@ -30,12 +30,10 @@ import org.hse.smartcalendar.ui.screens.SettingsScreen
 import org.hse.smartcalendar.ui.screens.StatisticsScreen
 import org.hse.smartcalendar.ui.task.DailyTasksList
 import org.hse.smartcalendar.ui.task.TaskEditWindow
-import org.hse.smartcalendar.utility.AppDrawer
 import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.utility.rememberNavigation
 import org.hse.smartcalendar.view.model.ListViewModel
-import org.hse.smartcalendar.view.model.SettingsViewModel
 import org.hse.smartcalendar.view.model.StatisticsViewModel
 import org.hse.smartcalendar.view.model.TaskEditViewModel
 
@@ -82,7 +80,6 @@ fun App(
 @Composable
 fun NestedNavigator(navigation: Navigation, authModel: AuthViewModel,openDrawer: ()-> Unit,
                     statisticsModel: StatisticsViewModel, listModel: ListViewModel, editModel: TaskEditViewModel){
-    var settingsViewModel: SettingsViewModel = viewModel()
     val reminderModel: ReminderViewModel = viewModel(factory = ReminderViewModelFactory(
         LocalContext.current.applicationContext as Application
     ))
@@ -105,7 +102,7 @@ fun NestedNavigator(navigation: Navigation, authModel: AuthViewModel,openDrawer:
                 AuthScreen(navigation, authModel, AuthType.Login)
             }
             composable(Screens.LOADING.route) {
-                LoadingScreen(navigation, statisticsModel)
+                LoadingScreen(navigation, statisticsModel, listModel)
             }
         }
 
@@ -143,12 +140,14 @@ fun NestedNavigator(navigation: Navigation, authModel: AuthViewModel,openDrawer:
             }
             composable(Screens.EDIT_TASK.route) {
                 TaskEditWindow(
-                    onSave = {},
+                    onSave = {task->reminderModel.scheduleReminder(task)},
                     onDelete = { task ->
                         listModel.removeDailyTask(task)
-
+                        reminderModel.cancelReminder(task)
                     }, onCancel = {},
-                    taskEditViewModel = editModel, navController = navigation.navController
+                    taskEditViewModel = editModel,
+                    reminderModel = reminderModel,
+                    navController = navigation.navController
                 )
             }
         }

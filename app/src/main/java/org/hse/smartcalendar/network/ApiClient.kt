@@ -1,10 +1,13 @@
 package org.hse.smartcalendar.network
 
 import DailyTaskTypeAdapter
+import InstantTimeAdapter
 import LocalDateAdapter
 import LocalDateTimeAdapter
 import LocalTimeAdapter
+import OffsetDateTimeAdapter
 import com.google.gson.GsonBuilder
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalTime
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -13,6 +16,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import org.hse.smartcalendar.data.DailyTaskType
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.time.OffsetDateTime
 
 object ApiClient {
     private const val SERVER_BASE_URL = "http://10.0.2.2:8080/"
@@ -26,6 +30,8 @@ object ApiClient {
         .registerTypeAdapter(LocalTime::class.java, LocalTimeAdapter())
         .registerTypeAdapter(kotlinx.datetime.LocalDateTime::class.java, LocalDateTimeAdapter())
         .registerTypeAdapter(DailyTaskType::class.java, DailyTaskTypeAdapter())
+        .registerTypeAdapter(OffsetDateTime::class.java, OffsetDateTimeAdapter())
+        .registerTypeAdapter(Instant::class.java, InstantTimeAdapter())
         .create()
     private val retrofit = Retrofit.Builder()
             .baseUrl(SERVER_BASE_URL)
@@ -40,6 +46,9 @@ object ApiClient {
     }
     val statisticsApiService: StatisticsApiInterface by lazy {
         retrofit.create(StatisticsApiInterface::class.java)
+    }
+    val audioApiService : AudioApiInterface by lazy {
+        retrofit.create(AudioApiInterface::class.java)
     }
 }
 class AuthInterceptor(private val tokenProvider: () -> String?) : Interceptor {

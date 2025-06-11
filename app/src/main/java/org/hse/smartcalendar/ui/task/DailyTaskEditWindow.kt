@@ -1,6 +1,7 @@
 package org.hse.smartcalendar.ui.task
 
 import android.annotation.SuppressLint
+import android.app.Application
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,6 +30,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.wear.compose.material3.Text
 import kotlinx.datetime.LocalTime
@@ -37,6 +39,8 @@ import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.utility.fromMinutesOfDay
 import org.hse.smartcalendar.utility.toMinutesOfDay
 import org.hse.smartcalendar.view.model.ListViewModel
+import org.hse.smartcalendar.view.model.ReminderViewModel
+import org.hse.smartcalendar.view.model.ReminderViewModelFactory
 import org.hse.smartcalendar.view.model.StatisticsManager
 import org.hse.smartcalendar.view.model.StatisticsViewModel
 import org.hse.smartcalendar.view.model.TaskEditViewModel
@@ -45,10 +49,11 @@ import org.hse.smartcalendar.view.model.TaskEditViewModel
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun TaskEditWindow(
-    onSave: () -> Unit,
+    onSave: (DailyTask) -> Unit,
     onCancel: () -> Unit,
     onDelete: (DailyTask) -> Unit,
     taskEditViewModel: TaskEditViewModel,
+    reminderModel: ReminderViewModel,
     navController: NavController
 ) {
     val taskState = taskEditViewModel.getTask()
@@ -78,12 +83,12 @@ fun TaskEditWindow(
                     )
                     taskEditViewModel.changes.setDailyTaskEndTime(LocalTime.fromMinutesOfDay(endTime.intValue))
                     taskEditViewModel.changes.setDailyTaskType(taskType.value)
-                    taskEditViewModel.updateInnerTask(
+                    val result = taskEditViewModel.updateInnerTask(
                         isEmptyTitle,
                         isConflictInTimeField,
-                        isNestedTask
+                        isNestedTask,
+                        reminderModel
                     )
-                    onSave()
                     if (!isEmptyTitle.value && !isConflictInTimeField.value && !isNestedTask.value) {
                         navController.navigate(Screens.CALENDAR.route)
                     }
@@ -168,6 +173,9 @@ fun TaskEditWindow(
 @Preview
 @Composable
 fun TaskEditWindowPreview() {
+    val reminderModel: ReminderViewModel = viewModel(factory = ReminderViewModelFactory(
+        LocalContext.current.applicationContext as Application
+    ))
     TaskEditWindow(
         onSave = { },
         onCancel = { },
@@ -175,6 +183,7 @@ fun TaskEditWindowPreview() {
         taskEditViewModel = TaskEditViewModel(
             listViewModel = ListViewModel(StatisticsManager(StatisticsViewModel()))
         ),
+        reminderModel = reminderModel,
         navController = NavController(
             LocalContext.current
         )

@@ -51,14 +51,6 @@ fun AuthScreen(navigation: Navigation, viewModel: AuthViewModel, authType:AuthTy
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(
-            onClick = {
-                navigation.navigateToMainApp(Screens.CALENDAR.route)
-                      },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Calendar")
-        }
         TextField(
             value = username,
             onValueChange = { username = it },
@@ -106,7 +98,7 @@ fun AuthScreen(navigation: Navigation, viewModel: AuthViewModel, authType:AuthTy
                 CircularProgressIndicator()
             }
             is NetworkResponse.Success -> {
-                Text("Login successful! Token: ${state.data.token}")
+                Text("Login successful!")
                 navigation.navigateTo(Screens.LOADING.route)
             }
             is NetworkResponse.Error -> {

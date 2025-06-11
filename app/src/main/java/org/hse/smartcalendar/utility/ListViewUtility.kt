@@ -11,8 +11,9 @@ fun editHandler(
     isEmptyTitle: MutableState<Boolean>,
     isConflictInTimeField: MutableState<Boolean>,
     isNestedTask: MutableState<Boolean>,
-    statsUpdateOldToNewTask: (DailyTask, DailyTask)-> Unit
-) {
+    statsUpdateOldToNewTask: (DailyTask, DailyTask)-> Unit,
+    reminderUpdate: (DailyTask)->Unit
+): Boolean {
     isEmptyTitle.value = false
     isNestedTask.value = false
     isConflictInTimeField.value = false
@@ -24,5 +25,8 @@ fun editHandler(
     if (!isEmptyTitle.value && !isConflictInTimeField.value && !isNestedTask.value) {
         oldTask.updateDailyTask(newTask)
         statsUpdateOldToNewTask(oldTask, newTask)
+        reminderUpdate(newTask)
+        return true
     }
+    return false
 }
