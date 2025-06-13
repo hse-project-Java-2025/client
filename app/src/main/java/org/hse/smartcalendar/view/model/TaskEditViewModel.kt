@@ -35,6 +35,7 @@ class TaskEditViewModel(
         isNestedTask: MutableState<Boolean>,
         reminderViewModel: ReminderViewModel
     ): Boolean {
+        changes.setDate(listViewModel.getScheduleDate())
         return editHandler(
             oldTask = task,
             newTask = changes,

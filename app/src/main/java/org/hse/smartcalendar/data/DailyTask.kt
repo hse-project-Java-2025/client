@@ -64,6 +64,9 @@ data class DailyTask (
     fun setCompletion(status: Boolean) {
         isComplete = status
     }
+    fun setDate(date: LocalDate) {
+        this.date = date
+    }
 
     fun getDailyTaskEndTime() : LocalTime {
         return end

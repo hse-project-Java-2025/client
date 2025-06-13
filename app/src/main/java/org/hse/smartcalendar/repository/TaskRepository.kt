@@ -50,6 +50,7 @@ class TaskRepository(private val api: TaskApiInterface): BaseRepository() {
         try {
             return when (val response = withIdRequest { id -> api.getDailyTasks(id) }) {
                 is NetworkResponse.Success -> {
+                    User.clearSchedule()
                     val listTask: List<DailyTask> = response.data.map { it.toTask() }
                     val map = listTask.groupBy { it.getTaskDate() }
                         .mapValues { (_, taskList) ->

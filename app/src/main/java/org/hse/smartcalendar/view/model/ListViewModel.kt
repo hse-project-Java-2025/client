@@ -46,9 +46,6 @@ open class AbstractListViewModel(val statisticsManager: StatisticsManager) : Vie
     )
     val dailyTaskList: SnapshotStateList<DailyTask>  = mutableStateListOf()
     protected val user: User = User
-    init {
-        loadDailyTasks()
-    }
     fun loadDailyTasks(){
         dailyTaskSchedule = user.getSchedule().getOrCreateDailySchedule(dailyScheduleDate.value)
         dailyTaskList.addAll(dailyTaskSchedule.getDailyTaskList())
