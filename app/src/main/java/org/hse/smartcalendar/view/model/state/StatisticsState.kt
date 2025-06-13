@@ -8,11 +8,11 @@ import org.hse.smartcalendar.network.TodayTime
 import org.hse.smartcalendar.utility.TimeUtils
 
 data class StatisticsUiState(
-    val total: TotalTimeTaskTypes = TotalTimeTaskTypes(0,0,0,0),
-    val week: WeekTime = WeekTime(0),
-    val averageDay: AverageDayTimeVars = AverageDayTimeVars(firstDay = LocalDate(1970,1,1), totalWorkMinutes = 0),
-    val today: TodayTimeVars = TodayTimeVars(0,0),
-    val calculable: StatisticsCalculableData = StatisticsCalculableData(0, 0, 0)
+    val total: TotalTimeTaskTypes = TotalTimeTaskTypes(320, 180, 60, 90),
+    val week: WeekTime = WeekTime(650),
+    val averageDay: AverageDayTimeVars = AverageDayTimeVars(firstDay = LocalDate(2025, 6, 1), totalWorkMinutes = 870),
+    val today: TodayTimeVars = TodayTimeVars(100, 60),
+    val calculable: StatisticsCalculableData = StatisticsCalculableData(3, 4, 5)
 )
 
 class TodayTimeVars(planned: Long, completed: Long){

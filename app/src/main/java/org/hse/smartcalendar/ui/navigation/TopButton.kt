@@ -3,6 +3,7 @@ package org.hse.smartcalendar.ui.navigation
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -29,20 +30,20 @@ fun TopButton(openMenu: (()-> Unit)? = null, navigation: Navigation, text: Strin
             IconButton(onClick = { openMenu?.invoke() }) {
                 Icon(
                     imageVector = Icons.Filled.Menu,
-                    contentDescription = null
+                    contentDescription = "Menu"
                 )
             }
         },
         actions = {
 
             IconButton(onClick = { navigation.navigateTo(Screens.SETTINGS.route)}) {
-                Icon(Icons.Filled.Settings, contentDescription = null)
+                Icon(Icons.Filled.Settings, contentDescription = "Settings")
             }
 
             IconButton(
                 onClick = {}) {
-                Icon(imageVector = Icons.Filled.MoreVert,
-                    contentDescription = null)
+                Icon(imageVector = Icons.Filled.Notifications,
+                    contentDescription = "Invites")
             }
         },
         colors = TopAppBarColors(

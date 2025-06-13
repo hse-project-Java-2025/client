@@ -29,6 +29,7 @@ composeBom = "2024.04.01"
 lifecycleRuntimeComposeAndroid = "2.8.7"
 loggingInterceptor = "4.12.0"
 loggingInterseptor = "4.7.2"
+material = "1.8.2"
 mockk = "1.13.10"
 navigationCompose = "2.8.8"
 composeMaterial3 = "1.0.0-alpha33"
@@ -53,6 +54,7 @@ android-junit5 = { module = "de.mannodermaus.gradle.plugins:android-junit5", ver
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 accompanist-permissions-v0340 = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistVersion" }
 androidx-lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "lifecycleProcessVersion" }
+androidx-material = { module = "androidx.compose.material:material", version.ref = "material" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-navigation-compose-v240beta02 = { module = "androidx.navigation:navigation-compose", version.ref = "navigationComposeVersion" }

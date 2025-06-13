@@ -13,12 +13,12 @@ class TaskEditViewModel(
     val listViewModel: ListViewModel
 ) : ViewModel() {
     private val workManager = WorkManagerHolder.getInstance()
-    private var task: DailyTask = DailyTask(
+    private var task: DailyTask = DailyTask.example(
         title = "Preview title",
         description = "Preview description",
         start = LocalTime(0, 0),
         end = LocalTime(23, 59),
-        date = DailyTask.defaultDate
+        type = DailyTaskType.COMMON
     )
     val changes = task
 

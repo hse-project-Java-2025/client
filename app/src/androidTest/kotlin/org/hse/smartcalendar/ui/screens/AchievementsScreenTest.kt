@@ -6,6 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
+import org.hse.smartcalendar.data.SharedInfo
 import org.hse.smartcalendar.store.StatisticsStore
 import org.hse.smartcalendar.ui.screens.model.AchievementType
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
@@ -39,6 +40,7 @@ class AchievementsScreenTest {
             start = LocalTime.Companion.fromMinutesOfDay(0),
             end = LocalTime.Companion.fromMinutesOfDay(300),
             date = TimeUtils.Companion.getCurrentDateTime().date,
+            sharedInfo = SharedInfo()
         )
         secondTask = DailyTask(
             title = "first",
@@ -50,6 +52,7 @@ class AchievementsScreenTest {
             start = LocalTime.Companion.fromMinutesOfDay(300),
             end = LocalTime.Companion.fromMinutesOfDay(1440-1),
             date = TimeUtils.Companion.getCurrentDateTime().date,
+            sharedInfo = SharedInfo()
         )
     }
     fun assertAchievementData(type: AchievementType, text: String){

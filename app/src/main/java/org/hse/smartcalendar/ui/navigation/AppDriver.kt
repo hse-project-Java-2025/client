@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import org.hse.smartcalendar.ui.elements.Calendar_add_on
 import org.hse.smartcalendar.ui.elements.Calendar_today
+import org.hse.smartcalendar.ui.elements.Event_upcoming
 import org.hse.smartcalendar.ui.elements.Finance
 import org.hse.smartcalendar.ui.elements.Follow_the_signs
 import org.hse.smartcalendar.ui.elements.Medal
@@ -42,6 +43,8 @@ fun AppDrawer(
         AppNavigationDrawerItem(label = "Rating", icon = Finance, destination = Screens.RATING,
             currentRoute = currentRoute, navigation = navigation, closeDrawer = closeDrawer)
         AppNavigationDrawerItem(label = "My Calendars", icon = Calendar_add_on, destination = Screens.MY_CALENDARS,
+            currentRoute = currentRoute, navigation = navigation, closeDrawer = closeDrawer)
+        AppNavigationDrawerItem(label = "Shared events", icon = Event_upcoming, destination = Screens.SHARED_EVENTS,
             currentRoute = currentRoute, navigation = navigation, closeDrawer = closeDrawer)
     }
 }

@@ -34,7 +34,6 @@ import org.hse.smartcalendar.view.model.StatisticsManager
 import org.hse.smartcalendar.view.model.StatisticsViewModel
 import org.hse.smartcalendar.view.model.TaskEditViewModel
 
-
 @Composable
 fun DailyTaskCard(
     task: DailyTask,
@@ -43,12 +42,29 @@ fun DailyTaskCard(
     onLongPressAction: () -> Unit = { },
     taskEditViewModel: TaskEditViewModel
 ) {
+    DailyTaskCard(
+        task,
+            modifier,
+        onCompletionChange,
+        {
+            onLongPressAction();
+            taskEditViewModel.setTask(task)
+        }
+        )
+}
+
+@Composable
+fun DailyTaskCard(
+    task: DailyTask,
+    modifier: Modifier = Modifier,
+    onCompletionChange: () -> Unit = { },
+    onLongPressAction: () -> Unit = { }
+) {
     Column(modifier = Modifier
         .padding(5.dp)
         .pointerInput(Unit) {
             detectTapGestures(
                 onLongPress = {
-                    taskEditViewModel.setTask(task)
                     onLongPressAction()
                 }
             )
@@ -124,42 +140,38 @@ fun DailyTaskCard(
 fun DailyTaskCardPreview() {
     val statisticsManager = StatisticsManager(StatisticsViewModel())
     val taskEditViewModel = TaskEditViewModel(listViewModel = ListViewModel(statisticsManager))
-    val previewCommonTask = DailyTask(
+    val previewCommonTask = DailyTask.example(
         title = "Common title example",
         type = DailyTaskType.COMMON,
         description = "Common description Example",
         start = LocalTime(4, 0),
-        end = LocalTime(5, 0),
-        date = DailyTask.defaultDate
+        end = LocalTime(5, 0)
     )
 
 
-    val previewFitnessTask = DailyTask(
+    val previewFitnessTask = DailyTask.example(
         title = "Fitness title example",
         type = DailyTaskType.FITNESS,
         description = "Fitness description Example",
         start = LocalTime(4, 0),
         end = LocalTime(5, 0),
-        date = DailyTask.defaultDate
     )
 
-    val previewWorkTask = DailyTask(
+    val previewWorkTask = DailyTask.example(
         title = "Work title example",
         type = DailyTaskType.WORK,
         description = "Work description Example",
         start = LocalTime(4, 0),
         end = LocalTime(5, 0),
-        date = DailyTask.defaultDate
     )
 
-    val previewStudiesTask = DailyTask(
+    val previewStudiesTask = DailyTask.example(
         isComplete = true,
         title = "Studies title example",
         type = DailyTaskType.STUDIES,
         description = "Studies description Example",
         start = LocalTime(4, 0),
         end = LocalTime(5, 0),
-        date = DailyTask.defaultDate
     )
 
     Column {

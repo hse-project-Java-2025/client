@@ -32,6 +32,7 @@ class TaskRepository(private val api: TaskApiInterface): BaseRepository() {
         return response
     }
     suspend fun addTask(task: DailyTask): NetworkResponse<ResponseBody> {
+        //TODO: какой TaskRequest нужен по SharedTask
         val response = withIdRequest { id ->
             api.addTask(id, TaskRequest.fromTask(task))}
         return when (response) {

@@ -4,6 +4,7 @@ import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.utility.TimeUtils
 import kotlinx.datetime.LocalTime
+import org.hse.smartcalendar.data.SharedInfo
 import org.hse.smartcalendar.utility.fromMinutesOfDay
 import java.util.UUID
 
@@ -23,7 +24,8 @@ enum class TaskProvider(val provide:()-> DailyTask) {
             description = "",
             start = LocalTime.fromMinutesOfDay(10),
             end = LocalTime.fromMinutesOfDay(30),
-            date = TimeUtils.getCurrentDateTime().date
+            date = TimeUtils.getCurrentDateTime().date,
+            sharedInfo = SharedInfo()
         )
     }),
 

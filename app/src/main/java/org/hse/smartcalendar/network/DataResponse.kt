@@ -9,6 +9,7 @@ import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.utility.TimeUtils
 import java.util.UUID
 import androidx.compose.runtime.MutableState
+import org.hse.smartcalendar.data.SharedInfo
 
 data class RegisterResponse (
     val id: Long? = null,
@@ -57,7 +58,8 @@ data class TaskResponse(
             date = LocalDate.parse(date),
             type = type,
             creationTime = creationTime,
-            isComplete = complete
+            isComplete = complete,
+            sharedInfo = SharedInfo()//TODO
         )
     }
 }
@@ -84,6 +86,7 @@ data class ChatTaskResponse(
             type = DailyTaskType.valueOf(type?.uppercase() ?: "COMMON"),
             creationTime = creationTime?: TimeUtils.getCurrentDateTime(),
             isComplete = complete == true,
+            sharedInfo = SharedInfo()
         )
         return task
     }

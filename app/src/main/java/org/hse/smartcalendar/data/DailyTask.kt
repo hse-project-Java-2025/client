@@ -10,7 +10,11 @@ import kotlinx.serialization.Serializable
 import org.hse.smartcalendar.utility.TimeUtils
 import org.hse.smartcalendar.utility.UUIDSerializer
 import java.util.UUID
-
+@Serializable
+data class SharedInfo(
+    val isShared: Boolean = false,
+    val invitees: List<String> = listOf()){
+}
 @Serializable
 data class DailyTask (
     @Serializable(with = UUIDSerializer::class)
@@ -24,8 +28,9 @@ data class DailyTask (
     private var start : LocalTime,//hour, minute
     private var end: LocalTime,//hour, minute
     private var date: LocalDate,//year, month, day
+    private var sharedInfo: SharedInfo
     ) {
-    companion object {//затычка, можешь убрать
+    companion object {
         val defaultDate = TimeUtils.getCurrentDateTime().date
         fun fromTime(start: LocalTime, end: LocalTime, date: LocalDate): DailyTask{
             return fromTimeAndType(start,end,date, DailyTaskType.COMMON)
@@ -37,7 +42,20 @@ data class DailyTask (
                 end = end,
                 start = start,
                 date = date,
-                type = type
+                type = type,
+                sharedInfo = SharedInfo()
+            )
+        }
+        fun example(title: String, type: DailyTaskType, description: String, start: LocalTime, end: LocalTime, isComplete: Boolean=false): DailyTask{
+            return DailyTask(
+                isComplete = isComplete,
+            title = title,
+            type = type,
+            description = description,
+            start = start,
+            end = end,
+                date = defaultDate,
+                sharedInfo = SharedInfo(),
             )
         }
     }

@@ -19,6 +19,7 @@ enum class Screens(val route: String) {
     ACHIEVEMENTS("achievements"),
     EDIT_TASK("editTask"),
     MY_CALENDARS("myCalendars"),
+    SHARED_EVENTS("sharedIvents"),
     RATING("rating"),
     AI_ASSISTANT("aiAssistant");
     enum class Subgraph(val route: String) {
