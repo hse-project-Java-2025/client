@@ -1,5 +1,6 @@
 package org.hse.smartcalendar.repository
 
+import android.util.Log
 import org.hse.smartcalendar.data.User
 import org.hse.smartcalendar.network.ApiClient
 import org.hse.smartcalendar.network.AuthApiInterface
@@ -10,13 +11,24 @@ import org.hse.smartcalendar.network.LoginResponse
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.network.RegisterRequest
 import org.hse.smartcalendar.network.UserInfoResponse
+import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.tasks.await
 
 //Repository - логика работы с задачами, получает данные,
 // формирует и отправляет запрос, возвращает данные/exception
 @Suppress("LiftReturnOrAssignment")
 class AuthRepository(private val api: AuthApiInterface) {
+    suspend fun getToken(): String{
+        return try {
+            FirebaseMessaging.getInstance().token.await()
+        } catch (e: Exception) {
+            Log.e("FCM", "Failed to get token", e)
+            ""
+        }
+    }
     suspend fun loginUser(loginRequest: LoginRequest): NetworkResponse<LoginResponse> {
         try {
+            val token = getToken()
             val responseLogin = api.loginUser(loginRequest)
             if (responseLogin.isSuccessful) {
                 val token = responseLogin.body()?.string()

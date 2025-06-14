@@ -11,6 +11,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.work.WorkManager
+import com.google.firebase.FirebaseApp
 import org.hse.smartcalendar.R
 
 //@HiltAndroidApp
@@ -19,6 +20,7 @@ class BaseApplication : Application(), LifecycleObserver {
 
     override fun onCreate() {
         super.onCreate()
+        FirebaseApp.initializeApp(this)
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = getString(R.string.channel_name)
