@@ -21,10 +21,16 @@ import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.view.model.InitViewModel
+import org.hse.smartcalendar.view.model.InvitesViewModel
 import org.hse.smartcalendar.view.model.StatisticsViewModel
 import org.hse.smartcalendar.view.model.ListViewModel
 @Composable
-fun LoadingScreen(navigation: Navigation, statisticsVM: StatisticsViewModel, listModel: ListViewModel){
+fun LoadingScreen(
+    navigation: Navigation,
+    statisticsVM: StatisticsViewModel,
+    listModel: ListViewModel,
+    invitesModel: InvitesViewModel
+){
     val initVM: InitViewModel = viewModel()//гарантирует 1 модель на Composable
     val initState by initVM.initResult.observeAsState()
     val statisticsState by statisticsVM.initResult.observeAsState()
@@ -35,6 +41,7 @@ fun LoadingScreen(navigation: Navigation, statisticsVM: StatisticsViewModel, lis
     LaunchedEffect(initState) {
         if (initState is NetworkResponse.Success) {
             statisticsVM.init()
+            invitesModel.startPollingInvites()
         }
     }
     Column(

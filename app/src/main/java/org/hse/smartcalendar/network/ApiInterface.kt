@@ -84,3 +84,30 @@ interface AudioApiInterface {
         @Part file: MultipartBody.Part
     ): Response<List<ChatTaskResponse>>
 }
+
+interface InviteApiInterface {
+
+    @GET("api/users/me/invites")
+    suspend fun getMyInvites(): Response<List<InviteResponse>>
+
+    @POST("api/users/events/{eventId}/accept-invite")
+    suspend fun acceptInvite(@Path("eventId") eventId: UUID): Response<ResponseBody>
+
+    @POST("api/users/events/{eventId}/invite")
+    suspend fun inviteUser(
+        @Path("eventId") eventId: UUID,
+        @Body request: InviteRequest
+    ): Response<ResponseBody>
+
+    @POST("api/users/events/{eventId}/remove-invite")
+    suspend fun removeInvite(
+        @Path("eventId") eventId: UUID,
+        @Body request: InviteRequest
+    ): Response<ResponseBody>
+
+    @POST("api/users/events/{eventId}/remove-participant")
+    suspend fun removeParticipant(
+        @Path("eventId") eventId: UUID,
+        @Body request: InviteRequest
+    ): Response<ResponseBody>
+}

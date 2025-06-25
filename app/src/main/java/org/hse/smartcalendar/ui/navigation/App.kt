@@ -113,7 +113,7 @@ fun NestedNavigator(navigation: Navigation, authModel: AuthViewModel,openDrawer:
                 AuthScreen(navigation, authModel, AuthType.Login)
             }
             composable(Screens.LOADING.route) {
-                LoadingScreen(navigation, statisticsModel, listModel)
+                LoadingScreen(navigation, statisticsModel, listModel, invitesModel)
             }
         }
 

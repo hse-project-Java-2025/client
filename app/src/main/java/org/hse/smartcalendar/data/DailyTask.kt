@@ -13,8 +13,10 @@ import java.util.UUID
 @Serializable
 data class SharedInfo(
     val isShared: Boolean = false,
-    val invitees: List<String> = listOf()){
-}
+    val invitees: List<String> = listOf(),
+    val participants: List<String> = listOf(),
+    val organizerName: String = ""
+)
 @Serializable
 data class DailyTask (
     @Serializable(with = UUIDSerializer::class)
@@ -159,7 +161,9 @@ data class DailyTask (
     fun getMinutesLength(): Int{
         return (end.toSecondOfDay()-start.toSecondOfDay())/60
     }
-
+    fun getSharedInfo(): SharedInfo{
+        return sharedInfo
+    }
     class TimeConflictException(start: LocalTime, end: LocalTime) : IllegalArgumentException(
         "Illegal start and end time: start = " +
                 start.toString() +
