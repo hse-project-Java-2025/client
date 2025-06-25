@@ -30,6 +30,7 @@ import org.hse.smartcalendar.network.ApiClient
 import org.hse.smartcalendar.network.ChatTaskResponse
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.repository.AudioRepository
+import org.hse.smartcalendar.repository.InviteRepository
 import org.hse.smartcalendar.work.TaskApiWorker
 import java.io.File
 
@@ -52,7 +53,7 @@ open class AbstractListViewModel(val statisticsManager: StatisticsManager) : Vie
     }
     open fun scheduleTaskRequest(task: DailyTask, action: DailyTaskAction.Type) {
     }
-    fun addDailyTask(newTask : DailyTask) {
+    open fun addDailyTask(newTask : DailyTask) {
         try {
             dailyTaskSchedule.addDailyTask(newTask)
         } catch (exception: DailySchedule.NestedTaskException) {
@@ -142,6 +143,18 @@ open class AbstractListViewModel(val statisticsManager: StatisticsManager) : Vie
 class ListViewModel(statisticsManager: StatisticsManager) : AbstractListViewModel(statisticsManager) {
     private val workManager = WorkManagerHolder.getInstance()
     private val audioRepo = AudioRepository(ApiClient.audioApiService)
+    private val invitesRepository = InviteRepository(ApiClient.inviteApiService)
+    override fun addDailyTask(newTask: DailyTask) {
+        super.addDailyTask(newTask)
+        viewModelScope.launch {//on meeting agree on sync invitees
+            val id = newTask.getId()
+            val invitees = newTask.getSharedInfo().invitees
+            for (user in invitees) {
+                while (invitesRepository.inviteUser(eventId = id, loginOrEmail = user) !is NetworkResponse.Success<*>){
+                }
+            }
+        }
+    }
     override fun scheduleTaskRequest(task: DailyTask, action: DailyTaskAction.Type) {
         val taskJson = Json.encodeToString(DailyTaskAction.serializer(), DailyTaskAction(task = task, type = action))
 

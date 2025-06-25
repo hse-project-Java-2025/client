@@ -39,17 +39,6 @@ class InvitesViewModel : ViewModel() {
         invites.clear()
         invites.addAll(InvitesStore.invites)
     }
-    fun send(task: DailyTask){
-        viewModelScope.launch {
-            val id = task.getId()
-            val invitees = task.getSharedInfo().invitees
-            for (user in invitees) {
-                while (invitesRepository.inviteUser(eventId = id, loginOrEmail = user) !is NetworkResponse.Success<*>){
-
-                }
-            }
-        }
-    }
     fun tryAdd(invite: Invite): Boolean{
         val task = invite.task
         try {
@@ -69,6 +58,9 @@ class InvitesViewModel : ViewModel() {
     }
 
     fun decline(invite: Invite) {
+        viewModelScope.launch {
+            while (invitesRepository.removeInvite(invite.id, User.name) !is NetworkResponse.Success<*>){}
+        }
         invites.remove(invite)
     }
     fun addInvite(invite: Invite){//preview

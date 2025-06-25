@@ -6,6 +6,7 @@ import org.hse.smartcalendar.data.DailySchedule
 import org.hse.smartcalendar.data.DailySchedule.NestedTaskException
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.User
+import org.hse.smartcalendar.network.ApiClient
 import org.hse.smartcalendar.network.CompleteStatusRequest
 import org.hse.smartcalendar.network.EditTaskRequest
 import org.hse.smartcalendar.network.NetworkResponse
@@ -13,6 +14,7 @@ import org.hse.smartcalendar.network.TaskApiInterface
 import org.hse.smartcalendar.network.TaskRequest
 
 class TaskRepository(private val api: TaskApiInterface): BaseRepository() {
+    private val inviteRepository = InviteRepository(ApiClient.inviteApiService)
     suspend fun deleteTask(task: DailyTask): NetworkResponse<ResponseBody>{
         val response = withSupplierRequest<ResponseBody>{
             ->api.deleteTask(task.getId())
@@ -32,9 +34,9 @@ class TaskRepository(private val api: TaskApiInterface): BaseRepository() {
         return response
     }
     suspend fun addTask(task: DailyTask): NetworkResponse<ResponseBody> {
-        //TODO: какой TaskRequest нужен по SharedTask
         val response = withIdRequest { id ->
             api.addTask(id, TaskRequest.fromTask(task))}
+
         return when (response) {
             is NetworkResponse.Success -> {
                 NetworkResponse.Success("Task created".toResponseBody(null))

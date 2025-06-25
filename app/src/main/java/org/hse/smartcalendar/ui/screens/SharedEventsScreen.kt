@@ -70,7 +70,9 @@ fun InvitesScreen(
                                     snackbarHostState.showSnackbar("Invitation accepted", "Undo")
                                 }
                             } else {
-                                //NestedTask Exception
+                                scope.launch {
+                                    snackbarHostState.showSnackbar("Time conflict", "")
+                                }
                             }
                         },
                         onDecline = {
