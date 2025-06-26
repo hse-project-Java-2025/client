@@ -150,7 +150,7 @@ fun NestedNavigator(navigation: Navigation, authModel: AuthViewModel,openDrawer:
                 AchievementsScreen(navigation, openDrawer, statisticsModel)
             }
             composable(route = Screens.SHARED_EVENTS.route) {
-                InvitesScreen(navigation, openDrawer, invitesModel)
+                InvitesScreen(navigation, openDrawer, invitesModel, listModel)
             }
             composable(Screens.EDIT_TASK.route) {
                 TaskEditWindow(

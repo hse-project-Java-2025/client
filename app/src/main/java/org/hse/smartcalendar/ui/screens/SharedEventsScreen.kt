@@ -15,6 +15,8 @@ import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.view.model.InvitesViewModel
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.rememberScaffoldState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -22,8 +24,11 @@ import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.data.Invite
+import org.hse.smartcalendar.data.store.InvitesStore
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
+import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.utility.rememberNavigation
+import org.hse.smartcalendar.view.model.ListViewModel
 import java.util.UUID
 
 @Composable
@@ -31,7 +36,11 @@ fun InvitesScreen(
     navigation: Navigation,
     openMenu: (()-> Unit)? = null,
     viewModel: InvitesViewModel,
+    listViewModel: ListViewModel
 ) {
+    LaunchedEffect(Unit) {
+        InvitesStore.markInvitesSeen()
+    }
     val invites = viewModel.invites
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -44,7 +53,9 @@ fun InvitesScreen(
                 openMenu = openMenu
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        }
     ) { padding ->
         if (invites.isEmpty()) {
             Box(
@@ -65,20 +76,32 @@ fun InvitesScreen(
                     InviteItem(
                         invite = invite,
                         onAccept = {
-                            if (viewModel.tryAdd(invite)) {
+                            val notNested = viewModel.tryAdd(invite);
+                            if (notNested) {
+                                listViewModel.loadDailyTasks()
                                 scope.launch {
-                                    snackbarHostState.showSnackbar("Invitation accepted", "Undo")
+                                    snackbarHostState.showSnackbar("Invitation accepted")
                                 }
                             } else {
+                                val conflict = viewModel.lastConflict!!
                                 scope.launch {
-                                    snackbarHostState.showSnackbar("Time conflict", "")
+                                    val result = snackbarHostState.showSnackbar(
+                                        message = "Time conflict with existing task",
+                                        actionLabel = "Go",
+                                        duration = SnackbarDuration.Indefinite
+                                    )
+                                    if (result == SnackbarResult.ActionPerformed) {
+                                        listViewModel.changeDailyTaskSchedule(conflict.getTaskDate())
+                                        navigation.navigateTo(Screens.CALENDAR.route)
+                                    }
                                 }
                             }
+                            notNested
                         },
                         onDecline = {
                             viewModel.decline(invite)
                             scope.launch {
-                                snackbarHostState.showSnackbar("Invitation declined", "Undo")
+                                snackbarHostState.showSnackbar("Invitation declined")
                             }
                         }
                     )
@@ -120,7 +143,8 @@ fun InvitesScreenPreview() {
         InvitesScreen(
             navigation = rememberNavigation(),
             viewModel = invitesViewModel,
-            openMenu = {}
+            openMenu = {},
+            listViewModel = viewModel()
         )
     }
 }

@@ -29,7 +29,7 @@ import java.util.UUID
 @Composable
 fun InviteItem(
     invite: Invite,
-    onAccept: () -> Unit,
+    onAccept: () -> Boolean,
     onDecline: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -37,7 +37,6 @@ fun InviteItem(
         when (dismissValue) {
             DismissValue.DismissedToEnd -> {
                 onAccept()
-                true
             }
             DismissValue.DismissedToStart -> {
                 onDecline()
@@ -157,7 +156,7 @@ fun InviteItemPreview() {
         Surface(modifier = Modifier.padding(16.dp)) {
             InviteItem(
                 invite = invite,
-                onAccept = {},
+                onAccept = {true},
                 onDecline = {}
             )
         }

@@ -51,6 +51,7 @@ open class AbstractListViewModel(val statisticsManager: StatisticsManager) : Vie
     protected val user: User = User
     fun loadDailyTasks(){
         dailyTaskSchedule = user.getSchedule().getOrCreateDailySchedule(dailyScheduleDate.value)
+        dailyTaskList.clear()
         dailyTaskList.addAll(dailyTaskSchedule.getDailyTaskList())
     }
     open fun scheduleTaskRequest(task: DailyTask, action: DailyTaskAction.Type) {
@@ -145,7 +146,6 @@ open class AbstractListViewModel(val statisticsManager: StatisticsManager) : Vie
 class ListViewModel(statisticsManager: StatisticsManager) : AbstractListViewModel(statisticsManager) {
     private val workManager = WorkManagerHolder.getInstance()
     private val audioRepo = AudioRepository(ApiClient.audioApiService)
-    private val invitesRepository = InviteRepository(ApiClient.inviteApiService)
     fun getInviteesRequestList(task: DailyTask): List<OneTimeWorkRequest>{
         return task.getSharedInfo().invitees.map { loginOrEmail ->
             val inviteJson = Json.encodeToString(
@@ -175,12 +175,13 @@ class ListViewModel(statisticsManager: StatisticsManager) : AbstractListViewMode
             )
                 .then(getInviteesRequestList(task))
                 .enqueue()
+        } else {
+            workManager.enqueueUniqueWork(
+                "task_${task.getId()}",
+                ExistingWorkPolicy.APPEND,
+                workRequest
+            )
         }
-        workManager.enqueueUniqueWork(
-            "task_${task.getId()}",
-            ExistingWorkPolicy.APPEND,
-            workRequest
-        )
     }
     fun sendAudio(
         audioFile: MutableState<File?>,

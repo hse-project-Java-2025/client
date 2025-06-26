@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonColors
@@ -29,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
+import org.hse.smartcalendar.ui.elements.People
 import org.hse.smartcalendar.view.model.ListViewModel
 import org.hse.smartcalendar.view.model.StatisticsManager
 import org.hse.smartcalendar.view.model.StatisticsViewModel
@@ -112,6 +115,14 @@ fun DailyTaskCard(
                     .align(Alignment.Bottom),
                 textAlign = TextAlign.End
             )
+            if (task.getSharedInfo().isShared) {
+                Icon(
+                    imageVector = People,
+                    contentDescription = "Shared",
+                    modifier = Modifier.size(20.dp).padding(start = 4.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
         }
     }
         Surface(

@@ -62,7 +62,7 @@ class DailySchedule (val date : LocalDate = Clock.System.now()
         return dailyTasksList
     }
 
-    class NestedTaskException(oldTask: DailyTask, newTask: DailyTask) : IllegalArgumentException(
+    class NestedTaskException(val oldTask: DailyTask, newTask: DailyTask) : IllegalArgumentException(
         "New task have conflict schedule with previous one:\n" +
                 "Old task: start = " + oldTask.getDailyTaskStartTime() + "; end = " + oldTask.getDailyTaskEndTime() + "\n" +
                 "New task: start = " + newTask.getDailyTaskStartTime() + "; end = " + newTask.getDailyTaskEndTime()

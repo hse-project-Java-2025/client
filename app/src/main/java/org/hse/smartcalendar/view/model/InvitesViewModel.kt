@@ -1,5 +1,6 @@
 package org.hse.smartcalendar.view.model
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -26,8 +27,10 @@ class InvitesViewModel : ViewModel() {
     var _initResult = MutableLiveData<NetworkResponse<List<Invite>>>()
     val initResult:LiveData<NetworkResponse<List<Invite>>> = _initResult
     private val invitesRepository: InviteRepository = InviteRepository(ApiClient.inviteApiService)
-    val invites = mutableListOf<Invite>()
+    val invites = mutableStateListOf<Invite>()
     private val mainSchedule = User.getSchedule()
+    private var _lastConflict: DailyTask? = null
+    val lastConflict: DailyTask? get() = _lastConflict
 
     fun startPollingInvites(){
         viewModelScope.launch {
@@ -38,7 +41,7 @@ class InvitesViewModel : ViewModel() {
                     updateUI()
                 }
                 _initResult.value = response
-                kotlinx.coroutines.delay(5000)
+                kotlinx.coroutines.delay(10000)
             }
         }
     }
@@ -51,6 +54,7 @@ class InvitesViewModel : ViewModel() {
         try {
             mainSchedule.getOrCreateDailySchedule(task.getTaskDate()).addDailyTask(task)
         } catch (e: DailySchedule.NestedTaskException){
+            _lastConflict = e.oldTask
             return false
         }
         accept(invite)

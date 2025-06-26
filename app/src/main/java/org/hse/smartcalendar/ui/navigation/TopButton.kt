@@ -5,6 +5,8 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -14,6 +16,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import org.hse.smartcalendar.data.store.InvitesStore
 import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.utility.rememberNavigation
@@ -40,10 +43,16 @@ fun TopButton(openMenu: (()-> Unit)? = null, navigation: Navigation, text: Strin
                 Icon(Icons.Filled.Settings, contentDescription = "Settings")
             }
 
-            IconButton(
-                onClick = {}) {
-                Icon(imageVector = Icons.Filled.Notifications,
-                    contentDescription = "Invites")
+            IconButton(onClick = {navigation.navigateTo(Screens.SHARED_EVENTS.route)}) {
+                if (InvitesStore.hasNewInvites) {
+                    BadgedBox(badge = {
+                        Badge { Text("${InvitesStore.invites.size}") }
+                    }) {
+                        Icon(Icons.Filled.Notifications, "Invites")
+                    }
+                } else {
+                    Icon(Icons.Filled.Notifications, "Invites")
+                }
             }
         },
         colors = TopAppBarColors(
