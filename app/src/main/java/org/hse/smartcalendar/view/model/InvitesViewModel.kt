@@ -4,16 +4,23 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.workDataOf
 import kotlinx.coroutines.launch
 import org.hse.smartcalendar.data.DailySchedule
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.Invite
+import org.hse.smartcalendar.data.InviteAction
 import org.hse.smartcalendar.data.MainSchedule
 import org.hse.smartcalendar.data.User
 import org.hse.smartcalendar.data.store.InvitesStore
 import org.hse.smartcalendar.network.ApiClient
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.repository.InviteRepository
+import org.hse.smartcalendar.work.InviteApiWorker
+import kotlinx.serialization.json.Json
+import org.hse.smartcalendar.data.WorkManagerHolder
+import androidx.work.ExistingWorkPolicy
 
 class InvitesViewModel : ViewModel() {
     var _initResult = MutableLiveData<NetworkResponse<List<Invite>>>()
@@ -51,19 +58,34 @@ class InvitesViewModel : ViewModel() {
     }
 
     private fun accept(invite: Invite) {
-        viewModelScope.launch {
-            while (invitesRepository.acceptInvite(invite.id) !is NetworkResponse.Success<*>){}
-        }
+        scheduleInviteWork(invite, InviteAction.Type.ACCEPT)
         invites.remove(invite)
     }
 
     fun decline(invite: Invite) {
-        viewModelScope.launch {
-            while (invitesRepository.removeInvite(invite.id, User.name) !is NetworkResponse.Success<*>){}
-        }
+        scheduleInviteWork(invite, InviteAction.Type.REMOVE_INVITE)
         invites.remove(invite)
     }
     fun addInvite(invite: Invite){//preview
         invites.add(invite)
     }
+    private fun scheduleInviteWork(invite: Invite, actionType: InviteAction.Type) {
+        val action = InviteAction(
+            type = actionType,
+            eventId = invite.id,
+            loginOrEmail = User.name
+        )
+        val actionJson = Json.encodeToString(InviteAction.serializer(), action)
+
+        val workRequest = OneTimeWorkRequestBuilder<InviteApiWorker>()
+            .setInputData(workDataOf(InviteAction.jsonName to actionJson))
+            .build()
+        WorkManagerHolder.getInstance()
+            .enqueueUniqueWork(
+                "invite_${action.eventId}_${action.loginOrEmail}_${action.type}",
+                ExistingWorkPolicy.APPEND,
+                workRequest
+            )
+    }
+
 }

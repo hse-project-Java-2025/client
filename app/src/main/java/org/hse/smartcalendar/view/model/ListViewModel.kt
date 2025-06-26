@@ -9,9 +9,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.workDataOf
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
@@ -24,6 +24,7 @@ import kotlinx.serialization.json.Json
 import org.hse.smartcalendar.data.DailySchedule
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskAction
+import org.hse.smartcalendar.data.InviteAction
 import org.hse.smartcalendar.data.User
 import org.hse.smartcalendar.data.WorkManagerHolder
 import org.hse.smartcalendar.network.ApiClient
@@ -31,6 +32,7 @@ import org.hse.smartcalendar.network.ChatTaskResponse
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.repository.AudioRepository
 import org.hse.smartcalendar.repository.InviteRepository
+import org.hse.smartcalendar.work.InviteApiWorker
 import org.hse.smartcalendar.work.TaskApiWorker
 import java.io.File
 
@@ -53,7 +55,7 @@ open class AbstractListViewModel(val statisticsManager: StatisticsManager) : Vie
     }
     open fun scheduleTaskRequest(task: DailyTask, action: DailyTaskAction.Type) {
     }
-    open fun addDailyTask(newTask : DailyTask) {
+    fun addDailyTask(newTask : DailyTask) {
         try {
             dailyTaskSchedule.addDailyTask(newTask)
         } catch (exception: DailySchedule.NestedTaskException) {
@@ -144,15 +146,19 @@ class ListViewModel(statisticsManager: StatisticsManager) : AbstractListViewMode
     private val workManager = WorkManagerHolder.getInstance()
     private val audioRepo = AudioRepository(ApiClient.audioApiService)
     private val invitesRepository = InviteRepository(ApiClient.inviteApiService)
-    override fun addDailyTask(newTask: DailyTask) {
-        super.addDailyTask(newTask)
-        viewModelScope.launch {//on meeting agree on sync invitees
-            val id = newTask.getId()
-            val invitees = newTask.getSharedInfo().invitees
-            for (user in invitees) {
-                while (invitesRepository.inviteUser(eventId = id, loginOrEmail = user) !is NetworkResponse.Success<*>){
-                }
-            }
+    fun getInviteesRequestList(task: DailyTask): List<OneTimeWorkRequest>{
+        return task.getSharedInfo().invitees.map { loginOrEmail ->
+            val inviteJson = Json.encodeToString(
+                InviteAction.serializer(),
+                InviteAction(
+                    type = InviteAction.Type.INVITE,
+                    eventId = task.getId(),
+                    loginOrEmail = loginOrEmail
+                )
+            )
+            OneTimeWorkRequestBuilder<InviteApiWorker>()
+                .setInputData(workDataOf(InviteAction.jsonName to inviteJson))
+                .build()
         }
     }
     override fun scheduleTaskRequest(task: DailyTask, action: DailyTaskAction.Type) {
@@ -161,6 +167,15 @@ class ListViewModel(statisticsManager: StatisticsManager) : AbstractListViewMode
         val workRequest = OneTimeWorkRequestBuilder<TaskApiWorker>()
             .setInputData(workDataOf(DailyTaskAction.jsonName to taskJson))
             .build()
+        if (action== DailyTaskAction.Type.ADD && task.getSharedInfo().isShared){
+            workManager.beginUniqueWork(
+                "task_${task.getId()}",
+                ExistingWorkPolicy.APPEND,
+                workRequest
+            )
+                .then(getInviteesRequestList(task))
+                .enqueue()
+        }
         workManager.enqueueUniqueWork(
             "task_${task.getId()}",
             ExistingWorkPolicy.APPEND,
