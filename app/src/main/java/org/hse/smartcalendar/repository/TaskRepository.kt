@@ -6,6 +6,7 @@ import org.hse.smartcalendar.data.DailySchedule
 import org.hse.smartcalendar.data.DailySchedule.NestedTaskException
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.User
+import org.hse.smartcalendar.network.ApiClient
 import org.hse.smartcalendar.network.CompleteStatusRequest
 import org.hse.smartcalendar.network.EditTaskRequest
 import org.hse.smartcalendar.network.NetworkResponse
@@ -13,6 +14,7 @@ import org.hse.smartcalendar.network.TaskApiInterface
 import org.hse.smartcalendar.network.TaskRequest
 
 class TaskRepository(private val api: TaskApiInterface): BaseRepository() {
+    private val inviteRepository = InviteRepository(ApiClient.inviteApiService)
     suspend fun deleteTask(task: DailyTask): NetworkResponse<ResponseBody>{
         val response = withSupplierRequest<ResponseBody>{
             ->api.deleteTask(task.getId())
@@ -34,6 +36,7 @@ class TaskRepository(private val api: TaskApiInterface): BaseRepository() {
     suspend fun addTask(task: DailyTask): NetworkResponse<ResponseBody> {
         val response = withIdRequest { id ->
             api.addTask(id, TaskRequest.fromTask(task))}
+
         return when (response) {
             is NetworkResponse.Success -> {
                 NetworkResponse.Success("Task created".toResponseBody(null))
@@ -50,6 +53,7 @@ class TaskRepository(private val api: TaskApiInterface): BaseRepository() {
         try {
             return when (val response = withIdRequest { id -> api.getDailyTasks(id) }) {
                 is NetworkResponse.Success -> {
+                    User.clearSchedule()
                     val listTask: List<DailyTask> = response.data.map { it.toTask() }
                     val map = listTask.groupBy { it.getTaskDate() }
                         .mapValues { (_, taskList) ->

@@ -58,6 +58,7 @@ import kotlinx.datetime.format.MonthNames
 import kotlinx.datetime.format.char
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
+import org.hse.smartcalendar.data.SharedInfo
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.view.model.ReminderViewModel
 import org.hse.smartcalendar.view.model.ReminderViewModelFactory
@@ -276,7 +277,8 @@ fun DailyTaskListPreview() {
             description = "sss",
             start = LocalTime(0, 0),
             end = LocalTime(1, 0),
-            date = LocalDate(2022, 5, 4)
+            date = LocalDate(2022, 5, 4),
+            sharedInfo = SharedInfo()
         )
     )
     val taskEditViewModel = TaskEditViewModel(

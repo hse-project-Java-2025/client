@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonColors
@@ -29,11 +31,11 @@ import androidx.compose.ui.unit.dp
 import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
+import org.hse.smartcalendar.ui.elements.People
 import org.hse.smartcalendar.view.model.ListViewModel
 import org.hse.smartcalendar.view.model.StatisticsManager
 import org.hse.smartcalendar.view.model.StatisticsViewModel
 import org.hse.smartcalendar.view.model.TaskEditViewModel
-
 
 @Composable
 fun DailyTaskCard(
@@ -43,12 +45,29 @@ fun DailyTaskCard(
     onLongPressAction: () -> Unit = { },
     taskEditViewModel: TaskEditViewModel
 ) {
+    DailyTaskCard(
+        task,
+            modifier,
+        onCompletionChange,
+        {
+            onLongPressAction();
+            taskEditViewModel.setTask(task)
+        }
+        )
+}
+
+@Composable
+fun DailyTaskCard(
+    task: DailyTask,
+    modifier: Modifier = Modifier,
+    onCompletionChange: () -> Unit = { },
+    onLongPressAction: () -> Unit = { }
+) {
     Column(modifier = Modifier
         .padding(5.dp)
         .pointerInput(Unit) {
             detectTapGestures(
                 onLongPress = {
-                    taskEditViewModel.setTask(task)
                     onLongPressAction()
                 }
             )
@@ -96,6 +115,14 @@ fun DailyTaskCard(
                     .align(Alignment.Bottom),
                 textAlign = TextAlign.End
             )
+            if (task.getSharedInfo().isShared) {
+                Icon(
+                    imageVector = People,
+                    contentDescription = "Shared",
+                    modifier = Modifier.size(20.dp).padding(start = 4.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
         }
     }
         Surface(
@@ -124,42 +151,38 @@ fun DailyTaskCard(
 fun DailyTaskCardPreview() {
     val statisticsManager = StatisticsManager(StatisticsViewModel())
     val taskEditViewModel = TaskEditViewModel(listViewModel = ListViewModel(statisticsManager))
-    val previewCommonTask = DailyTask(
+    val previewCommonTask = DailyTask.example(
         title = "Common title example",
         type = DailyTaskType.COMMON,
         description = "Common description Example",
         start = LocalTime(4, 0),
-        end = LocalTime(5, 0),
-        date = DailyTask.defaultDate
+        end = LocalTime(5, 0)
     )
 
 
-    val previewFitnessTask = DailyTask(
+    val previewFitnessTask = DailyTask.example(
         title = "Fitness title example",
         type = DailyTaskType.FITNESS,
         description = "Fitness description Example",
         start = LocalTime(4, 0),
         end = LocalTime(5, 0),
-        date = DailyTask.defaultDate
     )
 
-    val previewWorkTask = DailyTask(
+    val previewWorkTask = DailyTask.example(
         title = "Work title example",
         type = DailyTaskType.WORK,
         description = "Work description Example",
         start = LocalTime(4, 0),
         end = LocalTime(5, 0),
-        date = DailyTask.defaultDate
     )
 
-    val previewStudiesTask = DailyTask(
+    val previewStudiesTask = DailyTask.example(
         isComplete = true,
         title = "Studies title example",
         type = DailyTaskType.STUDIES,
         description = "Studies description Example",
         start = LocalTime(4, 0),
         end = LocalTime(5, 0),
-        date = DailyTask.defaultDate
     )
 
     Column {

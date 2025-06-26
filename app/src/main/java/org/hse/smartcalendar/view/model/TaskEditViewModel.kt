@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskAction
+import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.data.WorkManagerHolder
 import org.hse.smartcalendar.utility.editHandler
 
@@ -12,12 +13,12 @@ class TaskEditViewModel(
     val listViewModel: ListViewModel
 ) : ViewModel() {
     private val workManager = WorkManagerHolder.getInstance()
-    private var task: DailyTask = DailyTask(
+    private var task: DailyTask = DailyTask.example(
         title = "Preview title",
         description = "Preview description",
         start = LocalTime(0, 0),
         end = LocalTime(23, 59),
-        date = DailyTask.defaultDate
+        type = DailyTaskType.COMMON
     )
     val changes = task
 
@@ -35,6 +36,7 @@ class TaskEditViewModel(
         isNestedTask: MutableState<Boolean>,
         reminderViewModel: ReminderViewModel
     ): Boolean {
+        changes.setDate(listViewModel.getScheduleDate())
         return editHandler(
             oldTask = task,
             newTask = changes,

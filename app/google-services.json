@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "780456329938",
+    "firebase_url": "https://smartcalendarru-default-rtdb.firebaseio.com",
+    "project_id": "smartcalendarru",
+    "storage_bucket": "smartcalendarru.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:780456329938:android:14d945eb519314b326230b",
+        "android_client_info": {
+          "package_name": "org.hse.smartcalendar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBo5NexFhO3bcrOUp9Kjv5Xhbmuu2TluY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

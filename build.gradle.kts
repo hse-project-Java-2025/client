@@ -7,5 +7,6 @@ plugins {
 buildscript {
     dependencies {
         classpath(libs.android.junit5)
+        classpath(libs.google.services)
     }
 }

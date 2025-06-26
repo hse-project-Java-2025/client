@@ -9,9 +9,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.workDataOf
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
@@ -24,12 +24,15 @@ import kotlinx.serialization.json.Json
 import org.hse.smartcalendar.data.DailySchedule
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskAction
+import org.hse.smartcalendar.data.InviteAction
 import org.hse.smartcalendar.data.User
 import org.hse.smartcalendar.data.WorkManagerHolder
 import org.hse.smartcalendar.network.ApiClient
 import org.hse.smartcalendar.network.ChatTaskResponse
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.repository.AudioRepository
+import org.hse.smartcalendar.repository.InviteRepository
+import org.hse.smartcalendar.work.InviteApiWorker
 import org.hse.smartcalendar.work.TaskApiWorker
 import java.io.File
 
@@ -46,11 +49,9 @@ open class AbstractListViewModel(val statisticsManager: StatisticsManager) : Vie
     )
     val dailyTaskList: SnapshotStateList<DailyTask>  = mutableStateListOf()
     protected val user: User = User
-    init {
-        loadDailyTasks()
-    }
     fun loadDailyTasks(){
         dailyTaskSchedule = user.getSchedule().getOrCreateDailySchedule(dailyScheduleDate.value)
+        dailyTaskList.clear()
         dailyTaskList.addAll(dailyTaskSchedule.getDailyTaskList())
     }
     open fun scheduleTaskRequest(task: DailyTask, action: DailyTaskAction.Type) {
@@ -145,17 +146,42 @@ open class AbstractListViewModel(val statisticsManager: StatisticsManager) : Vie
 class ListViewModel(statisticsManager: StatisticsManager) : AbstractListViewModel(statisticsManager) {
     private val workManager = WorkManagerHolder.getInstance()
     private val audioRepo = AudioRepository(ApiClient.audioApiService)
+    fun getInviteesRequestList(task: DailyTask): List<OneTimeWorkRequest>{
+        return task.getSharedInfo().invitees.map { loginOrEmail ->
+            val inviteJson = Json.encodeToString(
+                InviteAction.serializer(),
+                InviteAction(
+                    type = InviteAction.Type.INVITE,
+                    eventId = task.getId(),
+                    loginOrEmail = loginOrEmail
+                )
+            )
+            OneTimeWorkRequestBuilder<InviteApiWorker>()
+                .setInputData(workDataOf(InviteAction.jsonName to inviteJson))
+                .build()
+        }
+    }
     override fun scheduleTaskRequest(task: DailyTask, action: DailyTaskAction.Type) {
         val taskJson = Json.encodeToString(DailyTaskAction.serializer(), DailyTaskAction(task = task, type = action))
 
         val workRequest = OneTimeWorkRequestBuilder<TaskApiWorker>()
             .setInputData(workDataOf(DailyTaskAction.jsonName to taskJson))
             .build()
-        workManager.enqueueUniqueWork(
-            "task_${task.getId()}",
-            ExistingWorkPolicy.APPEND,
-            workRequest
-        )
+        if (action== DailyTaskAction.Type.ADD && task.getSharedInfo().isShared){
+            workManager.beginUniqueWork(
+                "task_${task.getId()}",
+                ExistingWorkPolicy.APPEND,
+                workRequest
+            )
+                .then(getInviteesRequestList(task))
+                .enqueue()
+        } else {
+            workManager.enqueueUniqueWork(
+                "task_${task.getId()}",
+                ExistingWorkPolicy.APPEND,
+                workRequest
+            )
+        }
     }
     fun sendAudio(
         audioFile: MutableState<File?>,

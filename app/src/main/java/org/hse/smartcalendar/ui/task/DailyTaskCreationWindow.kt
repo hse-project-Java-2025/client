@@ -24,11 +24,13 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,6 +45,7 @@ import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailySchedule
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
+import org.hse.smartcalendar.data.SharedInfo
 import org.hse.smartcalendar.network.ChatTaskResponse
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.ui.elements.AudioRecorderButton
@@ -69,6 +72,10 @@ fun BottomSheet(
     viewModel: ListViewModel,
     addTask: (DailyTask) -> Unit,
 ) {
+    val isShared = rememberSaveable { mutableStateOf(false) }
+    val invitees = remember { mutableStateListOf<String>("") }
+
+
     val expendedTypeSelection = rememberSaveable { mutableStateOf(false) }
     val isConflictInTimeField = rememberSaveable { mutableStateOf(false) }
     val isEmptyTitle = rememberSaveable { mutableStateOf(false) }
@@ -181,6 +188,8 @@ fun BottomSheet(
                         )
                     }
                 }
+                SharedInviteSection(isShared=isShared,
+                    invitees=invitees)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -222,7 +231,9 @@ fun BottomSheet(
                                 isEmptyTitle = isEmptyTitle,
                                 isNestedTask = isNestedTask,
                                 fstFiledHasFormatError = fstFiledHasFormatError,
-                                sndFiledHasFormatError = sndFiledHasFormatError
+                                sndFiledHasFormatError = sndFiledHasFormatError,
+                                isShared = isShared,
+                                invitees = invitees
                             )
                         },
                     ) {
@@ -292,6 +303,8 @@ fun addNewTask(
     taskTitle: MutableState<String>,
     taskType: MutableState<DailyTaskType>,
     taskDescription: MutableState<String>,
+    isShared: MutableState<Boolean>,
+    invitees: MutableList<String>,
     startTime: MutableState<Int>,
     endTime: MutableState<Int>,
     viewModel: ListViewModel,
@@ -312,14 +325,14 @@ fun addNewTask(
     if (isConflictInTimeField.value || isEmptyTitle.value) {
         return
     }
-
     val newTask = DailyTask(
             title = taskTitle.value,
             type = taskType.value,
             description = taskDescription.value,
             start = LocalTime.fromMinutesOfDay(startTime.value),
             end = LocalTime.fromMinutesOfDay(endTime.value),
-            date = viewModel.getScreenDate()
+            date = viewModel.getScreenDate(),
+            sharedInfo = SharedInfo(isShared = isShared.value, invitees = invitees.toList())
         )
 
     try {
@@ -454,7 +467,7 @@ fun BottomSheetPreview() {
             addTask = {},
             taskType = taskType,
             viewModel = ListViewModel(StatisticsManager(StatisticsViewModel())),
-            onRecordStop = TODO(),
+            onRecordStop = {null},
             audioFile = audioFile,
         )
     }

@@ -6,6 +6,7 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -25,6 +26,7 @@ import org.hse.smartcalendar.ui.screens.AchievementsScreen
 import org.hse.smartcalendar.ui.screens.ChangeLogin
 import org.hse.smartcalendar.ui.screens.ChangePassword
 import org.hse.smartcalendar.ui.screens.GreetingScreen
+import org.hse.smartcalendar.ui.screens.InvitesScreen
 import org.hse.smartcalendar.ui.screens.LoadingScreen
 import org.hse.smartcalendar.ui.screens.SettingsScreen
 import org.hse.smartcalendar.ui.screens.StatisticsScreen
@@ -33,6 +35,7 @@ import org.hse.smartcalendar.ui.task.TaskEditWindow
 import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.utility.rememberNavigation
+import org.hse.smartcalendar.view.model.InvitesViewModel
 import org.hse.smartcalendar.view.model.ListViewModel
 import org.hse.smartcalendar.view.model.StatisticsViewModel
 import org.hse.smartcalendar.view.model.TaskEditViewModel
@@ -46,6 +49,7 @@ fun App(
     listVM: ListViewModel,
     taskEditVM: TaskEditViewModel
 ) {
+    val invitesModel: InvitesViewModel = viewModel()
     val authModel: AuthViewModel = viewModel()
     val navigation = rememberNavigation()
     val coroutineScope = rememberCoroutineScope()
@@ -56,9 +60,15 @@ fun App(
         navBackStackEntry?.destination?.route ?: Screens.CALENDAR.route
     val drawerEnabled = currentRoute !in listOf(Screens.LOGIN.route, Screens.GREETING.route, Screens.REGISTER.route)
     val isExpandedScreen =false
-    val DrawerState = rememberDrawerState(isExpandedScreen)
+    val navigationDrawerState = rememberDrawerState(isExpandedScreen)
+    val notificationDrawerState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+        confirmValueChange = { newValue ->
+            true
+        }
+    )
     val openDrawer: ()-> Unit = {
-        coroutineScope.launch { DrawerState.open() }
+        coroutineScope.launch { navigationDrawerState.open() }
     }
     if (drawerEnabled) {
         ModalNavigationDrawer(
@@ -66,20 +76,21 @@ fun App(
                 AppDrawer(
                     currentRoute = initialRoute,
                     navigation,
-                    closeDrawer = { coroutineScope.launch { DrawerState.close() } }
+                    closeDrawer = { coroutineScope.launch { navigationDrawerState.close() } }
                 )
             },
-            drawerState = DrawerState,
+            drawerState = navigationDrawerState,
             gesturesEnabled = !isExpandedScreen
-        ){NestedNavigator(navigation, authModel,openDrawer,statisticsVM, listVM, taskEditVM )
+        ){NestedNavigator(navigation, authModel,openDrawer,statisticsVM, listVM, taskEditVM, invitesModel )
         }
     } else {
-        NestedNavigator(navigation, authModel,openDrawer, statisticsVM, listVM, taskEditVM )
+        NestedNavigator(navigation, authModel,openDrawer, statisticsVM, listVM, taskEditVM, invitesModel )
     }
 }
 @Composable
 fun NestedNavigator(navigation: Navigation, authModel: AuthViewModel,openDrawer: ()-> Unit,
-                    statisticsModel: StatisticsViewModel, listModel: ListViewModel, editModel: TaskEditViewModel){
+                    statisticsModel: StatisticsViewModel, listModel: ListViewModel, editModel: TaskEditViewModel,
+                    invitesModel: InvitesViewModel){
     val reminderModel: ReminderViewModel = viewModel(factory = ReminderViewModelFactory(
         LocalContext.current.applicationContext as Application
     ))
@@ -102,7 +113,7 @@ fun NestedNavigator(navigation: Navigation, authModel: AuthViewModel,openDrawer:
                 AuthScreen(navigation, authModel, AuthType.Login)
             }
             composable(Screens.LOADING.route) {
-                LoadingScreen(navigation, statisticsModel, listModel)
+                LoadingScreen(navigation, statisticsModel, listModel, invitesModel)
             }
         }
 
@@ -137,6 +148,9 @@ fun NestedNavigator(navigation: Navigation, authModel: AuthViewModel,openDrawer:
             }
             composable(route = Screens.ACHIEVEMENTS.route) {
                 AchievementsScreen(navigation, openDrawer, statisticsModel)
+            }
+            composable(route = Screens.SHARED_EVENTS.route) {
+                InvitesScreen(navigation, openDrawer, invitesModel, listModel)
             }
             composable(Screens.EDIT_TASK.route) {
                 TaskEditWindow(

@@ -5,6 +5,7 @@ import androidx.work.WorkerParameters
 import kotlinx.serialization.json.Json
 import org.hse.smartcalendar.data.DailyTaskAction
 import org.hse.smartcalendar.network.ApiClient
+import org.hse.smartcalendar.repository.InviteRepository
 import org.hse.smartcalendar.repository.TaskRepository
 
 class TaskApiWorker(

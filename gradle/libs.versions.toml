@@ -5,6 +5,8 @@ accompanistVersion = "0.34.0"
 agp = "8.8.1"
 androidJunit5 = "1.8.2.1"
 converterGson = "2.9.0"
+firebaseMessaging = "24.1.1"
+googleServices = "4.4.2"
 hiltAndroid = "2.52"
 hiltAndroidVersion = "2.48.1"
 hiltCompiler = "2.48.1"
@@ -19,6 +21,7 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 kotlinTest = "1.9.23"
 kotlinTestJunit5 = "1.9.23"
+kotlinxCoroutinesPlayServices = "1.7.3"
 kotlinxCoroutinesTest = "1.7.3"
 kotlinxDatetime = "0.6.2"
 kotlinxSerializationJson = "1.6.3"
@@ -29,6 +32,7 @@ composeBom = "2024.04.01"
 lifecycleRuntimeComposeAndroid = "2.8.7"
 loggingInterceptor = "4.12.0"
 loggingInterseptor = "4.7.2"
+material = "1.8.2"
 mockk = "1.13.10"
 navigationCompose = "2.8.8"
 composeMaterial3 = "1.0.0-alpha33"
@@ -53,6 +57,7 @@ android-junit5 = { module = "de.mannodermaus.gradle.plugins:android-junit5", ver
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 accompanist-permissions-v0340 = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistVersion" }
 androidx-lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "lifecycleProcessVersion" }
+androidx-material = { module = "androidx.compose.material:material", version.ref = "material" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-navigation-compose-v240beta02 = { module = "androidx.navigation:navigation-compose", version.ref = "navigationComposeVersion" }
@@ -60,6 +65,8 @@ androidx-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedat
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 converter-gson-v2110 = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofitVersion" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging", version.ref = "firebaseMessaging" }
+google-services = { module = "com.google.gms:google-services", version.ref = "googleServices" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 hilt-android-v2481 = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroidVersion" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hiltCompiler" }
@@ -82,6 +89,7 @@ junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", vers
 junit-vintage-engine = { module = "org.junit.vintage:junit-vintage-engine", version.ref = "junitVintageEngine" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlinTest" }
 kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlinTestJunit5" }
+kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutinesPlayServices" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 androidx-compose-material3 = { group = "androidx.wear.compose", name = "compose-material3", version.ref = "composeMaterial3" }

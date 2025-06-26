@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.gms.google-services")
     id("de.mannodermaus.android-junit5")
     kotlin("plugin.serialization") version "1.9.23"
 }
@@ -45,11 +46,15 @@ android {
 
 
 dependencies {
+    //user token
+    implementation(libs.kotlinx.coroutines.play.services)
+    implementation(libs.firebase.messaging)
+    //tests
     testImplementation(libs.mockk)
     testImplementation(libs.jupiter.junit.jupiter)
     androidTestImplementation(libs.ui.test.junit4)
     debugImplementation(libs.ui.test.manifest)
-    implementation(libs.androidx.lifecycle.process)
+    implementation(libs.androidx.lifecycle.process)//Dispatchers.setMain()
     implementation(libs.kotlinx.serialization.json)
     testImplementation(libs.junit.jupiter)
     testRuntimeOnly(libs.junit.vintage.engine)
@@ -82,6 +87,7 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.lifecycle.runtime.compose.android)
     implementation(libs.androidx.compose.material3)

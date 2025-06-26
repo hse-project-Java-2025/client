@@ -9,11 +9,13 @@ import org.hse.smartcalendar.network.ApiClient
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.network.UserInfoResponse
 import org.hse.smartcalendar.repository.AuthRepository
+import org.hse.smartcalendar.repository.InviteRepository
 import org.hse.smartcalendar.repository.TaskRepository
 
 class InitViewModel:ViewModel() {
     private val authRepository: AuthRepository = AuthRepository(ApiClient.authApiService)
     private val taskRepository: TaskRepository = TaskRepository(ApiClient.taskApiService)
+    private val invitesRepository: InviteRepository = InviteRepository(ApiClient.inviteApiService)
     var _userInfoResult = MutableLiveData<NetworkResponse<UserInfoResponse>>()
     val userInfoResult = _userInfoResult
     var _initResult = MutableLiveData<NetworkResponse<Any>>()
