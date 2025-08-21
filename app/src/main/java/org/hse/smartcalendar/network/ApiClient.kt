@@ -20,6 +20,7 @@ import java.time.OffsetDateTime
 
 object ApiClient {
     private const val SERVER_BASE_URL = "http://10.0.2.2:8080/"
+    //в случае работы с реальным телефоном адрес сервера это адрес сети wi-fi, где запущен docker
     var authToken: String? = null
     private val client = OkHttpClient.Builder()
         .addInterceptor(AuthInterceptor { authToken })

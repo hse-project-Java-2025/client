@@ -62,7 +62,7 @@ fun BottomSheet(
     isBottomSheetVisible: MutableState<Boolean>,
     sheetState: SheetState,
     onDismiss: () -> Unit,
-    onRecordStop: () -> ChatTaskResponse? = { null },
+    onRecordStop: () -> Unit = { null },
     audioFile: MutableState<File?>,
     taskTitle: MutableState<String>,
     taskType: MutableState<DailyTaskType>,
@@ -83,10 +83,23 @@ fun BottomSheet(
     val fstFiledHasFormatError = rememberSaveable { mutableStateOf(false) }
     val sndFiledHasFormatError = rememberSaveable { mutableStateOf(false) }
     val actionResult by viewModel.actionResult.observeAsState()
+    val audioResponse by viewModel.audioResponse.observeAsState()
     val isErrorInRecorder = rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(isBottomSheetVisible.value) {
         if (isBottomSheetVisible.value){
             isErrorInRecorder.value = false
+        }
+    }
+    LaunchedEffect(audioResponse) {
+        audioResponse?.let { task ->
+            task.applyToUiStates(
+                taskTitle = taskTitle,
+                taskDescription = taskDescription,
+                taskType = taskType,
+                isErrorInRecorder = isErrorInRecorder,
+                startTime = startTime,
+                endTime = endTime
+            )
         }
     }
     if (isBottomSheetVisible.value) {
@@ -199,20 +212,7 @@ fun BottomSheet(
                     AudioRecorderButton(
                         modifier = Modifier.weight(1.0f),
                         audioFile = audioFile,
-                        onStop = {
-                            val task = onRecordStop()
-                            if (task != null) {
-                                task.applyToUiStates(
-                                    taskTitle = taskTitle,
-                                    taskDescription = taskDescription,
-                                    taskType = taskType,
-                                    isErrorInRecorder = isErrorInRecorder,
-                                    startTime = startTime,
-                                    endTime = endTime)
-                            } else {
-                                isErrorInRecorder.value = true
-                            }
-                        }
+                        onStop = onRecordStop
                     )
                     Spacer(modifier = Modifier.padding(12.dp))
                     Button(
