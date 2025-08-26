@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.utility.TimeUtils
+data class ChatGptRequest(val query: String)
 data class InviteRequest(val loginOrEmail: String)
 data class LoginRequest(
     val username: String,

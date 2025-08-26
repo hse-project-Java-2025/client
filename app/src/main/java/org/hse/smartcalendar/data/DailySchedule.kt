@@ -12,6 +12,15 @@ class DailySchedule (val date : LocalDate = Clock.System.now()
 {
     private var dailyTasksList: LinkedList<DailyTask> = LinkedList()
 
+    fun tryAddTask(newTask : DailyTask) : Boolean {
+        val iterator = dailyTasksList.iterator()
+        iterator.forEach { task ->
+            if (task.isNestedTasks(newTask)) {
+                return false
+            }
+        }
+        return true
+    }
     fun addDailyTask(newTask : DailyTask) : Boolean {
         val iterator = dailyTasksList.iterator()
         iterator.forEach { task ->

@@ -54,6 +54,9 @@ object ApiClient {
     val inviteApiService: InviteApiInterface by lazy {
         retrofit.create(InviteApiInterface::class.java)
     }
+    val chatGptApiService: ChatGptApiInterface by lazy {
+        retrofit.create(ChatGptApiInterface::class.java)
+    }
 }
 class AuthInterceptor(private val tokenProvider: () -> String?) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {

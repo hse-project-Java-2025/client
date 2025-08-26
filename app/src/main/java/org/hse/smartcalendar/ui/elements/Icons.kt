@@ -9,6 +9,52 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+val BotMessageSquare: ImageVector
+    get() {
+        if (_BotMessageSquare != null) return _BotMessageSquare!!
+
+        _BotMessageSquare = ImageVector.Builder(
+            name = "BotMessageSquare",
+            defaultWidth = 24.dp,
+            defaultHeight = 24.dp,
+            viewportWidth = 24f,
+            viewportHeight = 24f
+        ).apply {
+            path(
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round
+            ) {
+                moveTo(12f, 6f)
+                verticalLineTo(2f)
+                horizontalLineTo(8f)
+                moveToRelative(0f, 16f)
+                lineToRelative(-4f, 4f)
+                verticalLineTo(8f)
+                arcToRelative(2f, 2f, 0f, false, true, 2f, -2f)
+                horizontalLineToRelative(12f)
+                arcToRelative(2f, 2f, 0f, false, true, 2f, 2f)
+                verticalLineToRelative(8f)
+                arcToRelative(2f, 2f, 0f, false, true, -2f, 2f)
+                close()
+                moveToRelative(-6f, -6f)
+                horizontalLineToRelative(2f)
+                moveToRelative(5f, -1f)
+                verticalLineToRelative(2f)
+                moveToRelative(6f, -2f)
+                verticalLineToRelative(2f)
+                moveToRelative(5f, -1f)
+                horizontalLineToRelative(2f)
+            }
+        }.build()
+
+        return _BotMessageSquare!!
+    }
+
+private var _BotMessageSquare: ImageVector? = null
+
+
 val People: ImageVector
     get() {
         if (_People != null) return _People!!

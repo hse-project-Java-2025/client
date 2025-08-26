@@ -118,3 +118,4 @@ data class ChatTaskResponse(
         applyToState(newEnd, endTime)
     }
 }
+data class ChatGptResponse(val events: List<ChatTaskResponse>)

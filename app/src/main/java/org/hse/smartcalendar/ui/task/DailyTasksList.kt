@@ -106,6 +106,9 @@ fun DailyTasksList(
             showLoading = false
         }
     }
+    LaunchedEffect(Unit) {
+        viewModel.loadDailyTasks()
+    }
     Scaffold(
         topBar = {
             TopButton(

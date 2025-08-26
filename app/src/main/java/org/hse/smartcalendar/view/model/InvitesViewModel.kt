@@ -5,23 +5,22 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.workDataOf
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import org.hse.smartcalendar.data.DailySchedule
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.Invite
 import org.hse.smartcalendar.data.InviteAction
-import org.hse.smartcalendar.data.MainSchedule
 import org.hse.smartcalendar.data.User
+import org.hse.smartcalendar.data.WorkManagerHolder
 import org.hse.smartcalendar.data.store.InvitesStore
 import org.hse.smartcalendar.network.ApiClient
 import org.hse.smartcalendar.network.NetworkResponse
 import org.hse.smartcalendar.repository.InviteRepository
 import org.hse.smartcalendar.work.InviteApiWorker
-import kotlinx.serialization.json.Json
-import org.hse.smartcalendar.data.WorkManagerHolder
-import androidx.work.ExistingWorkPolicy
 
 class InvitesViewModel : ViewModel() {
     var _initResult = MutableLiveData<NetworkResponse<List<Invite>>>()
@@ -41,7 +40,7 @@ class InvitesViewModel : ViewModel() {
                     updateUI()
                 }
                 _initResult.value = response
-                kotlinx.coroutines.delay(10000)
+                kotlinx.coroutines.delay(100000)
             }
         }
     }

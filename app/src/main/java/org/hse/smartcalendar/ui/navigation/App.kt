@@ -25,6 +25,7 @@ import org.hse.smartcalendar.view.model.ReminderViewModelFactory
 import org.hse.smartcalendar.ui.screens.AchievementsScreen
 import org.hse.smartcalendar.ui.screens.ChangeLogin
 import org.hse.smartcalendar.ui.screens.ChangePassword
+import org.hse.smartcalendar.ui.screens.ChatGptScreen
 import org.hse.smartcalendar.ui.screens.GreetingScreen
 import org.hse.smartcalendar.ui.screens.InvitesScreen
 import org.hse.smartcalendar.ui.screens.LoadingScreen
@@ -35,6 +36,7 @@ import org.hse.smartcalendar.ui.task.TaskEditWindow
 import org.hse.smartcalendar.utility.Navigation
 import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.utility.rememberNavigation
+import org.hse.smartcalendar.view.model.ChatGptViewModel
 import org.hse.smartcalendar.view.model.InvitesViewModel
 import org.hse.smartcalendar.view.model.ListViewModel
 import org.hse.smartcalendar.view.model.StatisticsViewModel
@@ -49,6 +51,7 @@ fun App(
     listVM: ListViewModel,
     taskEditVM: TaskEditViewModel
 ) {
+    val chatGptViewModel: ChatGptViewModel = viewModel ()
     val invitesModel: InvitesViewModel = viewModel()
     val authModel: AuthViewModel = viewModel()
     val navigation = rememberNavigation()
@@ -81,16 +84,16 @@ fun App(
             },
             drawerState = navigationDrawerState,
             gesturesEnabled = !isExpandedScreen
-        ){NestedNavigator(navigation, authModel,openDrawer,statisticsVM, listVM, taskEditVM, invitesModel )
+        ){NestedNavigator(navigation, authModel,openDrawer,statisticsVM, listVM, taskEditVM, invitesModel, chatGptViewModel)
         }
     } else {
-        NestedNavigator(navigation, authModel,openDrawer, statisticsVM, listVM, taskEditVM, invitesModel )
+        NestedNavigator(navigation, authModel,openDrawer, statisticsVM, listVM, taskEditVM, invitesModel, chatGptViewModel)
     }
 }
 @Composable
 fun NestedNavigator(navigation: Navigation, authModel: AuthViewModel,openDrawer: ()-> Unit,
                     statisticsModel: StatisticsViewModel, listModel: ListViewModel, editModel: TaskEditViewModel,
-                    invitesModel: InvitesViewModel){
+                    invitesModel: InvitesViewModel, chatGptViewModel: ChatGptViewModel){
     val reminderModel: ReminderViewModel = viewModel(factory = ReminderViewModelFactory(
         LocalContext.current.applicationContext as Application
     ))
@@ -163,6 +166,9 @@ fun NestedNavigator(navigation: Navigation, authModel: AuthViewModel,openDrawer:
                     reminderModel = reminderModel,
                     navController = navigation.navController
                 )
+            }
+            composable(route = Screens.AI_ASSISTANT.route) {
+                ChatGptScreen(navigation, openDrawer, chatGptViewModel, listViewModel = listModel)
             }
         }
     }

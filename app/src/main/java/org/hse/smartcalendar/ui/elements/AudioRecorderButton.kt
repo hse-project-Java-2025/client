@@ -3,6 +3,8 @@ package org.hse.smartcalendar.ui.elements
 import android.Manifest
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -29,13 +31,16 @@ import java.io.File
 fun AudioRecorderButton(
     modifier: Modifier = Modifier,
     audioFile: MutableState<File?>,
-    onStop: () -> Unit
+    onStop: () -> Unit,
+    buttonColors:  ButtonColors =  ButtonDefaults.buttonColors(),
+    iconColor: Color = Color.White
 ) {
     val recordingState = rememberSaveable { mutableStateOf(RecordState.IDLE) }
     val context = LocalContext.current
     val audioPermissionState = rememberPermissionState(Manifest.permission.RECORD_AUDIO)
 
     Button(
+        colors = buttonColors,
         modifier = modifier,
         onClick = {
             when {
@@ -65,7 +70,7 @@ fun AudioRecorderButton(
                 Icon(
                     painter = painterResource(R.drawable.mic_asset),
                     contentDescription = "Recording",
-                    tint = Color.White,
+                    tint = iconColor,
                     modifier = Modifier.size(24.dp)
                 )
 
@@ -73,7 +78,7 @@ fun AudioRecorderButton(
                 Icon(
                     painter = painterResource(R.drawable.stop_asset),
                     contentDescription = "Recording",
-                    tint = Color.White,
+                    tint = iconColor,
                     modifier = Modifier.size(24.dp)
                 )
 
