@@ -11,10 +11,12 @@ Back-end часть проекта доступна по ссылке:
 - [SmartCalendarServer](https://github.com/hse-project-Java-2025/server)
 
 ## Video 
- - AI-assist demonstration
-   https://github.com/user-attachments/assets/963f8ed1-c95e-4326-ae8b-bdfbd8c01e74
- -  Main functionality demonstration
-   https://drive.google.com/file/d/1Zq_mHprqxPhZRkU3m5l3qvVPfQEbaJFy/view?usp=sharing
+## Video
+Main app functionality & AI assistant demos
+
+| | |
+|---|---|
+| <video src="https://github.com/user-attachments/assets/963f8ed1-c95e-4326-ae8b-bdfbd8c01e74" width="100%"></video> | <video src="https://github.com/user-attachments/assets/84071fe9-3991-4290-9e04-8ced36ae3edf" width="100%"></video> |
 
 # Key Features
 
