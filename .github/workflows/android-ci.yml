@@ -11,7 +11,7 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: macos-latest
+    runs-on: macos-13
     env:
       ANDROID_SDK_ROOT: /Users/runner/Library/Android/sdk
 
@@ -36,21 +36,21 @@ jobs:
           java-version: 17
 
       - name: Install Android SDK
-        uses: android-actions/setup-android@v2
-        with:
-          api-level: 33
-          build-tools: "33.0.2"
-          components: |
-            platform-tools
-            emulator
-            tools
-            platforms;android-33
-            system-images;android-33;google_apis;x86_64
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        run: |
+          sdkmanager --install \
+            "platform-tools" \
+            "platforms;android-33" \
+            "build-tools;33.0.2" \
+            "emulator" \
+            "system-images;android-33;google_apis;x86_64"
 
       - name: Accept Android SDK licenses
         run: yes | sdkmanager --licenses
 
-      - name: Create and start emulator
+      - name: Create and start emulator, run instrumentation tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 33
@@ -60,10 +60,10 @@ jobs:
           emulator-options: -no-window -no-boot-anim -gpu swiftshader_indirect
           disable-animations: true
           emulator-boot-timeout: 180
+          script: ./gradlew connectedDebugAndroidTest --stacktrace
 
-      - name: Build debug APK, run unit & instrumentation tests
+      - name: Build debug APK, run unit tests
         run: |
           ./gradlew clean assembleDebug \
             testDebugUnitTest \
-            connectedDebugAndroidTest \
             --stacktrace
