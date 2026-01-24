@@ -16,7 +16,7 @@ Main app functionality & AI assistant demos
 
 | | |
 |---|---|
-| <video src="https://github.com/user-attachments/assets/963f8ed1-c95e-4326-ae8b-bdfbd8c01e74" width="100%"></video> | <video src="https://github.com/user-attachments/assets/84071fe9-3991-4290-9e04-8ced36ae3edf" width="100%"></video> |
+| <video src="https://github.com/user-attachments/assets/84071fe9-3991-4290-9e04-8ced36ae3edf" width="100%"></video> |<video src="https://github.com/user-attachments/assets/963f8ed1-c95e-4326-ae8b-bdfbd8c01e74" width="100%"></video> |
 
 # Key Features
 
