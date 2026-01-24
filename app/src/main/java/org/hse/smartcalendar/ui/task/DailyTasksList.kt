@@ -106,6 +106,9 @@ fun DailyTasksList(
             showLoading = false
         }
     }
+    LaunchedEffect(Unit) {
+        viewModel.loadDailyTasks()
+    }
     Scaffold(
         topBar = {
             TopButton(
@@ -144,10 +147,10 @@ fun DailyTasksList(
                         .invokeOnCompletion { isBottomSheetVisible.value = false }
                 },
                 onRecordStop = {
-                    viewModel.sendAudio(
-                        audioFile = audioFile,
-                        description = ListViewModel.AudioDescription.CONVERT_AUDIO,
-                    )
+                    audioFile.value?.let { file ->
+                        viewModel.sendAudio(file)
+                    }
+
                 },
                 audioFile = audioFile,
                 taskTitle = taskTitle,

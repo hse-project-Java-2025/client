@@ -111,3 +111,17 @@ interface InviteApiInterface {
         @Body request: InviteRequest
     ): Response<ResponseBody>
 }
+
+interface ChatGptApiInterface {
+    @POST("api/chatgpt/{userId}/generate/suggestions")
+    suspend fun generateSuggestions(
+        @Path("userId") userId: Long,
+        @Body request: ChatGptRequest
+    ): Response<ChatGptResponse>
+    @Multipart
+    @POST("api/chatgpt/{userId}/generate/suggestions/audio")
+    suspend fun generateSuggestionsFromAudio(
+        @Path("userId") userId: Long,
+        @Part file: MultipartBody.Part
+    ): Response<ChatGptResponse>
+}

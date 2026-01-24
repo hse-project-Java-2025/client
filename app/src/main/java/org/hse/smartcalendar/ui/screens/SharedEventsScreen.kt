@@ -1,6 +1,5 @@
 package org.hse.smartcalendar.ui.screens
 
-import InviteItem
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -25,6 +24,7 @@ import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.data.Invite
 import org.hse.smartcalendar.data.store.InvitesStore
+import org.hse.smartcalendar.ui.elements.InviteItem
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import org.hse.smartcalendar.utility.Screens
 import org.hse.smartcalendar.utility.rememberNavigation

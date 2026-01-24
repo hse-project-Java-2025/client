@@ -1,6 +1,7 @@
+package org.hse.smartcalendar.ui.elements
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DismissDirection
 import androidx.compose.material.DismissValue
 import androidx.compose.material.ExperimentalMaterialApi
@@ -21,23 +22,24 @@ import kotlinx.datetime.LocalTime
 import org.hse.smartcalendar.data.DailyTask
 import org.hse.smartcalendar.data.DailyTaskType
 import org.hse.smartcalendar.data.Invite
+import org.hse.smartcalendar.data.SuggestedTask
 import org.hse.smartcalendar.ui.task.DailyTaskCard
 import org.hse.smartcalendar.ui.theme.SmartCalendarTheme
 import java.util.UUID
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun InviteItem(
-    invite: Invite,
+fun TaskItemBase(
+    task: DailyTask,
+    expandedState: MutableState<Boolean> = remember { mutableStateOf(false) },
     onAccept: () -> Boolean,
-    onDecline: () -> Unit
+    onDecline: () -> Unit,
+    expandable: Boolean = true,
+    statusContent: @Composable (() -> Unit)? = null
 ) {
-    var expanded by remember { mutableStateOf(false) }
     val dismissState = rememberDismissState { dismissValue ->
         when (dismissValue) {
-            DismissValue.DismissedToEnd -> {
-                onAccept()
-            }
+            DismissValue.DismissedToEnd -> onAccept()
             DismissValue.DismissedToStart -> {
                 onDecline()
                 true
@@ -80,63 +82,59 @@ fun InviteItem(
                     .fillMaxWidth()
                     .padding(vertical = 4.dp)
             ) {
-                Card(
-                    shape = RoundedCornerShape(8.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
-                    elevation = CardDefaults.cardElevation(2.dp)
-                ) {
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column {
-                            Text(invite.inviterName, style = MaterialTheme.typography.labelMedium)
-                            Spacer(Modifier.height(4.dp))
-                            Text(invite.task.getDailyTaskTitle(), style = MaterialTheme.typography.bodyLarge)
-                        }
-                        Column(horizontalAlignment = Alignment.End) {
-                            Text(
-                                invite.task.getDailyTaskArrangementString(),
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                            Spacer(Modifier.height(4.dp))
-                            Text(
-                                "Date: ${invite.task.getTaskDate()}",
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
-                    }
-                }
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    TextButton(onClick = { expanded = !expanded }) {
-                        Text(if (expanded) "Hide Details" else "Show Details")
-                    }
-                }
-                if (expanded) {
-                    DailyTaskCard(
-                        task = invite.task,
+                DailyTaskCard(
+                    task = task,
+                    onCompletionChange = {},
+                    onLongPressAction = {},
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                )
+                statusContent?.let {
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
+                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        it()
+                    }
+                }
+                if (expandable){
+                Row(
+                    Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                        TextButton(onClick = { expandedState.value = !expandedState.value }) {
+                            Text(if (expandedState.value) "Hide Details" else "Show Details")
+                        }
+                }
+                    }
+                if (expandedState.value) {
+                    DailyTaskCard(
+                        task = task,
                         onCompletionChange = {},
-                        onLongPressAction = {}
+                        onLongPressAction = {},
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
                     )
                 }
             }
         }
     )
 }
+
+@Composable
+fun InviteItem(
+    invite: Invite,
+    onAccept: () -> Boolean,
+    onDecline: () -> Unit
+) {
+    TaskItemBase(
+        task = invite.task,
+        onAccept = onAccept,
+        onDecline = onDecline,
+    )
+}
+
+
 @Preview(showBackground = true)
 @Composable
 fun InviteItemPreview() {

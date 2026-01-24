@@ -80,6 +80,7 @@ class StatisticsTest {
     fun init(){
         statisticsViewModel = StatisticsViewModel()
         listViewModel = AbstractListViewModel(StatisticsManager(statisticsViewModel))
+        listViewModel.loadDailyTasks()
         setTasks()
     }
     @AfterEach//Clear, call after EACH test

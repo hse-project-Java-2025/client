@@ -23,4 +23,12 @@ sealed class NetworkResponse<out T> {
             return Error("token is null")
         }
     }
+    fun <R> mapSuccess(transform: (T) -> R): NetworkResponse<R> {
+        return when (this) {
+            is NetworkResponse.Success -> NetworkResponse.Success(transform(this.data))
+            is NetworkResponse.Error -> NetworkResponse.Error(this.message)
+            is NetworkResponse.NetworkError -> NetworkResponse.NetworkError(this.exceptionMessage)
+            is NetworkResponse.Loading -> NetworkResponse.Loading
+        }
+    }
 }

@@ -144,6 +144,9 @@ open class AbstractListViewModel(val statisticsManager: StatisticsManager) : Vie
     }
 }
 class ListViewModel(statisticsManager: StatisticsManager) : AbstractListViewModel(statisticsManager) {
+    private val _audioResponse = MutableLiveData<ChatTaskResponse?>()
+    val audioResponse: LiveData<ChatTaskResponse?> = _audioResponse
+
     private val workManager = WorkManagerHolder.getInstance()
     private val audioRepo = AudioRepository(ApiClient.audioApiService)
     fun getInviteesRequestList(task: DailyTask): List<OneTimeWorkRequest>{
@@ -183,23 +186,17 @@ class ListViewModel(statisticsManager: StatisticsManager) : AbstractListViewMode
             )
         }
     }
-    fun sendAudio(
-        audioFile: MutableState<File?>,
-        description: AudioDescription,
-    ): ChatTaskResponse? {
-        val file = audioFile.value
-        var response: ChatTaskResponse? = null
-        if (file!=null) {
-            viewModelScope.launch {
-                _actionResult.value = NetworkResponse.Loading
-                val result  = audioRepo.sendAudioGetResponse(file)
-                if (result is NetworkResponse.Success){
-                     response = result.data
-                }
-                _actionResult.value = result
+    fun sendAudio(audioFile: File) {
+        viewModelScope.launch {
+            _actionResult.value = NetworkResponse.Loading
+            val result = audioRepo.sendAudioGetResponse(audioFile)
+            if (result is NetworkResponse.Success) {
+                _audioResponse.value = result.data
+            } else {
+                _audioResponse.value = null
             }
+            _actionResult.value = result
         }
-        return response
     }
 
     class NestedTask(val nestedTask: DailyTask) :

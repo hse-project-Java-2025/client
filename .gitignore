@@ -1,1 +1,7 @@
 local.properties
+.idea/
+.gradle/
+.kotlin/
+internalDocs/
+gradle/local-properites.kts
+out.txt

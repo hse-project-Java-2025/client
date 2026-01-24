@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
+import org.hse.smartcalendar.ui.elements.BotMessageSquare
 import org.hse.smartcalendar.ui.elements.Calendar_add_on
 import org.hse.smartcalendar.ui.elements.Calendar_today
 import org.hse.smartcalendar.ui.elements.Event_upcoming
@@ -45,6 +46,8 @@ fun AppDrawer(
         AppNavigationDrawerItem(label = "My Calendars", icon = Calendar_add_on, destination = Screens.MY_CALENDARS,
             currentRoute = currentRoute, navigation = navigation, closeDrawer = closeDrawer)
         AppNavigationDrawerItem(label = "Shared events", icon = Event_upcoming, destination = Screens.SHARED_EVENTS,
+            currentRoute = currentRoute, navigation = navigation, closeDrawer = closeDrawer)
+        AppNavigationDrawerItem(label = "Ai Assistant", icon = BotMessageSquare, destination = Screens.AI_ASSISTANT,
             currentRoute = currentRoute, navigation = navigation, closeDrawer = closeDrawer)
     }
 }

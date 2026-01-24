@@ -11,9 +11,7 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: macos-latest
-    env:
-      ANDROID_SDK_ROOT: /Users/runner/Library/Android/sdk
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
@@ -35,35 +33,44 @@ jobs:
           distribution: temurin
           java-version: 17
 
+      - name: Enable KVM
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils
+          sudo adduser $USER libvirt
+          sudo adduser $USER kvm
+          sudo chmod 666 /dev/kvm
+          ls -l /dev/kvm
+
       - name: Install Android SDK
-        uses: android-actions/setup-android@v2
-        with:
-          api-level: 33
-          build-tools: "33.0.2"
-          components: |
-            platform-tools
-            emulator
-            tools
-            platforms;android-33
-            system-images;android-33;google_apis;x86_64
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        run: |
+          sdkmanager --install \
+            "platform-tools" \
+            "platforms;android-33" \
+            "build-tools;33.0.2" \
+            "emulator" \
+            "system-images;android-33;google_apis;x86_64"
 
       - name: Accept Android SDK licenses
         run: yes | sdkmanager --licenses
 
-      - name: Create and start emulator
+      - name: Create and start emulator, run instrumentation tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 33
           target: google_apis
           arch: x86_64
           force-avd-creation: true
-          emulator-options: -no-window -no-boot-anim -gpu swiftshader_indirect
+          emulator-options: -no-window -no-boot-anim -noaudio -gpu swiftshader_indirect -no-snapshot -no-snapshot-save -wipe-data -accel on
           disable-animations: true
           emulator-boot-timeout: 180
+          script: ./gradlew connectedDebugAndroidTest --stacktrace
 
-      - name: Build debug APK, run unit & instrumentation tests
+      - name: Build debug APK, run unit tests
         run: |
           ./gradlew clean assembleDebug \
             testDebugUnitTest \
-            connectedDebugAndroidTest \
             --stacktrace
