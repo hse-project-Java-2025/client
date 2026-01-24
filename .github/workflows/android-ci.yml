@@ -11,9 +11,7 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: macos-13
-    env:
-      ANDROID_SDK_ROOT: /Users/runner/Library/Android/sdk
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
@@ -34,6 +32,15 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+
+      - name: Enable KVM
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils
+          sudo adduser $USER libvirt
+          sudo adduser $USER kvm
+          sudo chmod 666 /dev/kvm
+          ls -l /dev/kvm
 
       - name: Install Android SDK
         uses: android-actions/setup-android@v3
@@ -57,7 +64,7 @@ jobs:
           target: google_apis
           arch: x86_64
           force-avd-creation: true
-          emulator-options: -no-window -no-boot-anim -gpu swiftshader_indirect
+          emulator-options: -no-window -no-boot-anim -noaudio -gpu swiftshader_indirect -no-snapshot -no-snapshot-save -wipe-data -accel on
           disable-animations: true
           emulator-boot-timeout: 180
           script: ./gradlew connectedDebugAndroidTest --stacktrace
