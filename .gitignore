@@ -4,3 +4,4 @@ local.properties
 .kotlin/
 internalDocs/
 gradle/local-properites.kts
+out.txt

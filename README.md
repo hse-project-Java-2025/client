@@ -10,6 +10,12 @@ Back-end часть проекта доступна по ссылке:
 
 - [SmartCalendarServer](https://github.com/hse-project-Java-2025/server)
 
+## Video 
+ - AI-assist demonstration
+   https://github.com/user-attachments/assets/963f8ed1-c95e-4326-ae8b-bdfbd8c01e74
+ -  Main functionality demonstration
+   https://drive.google.com/file/d/1Zq_mHprqxPhZRkU3m5l3qvVPfQEbaJFy/view?usp=sharing
+
 # Key Features
 
 ## 👤 User Authentication & Profile
@@ -80,9 +86,3 @@ MIT License - see [LICENSE](LICENSE.txt) file
 ## Contributors
 - [Pavel Usatov](https://github.com/UsatovPavel)
 - [Timofey Ustinov](https://github.com/timustinov)
-
-
-AI-функционал
-https://github.com/user-attachments/assets/963f8ed1-c95e-4326-ae8b-bdfbd8c01e74
-Основной функционал
-https://drive.google.com/file/d/1Zq_mHprqxPhZRkU3m5l3qvVPfQEbaJFy/view?usp=sharing

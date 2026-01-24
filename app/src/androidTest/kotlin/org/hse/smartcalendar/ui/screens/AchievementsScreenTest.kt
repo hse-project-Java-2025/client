@@ -67,6 +67,7 @@ class AchievementsScreenTest {
     fun achievementsShowsStreak() {
         val statisticsViewModel = StatisticsViewModel()
         val listViewModel = AbstractListViewModel(StatisticsManager(statisticsViewModel))
+        listViewModel.loadDailyTasks()
 //нужно потестить каждый элемент:Planning everything - без заданий 0,
 // с заданием 5ч 5/10, c 24ч 24 часа
         composeTestRule.setContent {
